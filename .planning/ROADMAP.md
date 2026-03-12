@@ -29,12 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. MediaPipe inference runs inside a Web Worker without crashing on both Mac Chrome and Windows Chrome (verified spike — not assumed from docs)
   4. Chrome's Web Speech API behavior with um/uh filler words is empirically confirmed (suppressed or preserved), establishing the implementation path before filler detection is built
   5. The app calls navigator.storage.persist() so stored sessions are not silently evicted by the browser
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Project scaffold — Vite 7 + React 19 + TypeScript + Tailwind, Web Worker config, Dexie schema v1
-- [ ] 01-02: Architecture spikes — MediaPipe-in-worker prototype (all 3 models), WebM fix-webm-duration verification, Chrome filler-word suppression empirical test
-- [ ] 01-03: Recording pipeline — getUserMedia, distraction-free session UI, MediaRecorder + fix-webm-duration, IndexedDB save via Dexie, navigator.storage.persist()
+- [ ] 01-01-PLAN.md — Vite 7 + React 19 + TypeScript scaffold, Tailwind v4, Vitest wired to jsdom, Dexie v4 schema v1, Wave 0 test stubs
+- [ ] 01-02-PLAN.md — Architecture spikes: MediaPipe classic-mode worker (all 3 models), WebM fix-webm-duration verification, Chrome filler-word suppression empirical test
+- [ ] 01-03-PLAN.md — Recording pipeline: getUserMedia, distraction-free session UI, MediaRecorder + fix-webm-duration, Dexie session save, navigator.storage.persist(), browser support warning
 
 ### Phase 2: Analysis Pipeline
 **Goal**: Every session the user records is silently analyzed end-to-end — eye contact, facial expressiveness, nervous gestures, filler words, and pacing — producing a complete, timestamped event log committed to IndexedDB at session end.
