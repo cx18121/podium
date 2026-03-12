@@ -1,7 +1,7 @@
+// src/App.tsx — TEMPORARY: renders spike runner for Plan 01-02
+// Plan 01-03 will replace this with the real app routing
+import SpikeRunner from './spikes/SpikeRunner';
+
 export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-      <p className="text-gray-400">Presentation Coach — loading...</p>
-    </div>
-  );
+  return <SpikeRunner />;
 }
