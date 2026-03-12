@@ -84,13 +84,13 @@
 | REC-02 | Phase 1 | Pending |
 | REC-03 | Phase 1 | Pending |
 | REC-04 | Phase 1 | Pending |
-| REC-05 | Phase 1 | Pending |
+| REC-05 | Phase 1 | In Progress (schema defined in 01-01, full save in 01-03) |
 | REC-06 | Phase 1 | Pending |
 | AUD-01 | Phase 2 | Pending |
 | AUD-02 | Phase 2 | Pending |
 | AUD-03 | Phase 2 | Pending |
 | AUD-04 | Phase 2 | Pending |
-| AUD-05 | Phase 1 | Pending |
+| AUD-05 | Phase 1 | In Progress (test stub in 01-01, component in 01-03) |
 | VIS-01 | Phase 2 | Pending |
 | VIS-02 | Phase 2 | Pending |
 | VIS-03 | Phase 2 | Pending |

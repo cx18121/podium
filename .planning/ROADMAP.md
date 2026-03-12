@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Vite 7 + React 19 + TypeScript scaffold, Tailwind v4, Vitest wired to jsdom, Dexie v4 schema v1, Wave 0 test stubs
+- [x] 01-01-PLAN.md — Vite 7 + React 19 + TypeScript scaffold, Tailwind v4, Vitest wired to jsdom, Dexie v4 schema v1, Wave 0 test stubs
 - [ ] 01-02-PLAN.md — Architecture spikes: MediaPipe classic-mode worker (all 3 models), WebM fix-webm-duration verification, Chrome filler-word suppression empirical test
 - [ ] 01-03-PLAN.md — Recording pipeline: getUserMedia, distraction-free session UI, MediaRecorder + fix-webm-duration, Dexie session save, navigator.storage.persist(), browser support warning
 
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Recording | 0/3 | Not started | - |
+| 1. Foundation and Recording | 1/3 | In progress | - |
 | 2. Analysis Pipeline | 0/3 | Not started | - |
 | 3. Post-Session Review | 0/3 | Not started | - |
 | 4. Session History | 0/1 | Not started | - |
