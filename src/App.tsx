@@ -1,9 +1,13 @@
 // src/App.tsx
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db/db';
+import type { SessionEvent } from './db/db';
 import { useRecording, type RecordingReadyData } from './hooks/useRecording';
 import { requestPersistentStorage } from './hooks/useStoragePermission';
+import { SpeechCapture } from './hooks/useSpeechCapture';
+import { detectFillers } from './analysis/fillerDetector';
+import { detectPauses, calculateWPM } from './analysis/pacing';
 import Home from './pages/Home';
 import SetupScreen from './components/SetupScreen/SetupScreen';
 import RecordingScreen from './components/RecordingScreen/RecordingScreen';
@@ -20,6 +24,10 @@ export default function App() {
   const [view, setView] = useState<AppView>('home');
   const [savedSessionId, setSavedSessionId] = useState<number | null>(null);
   const [pendingRecording, setPendingRecording] = useState<RecordingReadyData | null>(null);
+
+  // SpeechCapture ref — does NOT trigger re-renders (useRef, not useState)
+  const speechCaptureRef = useRef<SpeechCapture | null>(null);
+  const sessionStartMsRef = useRef<number>(0);
 
   const sessionCount = useLiveQuery(() => db.sessions.count(), []);
   const hasExistingSessions = (sessionCount ?? 0) > 0;
@@ -41,6 +49,9 @@ export default function App() {
 
   const handleStart = useCallback(async () => {
     setView('recording');
+    speechCaptureRef.current = new SpeechCapture();
+    sessionStartMsRef.current = Date.now();
+    speechCaptureRef.current.start(sessionStartMsRef.current);
     await startSession();
   }, [startSession]);
 
@@ -52,22 +63,41 @@ export default function App() {
   // App owns the save so naming prompt sits between stop and save (locked user decision)
   const handleSaveName = useCallback(async (title: string) => {
     if (!pendingRecording) return;
-    const { fixedBlob, durationMs } = pendingRecording;
+    const { fixedBlob, durationMs, visualEvents } = pendingRecording;
 
-    // REC-05: save with metadata to IndexedDB
-    // visualEvents from ML worker are merged here; speech events added in 02-03
+    // Stop speech capture and derive speech events
+    const segments = speechCaptureRef.current?.stop() ?? [];
+    const fillerEvents: SessionEvent[] = detectFillers(segments);
+    const pauseEvents: SessionEvent[] = detectPauses(segments);
+    const wpm = calculateWPM(segments, durationMs);
+    // Store WPM as a single session-end event so Phase 3 scorer can read it
+    const wpmEvent: SessionEvent = {
+      type: 'wpm_snapshot',
+      timestampMs: durationMs,
+      label: `${wpm} wpm`,
+    };
+    const speechEvents: SessionEvent[] = [...fillerEvents, ...pauseEvents, wpmEvent];
+
+    // Merge visual + speech events, sorted by timestamp
+    const eventLog: SessionEvent[] = [
+      ...(visualEvents ?? []),
+      ...speechEvents,
+    ].sort((a, b) => a.timestampMs - b.timestampMs);
+
+    // REC-05: save with merged event log to IndexedDB
     const sessionId = await db.sessions.add({
       title,
       createdAt: new Date(),
       durationMs,
       videoBlob: fixedBlob,
-      eventLog: [...(pendingRecording.visualEvents ?? [])],
+      eventLog,
       scorecard: null,
     });
 
     // REC-06: request persistent storage after first save
     await requestPersistentStorage();
 
+    speechCaptureRef.current = null;
     setPendingRecording(null);
     setSavedSessionId(sessionId as number);
     setView('review');
