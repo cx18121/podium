@@ -25,9 +25,9 @@
 ### Visual Analysis
 
 - [x] **VIS-01**: MediaPipe inference runs in a Web Worker (not main thread) to prevent UI blocking
-- [ ] **VIS-02**: Eye contact events are detected (gaze toward vs. away from camera) and timestamped
-- [ ] **VIS-03**: Facial expressiveness is scored per-segment (animated vs. flat delivery) from landmark data
-- [ ] **VIS-04**: Nervous gesture events are detected (face touching, body sway) and timestamped
+- [x] **VIS-02**: Eye contact events are detected (gaze toward vs. away from camera) and timestamped
+- [x] **VIS-03**: Facial expressiveness is scored per-segment (animated vs. flat delivery) from landmark data
+- [x] **VIS-04**: Nervous gesture events are detected (face touching, body sway) and timestamped
 - [x] **VIS-05**: Frame capture is throttled to 5–10 fps during inference to stay within CPU budget
 
 ### Scorecard
@@ -92,9 +92,9 @@
 | AUD-04 | Phase 2 | Pending |
 | AUD-05 | Phase 1 | In Progress (test stub in 01-01, component in 01-03) |
 | VIS-01 | Phase 2 | Complete |
-| VIS-02 | Phase 2 | Pending |
-| VIS-03 | Phase 2 | Pending |
-| VIS-04 | Phase 2 | Pending |
+| VIS-02 | Phase 2 | Complete |
+| VIS-03 | Phase 2 | Complete |
+| VIS-04 | Phase 2 | Complete |
 | VIS-05 | Phase 2 | Complete |
 | SCORE-01 | Phase 3 | Pending |
 | SCORE-02 | Phase 3 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-13T02:35:22.246Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-13T02:45:32.679Z"
 last_activity: "2026-03-12 — Plan 01-03 complete (recording pipeline: MediaRecorder + webmFixDuration + IndexedDB save + NameSessionModal, 7 browser tests passed)"
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 100
 ---
 
@@ -51,6 +51,7 @@ Progress: [██████████] 100% (Phase 1)
 
 *Updated after each plan completion*
 | Phase 02-analysis-pipeline P01 | 11 | 3 tasks | 11 files |
+| Phase 02-analysis-pipeline P02 | 8 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 01-03]: App.tsx owns all recording state — screens are stateless, simplifying future phase additions
 - [Phase 02-01]: Worker tests (VIS-01) remain as it.todo stubs — classic-mode worker cannot run in jsdom; manual gate in 02-VALIDATION.md
 - [Phase 02-01]: Hidden video element created from stream for frame pump but never appended to DOM (RESEARCH.md Pitfall 7)
+- [Phase 02-analysis-pipeline]: Analysis functions inlined as plain JS in worker — classic-mode Web Worker cannot use ES module imports
+- [Phase 02-analysis-pipeline]: Analysis state (eyeContactState, prevShoulderX, prevFaceTouching, expressionFrameScores) owned by worker module level — keeps pure functions testable in isolation
+- [Phase 02-analysis-pipeline]: GAZE_THRESHOLD=0.15, FACE_TOUCH_THRESHOLD=0.12, SWAY_THRESHOLD=0.04 shipped as uncalibrated heuristics — tune after Phase 3 first recordings
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T02:35:16.309Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-13T02:45:27.372Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
