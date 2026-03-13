@@ -28,11 +28,11 @@ const mockStream = {
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetUserMedia.mockResolvedValue(mockStream);
-  Object.defineProperty(global.navigator, 'mediaDevices', {
+  Object.defineProperty(globalThis.navigator, 'mediaDevices', {
     value: { getUserMedia: mockGetUserMedia },
     configurable: true,
   });
-  (global as any).MediaRecorder = MockMediaRecorder;
+  (globalThis as any).MediaRecorder = MockMediaRecorder;
 });
 
 describe('useRecording — getUserMedia', () => {

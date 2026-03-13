@@ -1,7 +1,25 @@
 // src/components/common/SpeechSupportBanner.test.tsx
-import { describe, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect, afterEach } from 'vitest';
+import SpeechSupportBanner from './SpeechSupportBanner';
 
 describe('SpeechSupportBanner', () => {
-  it.todo('renders warning banner when SpeechRecognition is absent from window');
-  it.todo('renders nothing when SpeechRecognition is available');
+  afterEach(() => {
+    delete (window as any).SpeechRecognition;
+    delete (window as any).webkitSpeechRecognition;
+  });
+
+  it('renders a warning banner when SpeechRecognition is absent from window', () => {
+    delete (window as any).SpeechRecognition;
+    delete (window as any).webkitSpeechRecognition;
+    render(<SpeechSupportBanner />);
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText(/chrome or edge/i)).toBeInTheDocument();
+  });
+
+  it('renders nothing when SpeechRecognition is available', () => {
+    (window as any).SpeechRecognition = class {};
+    const { container } = render(<SpeechSupportBanner />);
+    expect(container.firstChild).toBeNull();
+  });
 });
