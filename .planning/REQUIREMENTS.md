@@ -16,10 +16,10 @@
 
 ### Audio Analysis
 
-- [ ] **AUD-01**: Real-time speech transcript is captured via Web Speech API during recording
-- [ ] **AUD-02**: Filler word occurrences (um, uh, like, you know) are detected and timestamped
-- [ ] **AUD-03**: Words per minute is calculated from the transcript
-- [ ] **AUD-04**: Significant pauses (>2 seconds of silence) are detected and timestamped
+- [x] **AUD-01**: Real-time speech transcript is captured via Web Speech API during recording
+- [x] **AUD-02**: Filler word occurrences (um, uh, like, you know) are detected and timestamped
+- [x] **AUD-03**: Words per minute is calculated from the transcript
+- [x] **AUD-04**: Significant pauses (>2 seconds of silence) are detected and timestamped
 - [x] **AUD-05**: User sees a browser support warning when Web Speech API is unavailable (non-Chrome/Edge)
 
 ### Visual Analysis
@@ -86,10 +86,10 @@
 | REC-04 | Phase 1 | Complete |
 | REC-05 | Phase 1 | In Progress (schema defined in 01-01, full save in 01-03) |
 | REC-06 | Phase 1 | Complete |
-| AUD-01 | Phase 2 | Pending |
-| AUD-02 | Phase 2 | Pending |
-| AUD-03 | Phase 2 | Pending |
-| AUD-04 | Phase 2 | Pending |
+| AUD-01 | Phase 2 | Complete |
+| AUD-02 | Phase 2 | Complete |
+| AUD-03 | Phase 2 | Complete |
+| AUD-04 | Phase 2 | Complete |
 | AUD-05 | Phase 1 | In Progress (test stub in 01-01, component in 01-03) |
 | VIS-01 | Phase 2 | Complete |
 | VIS-02 | Phase 2 | Complete |

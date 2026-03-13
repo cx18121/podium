@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-13T02:45:32.679Z"
+stopped_at: "Checkpoint 02-03 Task 3: awaiting human browser verification of IndexedDB eventLog"
+last_updated: "2026-03-13T03:21:02.249Z"
 last_activity: "2026-03-12 — Plan 01-03 complete (recording pipeline: MediaRecorder + webmFixDuration + IndexedDB save + NameSessionModal, 7 browser tests passed)"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 100
 ---
 
@@ -52,6 +52,7 @@ Progress: [██████████] 100% (Phase 1)
 *Updated after each plan completion*
 | Phase 02-analysis-pipeline P01 | 11 | 3 tasks | 11 files |
 | Phase 02-analysis-pipeline P02 | 8 | 3 tasks | 7 files |
+| Phase 02-analysis-pipeline P03 | 18 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase 02-analysis-pipeline]: Analysis functions inlined as plain JS in worker — classic-mode Web Worker cannot use ES module imports
 - [Phase 02-analysis-pipeline]: Analysis state (eyeContactState, prevShoulderX, prevFaceTouching, expressionFrameScores) owned by worker module level — keeps pure functions testable in isolation
 - [Phase 02-analysis-pipeline]: GAZE_THRESHOLD=0.15, FACE_TOUCH_THRESHOLD=0.12, SWAY_THRESHOLD=0.04 shipped as uncalibrated heuristics — tune after Phase 3 first recordings
+- [Phase 02-03]: wpm_snapshot event at durationMs position so Phase 3 scorer can find it at the end of eventLog without scanning
+- [Phase 02-03]: SpeechCapture as plain class held in useRef — transcript accumulation does not need React re-renders
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T02:45:27.372Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-13T03:21:02.172Z
+Stopped at: Checkpoint 02-03 Task 3: awaiting human browser verification of IndexedDB eventLog
 Resume file: None
