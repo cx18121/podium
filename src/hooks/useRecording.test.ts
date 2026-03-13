@@ -6,6 +6,15 @@ vi.mock('webm-fix-duration', () => ({
   webmFixDuration: vi.fn().mockResolvedValue(new Blob(['fixed'], { type: 'video/webm' })),
 }));
 
+// Mock useMLWorker so tests run in jsdom without a real Web Worker
+vi.mock('./useMLWorker', () => ({
+  useMLWorker: () => ({
+    startWorker: vi.fn().mockResolvedValue(undefined),
+    stopWorker: vi.fn().mockResolvedValue([]),
+    cleanupWorker: vi.fn(),
+  }),
+}));
+
 import { useRecording } from './useRecording';
 import { webmFixDuration } from 'webm-fix-duration';
 
@@ -33,6 +42,13 @@ beforeEach(() => {
     configurable: true,
   });
   (globalThis as any).MediaRecorder = MockMediaRecorder;
+
+  // Mock HTMLVideoElement.play() since jsdom does not implement it
+  Object.defineProperty(HTMLVideoElement.prototype, 'play', {
+    configurable: true,
+    writable: true,
+    value: vi.fn().mockResolvedValue(undefined),
+  });
 });
 
 describe('useRecording — getUserMedia', () => {

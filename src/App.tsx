@@ -55,12 +55,13 @@ export default function App() {
     const { fixedBlob, durationMs } = pendingRecording;
 
     // REC-05: save with metadata to IndexedDB
+    // visualEvents from ML worker are merged here; speech events added in 02-03
     const sessionId = await db.sessions.add({
       title,
       createdAt: new Date(),
       durationMs,
       videoBlob: fixedBlob,
-      eventLog: [],
+      eventLog: [...(pendingRecording.visualEvents ?? [])],
       scorecard: null,
     });
 

@@ -1,6 +1,8 @@
 // src/hooks/useRecording.ts
 import { useCallback, useRef, useState } from 'react';
 import { webmFixDuration } from 'webm-fix-duration';
+import { useMLWorker } from './useMLWorker';
+import type { SessionEvent } from '../db/db';
 
 // Intentionally does NOT import db or requestPersistentStorage.
 // App owns the Dexie save so it can insert the rename prompt between stop and save.
@@ -11,6 +13,7 @@ export interface RecordingReadyData {
   fixedBlob: Blob;
   durationMs: number;
   autoTitle: string;  // formatAutoTitle() result; used as fallback if user skips rename
+  visualEvents: SessionEvent[];  // from ML worker at session end
 }
 
 interface UseRecordingReturn {
@@ -44,6 +47,12 @@ export function useRecording(
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Hidden video element used exclusively for createImageBitmap in the ML worker.
+  // It is NOT added to the DOM — only used as the bitmap source (see RESEARCH.md Pitfall 7).
+  const hiddenVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const mlWorker = useMLWorker();
+
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -54,7 +63,8 @@ export function useRecording(
   const stopStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
-  }, []);
+    mlWorker.cleanupWorker();
+  }, [mlWorker]);
 
   const startSession = useCallback(async () => {
     setStatus('requesting');
@@ -68,6 +78,18 @@ export function useRecording(
         audio: true,
       });
       streamRef.current = stream;
+
+      // Create a hidden video element for the ML worker frame pump.
+      // The hidden video is NOT added to the DOM — only used for createImageBitmap.
+      const hiddenVideo = document.createElement('video');
+      hiddenVideo.srcObject = stream;
+      hiddenVideo.muted = true;
+      hiddenVideo.playsInline = true;
+      await hiddenVideo.play();
+      hiddenVideoRef.current = hiddenVideo;
+
+      // Start the ML worker — do NOT await (worker init is async, frames are dropped until ready)
+      mlWorker.startWorker(hiddenVideo);
 
       const recorder = new MediaRecorder(stream, {
         mimeType: 'video/webm;codecs=vp9,opus',
@@ -86,6 +108,9 @@ export function useRecording(
         const durationMs = Date.now() - startTimeRef.current;
         const rawBlob = new Blob(chunksRef.current, { type: 'video/webm' });
 
+        // Flush ML worker events BEFORE calling onRecordingReady — events must be available for save
+        const visualEvents = await mlWorker.stopWorker();
+
         // REC-04: post-process with webm-fix-duration before surfacing to App
         const fixedBlob = await webmFixDuration(rawBlob, durationMs);
 
@@ -95,6 +120,7 @@ export function useRecording(
           fixedBlob,
           durationMs,
           autoTitle: formatAutoTitle(),
+          visualEvents,
         });
       };
 
@@ -122,7 +148,7 @@ export function useRecording(
       setError(message);
       setStatus('error');
     }
-  }, [onRecordingReady, stopTimer, stopStream]);
+  }, [onRecordingReady, stopTimer, stopStream, mlWorker]);
 
   const stopSession = useCallback(() => {
     recorderRef.current?.stop();
