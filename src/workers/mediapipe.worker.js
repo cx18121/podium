@@ -10,14 +10,31 @@ let faceLandmarker = null;
 let gestureRecognizer = null;
 let poseLandmarker = null;
 
+// pendingEvents accumulates all SessionEvent objects for the session duration.
+// Flushed on 'stop' and returned to the main thread.
+let pendingEvents = [];
+
+// busy flag prevents frame backup (Pitfall 4: if a frame takes >150ms to process,
+// the next frame must be dropped rather than queued to avoid heap exhaustion)
+let busy = false;
+
+// deriveEvents — stub that returns [] for now.
+// Plan 02-02 will populate this with real analysis calls to eyeContact, expressiveness, gestures.
+function deriveEvents(faceResult, gestureResult, poseResult, timestampMs) {
+  return [];
+}
+
 self.onmessage = async (e) => {
   if (e.data.type === 'init') {
+    // Reset events on init so a reused worker starts fresh
+    pendingEvents = [];
     try {
       const vision = await FilesetResolver.forVisionTasks(
         'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm'
       );
 
-      // Initialize all three models — each has a different init path
+      // FaceLandmarker MUST have outputFaceBlendshapes: true —
+      // the default is false and expressiveness analysis will silently get empty blendshapes without it
       faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath:
@@ -25,6 +42,7 @@ self.onmessage = async (e) => {
         },
         runningMode: 'VIDEO',
         numFaces: 1,
+        outputFaceBlendshapes: true,
       });
 
       gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -52,9 +70,47 @@ self.onmessage = async (e) => {
   }
 
   if (e.data.type === 'frame') {
-    // Spike: just close the bitmap to prove it transfers without error
-    if (e.data.bitmap) e.data.bitmap.close();
-    self.postMessage({ type: 'frame_ack' });
+    const bitmap = e.data.bitmap;
+
+    // Drop frame if any model is uninitialized
+    if (!faceLandmarker || !gestureRecognizer || !poseLandmarker) {
+      if (bitmap) bitmap.close();
+      return;
+    }
+
+    // Drop frame if previous frame is still processing (Pitfall 4: prevents frame backup)
+    if (busy) {
+      if (bitmap) bitmap.close();
+      return;
+    }
+
+    busy = true;
+    try {
+      // Use performance.now() at the moment of inference — NOT e.data.timestampMs.
+      // Main-thread timestamps arrive late due to transfer overhead (Pitfall 2 from RESEARCH.md).
+      const nowMs = performance.now();
+
+      const faceResult = faceLandmarker.detectForVideo(bitmap, nowMs);
+      const gestureResult = gestureRecognizer.recognizeForVideo(bitmap, nowMs);
+      const poseResult = poseLandmarker.detectForVideo(bitmap, nowMs);
+
+      const derived = deriveEvents(faceResult, gestureResult, poseResult, nowMs);
+      if (derived.length > 0) {
+        pendingEvents.push(...derived);
+      }
+
+      self.postMessage({ type: 'frame_ack' });
+    } finally {
+      // bitmap.close() MUST be in try/finally — a leaked bitmap = ~4MB WASM heap (Pitfall 3)
+      if (bitmap) bitmap.close();
+      busy = false;
+    }
+  }
+
+  if (e.data.type === 'stop') {
+    // Flush accumulated events and reset for next session
+    self.postMessage({ type: 'events', events: [...pendingEvents] });
+    pendingEvents = [];
   }
 
   if (e.data.type === 'cleanup') {
