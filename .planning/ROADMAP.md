@@ -46,12 +46,12 @@ Plans:
   3. Filler words (um, uh, like, you know) detected during a session appear as individual timestamped events with the specific word recorded
   4. Words per minute and significant pauses (over 2 seconds) are calculated from the transcript and available in the event log after the session ends
   5. Recording and stopping the session three times in a row leaves no MediaPipe memory leak — WASM heap returns to baseline between sessions
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: ML Worker pipeline — production mediapipe.worker.ts with ImageBitmap transfer, frame pump at 5–10 fps, all three landmarkers with warm-up and cleanup, bulk event commit to Dexie on stop
-- [ ] 02-02: Visual analysis functions — eyeContact.ts (iris gaze), expressiveness.ts (blendshape variance), gestures.ts (face-touch proximity + sway heuristics), wired into Worker output
-- [ ] 02-03: Speech analysis — SpeechCapture.ts wrapping Web Speech API, fillerDetector.ts, pacing.ts (WPM + pause detection), browser support warning for non-Chrome/Edge
+- [ ] 02-01-PLAN.md — Production ML worker (init/frame/stop/cleanup protocol, pendingEvents, busy flag), useMLWorker hook with 150ms frame pump and ImageBitmap transfer, useRecording extended to compose worker lifecycle and flush visualEvents before onRecordingReady, Wave 0 test stubs for all 7 analysis modules (VIS-01, VIS-05)
+- [ ] 02-02-PLAN.md — Visual analysis pure functions: eyeContact.ts (iris gaze, state transitions), expressiveness.ts (blendshape variance, 5s segments), gestures.ts (face-touch proximity + body sway), all wired into worker deriveEvents() (VIS-02, VIS-03, VIS-04)
+- [ ] 02-03-PLAN.md — Speech pipeline: SpeechCapture class with auto-restart, fillerDetector.ts, pacing.ts (WPM + pause detection), App.tsx wired to merge visual + speech events into sorted eventLog at session end (AUD-01, AUD-02, AUD-03, AUD-04)
 
 ### Phase 3: Post-Session Review
 **Goal**: Immediately after stopping a session, the user is taken to a review screen where they see their scores across all five dimensions and can watch their video back with every coaching event pinned to the exact moment it happened on a clickable timeline.
