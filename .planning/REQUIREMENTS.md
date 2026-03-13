@@ -7,10 +7,10 @@
 
 ### Recording
 
-- [ ] **REC-01**: User can start a recording session (webcam + microphone via getUserMedia)
+- [x] **REC-01**: User can start a recording session (webcam + microphone via getUserMedia)
 - [ ] **REC-02**: Session UI shows only a timer and a stop button during recording (distraction-free)
 - [ ] **REC-03**: User can stop recording and be taken to the post-session review
-- [ ] **REC-04**: Session video blob is post-processed with fix-webm-duration before storage (enables scrubbing)
+- [x] **REC-04**: Session video blob is post-processed with fix-webm-duration before storage (enables scrubbing)
 - [ ] **REC-05**: Session is saved with metadata (date, duration, title) to IndexedDB via Dexie.js
 - [ ] **REC-06**: navigator.storage.persist() is called on first session to prevent storage eviction
 
@@ -80,10 +80,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REC-01 | Phase 1 | Pending |
+| REC-01 | Phase 1 | Complete |
 | REC-02 | Phase 1 | Pending |
 | REC-03 | Phase 1 | Pending |
-| REC-04 | Phase 1 | Pending |
+| REC-04 | Phase 1 | Complete |
 | REC-05 | Phase 1 | In Progress (schema defined in 01-01, full save in 01-03) |
 | REC-06 | Phase 1 | Pending |
 | AUD-01 | Phase 2 | Pending |
