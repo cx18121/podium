@@ -8,11 +8,11 @@
 ### Recording
 
 - [x] **REC-01**: User can start a recording session (webcam + microphone via getUserMedia)
-- [ ] **REC-02**: Session UI shows only a timer and a stop button during recording (distraction-free)
-- [ ] **REC-03**: User can stop recording and be taken to the post-session review
+- [x] **REC-02**: Session UI shows only a timer and a stop button during recording (distraction-free)
+- [x] **REC-03**: User can stop recording and be taken to the post-session review
 - [x] **REC-04**: Session video blob is post-processed with fix-webm-duration before storage (enables scrubbing)
-- [ ] **REC-05**: Session is saved with metadata (date, duration, title) to IndexedDB via Dexie.js
-- [ ] **REC-06**: navigator.storage.persist() is called on first session to prevent storage eviction
+- [x] **REC-05**: Session is saved with metadata (date, duration, title) to IndexedDB via Dexie.js
+- [x] **REC-06**: navigator.storage.persist() is called on first session to prevent storage eviction
 
 ### Audio Analysis
 
@@ -20,7 +20,7 @@
 - [ ] **AUD-02**: Filler word occurrences (um, uh, like, you know) are detected and timestamped
 - [ ] **AUD-03**: Words per minute is calculated from the transcript
 - [ ] **AUD-04**: Significant pauses (>2 seconds of silence) are detected and timestamped
-- [ ] **AUD-05**: User sees a browser support warning when Web Speech API is unavailable (non-Chrome/Edge)
+- [x] **AUD-05**: User sees a browser support warning when Web Speech API is unavailable (non-Chrome/Edge)
 
 ### Visual Analysis
 
@@ -81,11 +81,11 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | REC-01 | Phase 1 | Complete |
-| REC-02 | Phase 1 | Pending |
-| REC-03 | Phase 1 | Pending |
+| REC-02 | Phase 1 | Complete |
+| REC-03 | Phase 1 | Complete |
 | REC-04 | Phase 1 | Complete |
 | REC-05 | Phase 1 | In Progress (schema defined in 01-01, full save in 01-03) |
-| REC-06 | Phase 1 | Pending |
+| REC-06 | Phase 1 | Complete |
 | AUD-01 | Phase 2 | Pending |
 | AUD-02 | Phase 2 | Pending |
 | AUD-03 | Phase 2 | Pending |

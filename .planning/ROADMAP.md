@@ -12,7 +12,7 @@ Build a fully client-side browser tool that records a user practicing a talk, ru
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation and Recording** - Verified project scaffold, architecture spikes for the three HIGH-recovery-cost pitfalls, and a working recording pipeline that produces seekable WebM blobs persisted to IndexedDB
+- [x] **Phase 1: Foundation and Recording** - Verified project scaffold, architecture spikes for the three HIGH-recovery-cost pitfalls, and a working recording pipeline that produces seekable WebM blobs persisted to IndexedDB
 - [ ] **Phase 2: Analysis Pipeline** - All five analysis signals (eye contact, expressiveness, nervous gestures, filler words, pacing) running in the browser via a throttled ML Worker and Web Speech API, producing a complete timestamped event log for every session
 - [ ] **Phase 3: Post-Session Review** - Scorecard with per-dimension and overall scores, plus annotated video playback with a clickable event timeline — the product's core differentiator
 - [ ] **Phase 4: Session History** - Persistent session list, per-dimension trend charts, and storage quota management that makes improvement over time visible and safe
@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Vite 7 + React 19 + TypeScript scaffold, Tailwind v4, Vitest wired to jsdom, Dexie v4 schema v1, Wave 0 test stubs
 - [x] 01-02-PLAN.md — Architecture spikes: MediaPipe classic-mode worker (all 3 models), WebM fix-webm-duration verification, Chrome filler-word suppression empirical test
-- [ ] 01-03-PLAN.md — Recording pipeline: getUserMedia, distraction-free session UI, MediaRecorder + fix-webm-duration, Dexie session save, navigator.storage.persist(), browser support warning
+- [x] 01-03-PLAN.md — Recording pipeline: getUserMedia, distraction-free session UI, MediaRecorder + fix-webm-duration, Dexie session save, navigator.storage.persist(), browser support warning
 
 ### Phase 2: Analysis Pipeline
 **Goal**: Every session the user records is silently analyzed end-to-end — eye contact, facial expressiveness, nervous gestures, filler words, and pacing — producing a complete, timestamped event log committed to IndexedDB at session end.
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Recording | 2/3 | In Progress|  |
+| 1. Foundation and Recording | 3/3 | Complete | 2026-03-12 |
 | 2. Analysis Pipeline | 0/3 | Not started | - |
 | 3. Post-Session Review | 0/3 | Not started | - |
 | 4. Session History | 0/1 | Not started | - |
