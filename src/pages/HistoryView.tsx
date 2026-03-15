@@ -1,0 +1,83 @@
+import { useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../db/db';
+import { SessionListItem } from '../components/SessionListItem/SessionListItem';
+import { StorageQuotaBar } from '../components/StorageQuotaBar/StorageQuotaBar';
+import { DeleteConfirmModal } from '../components/DeleteConfirmModal/DeleteConfirmModal';
+
+interface HistoryViewProps {
+  onOpenSession: (id: number) => void;
+  onRecordNew: () => void;
+}
+
+export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewProps) {
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const sessions = useLiveQuery(() => db.sessions.orderBy('createdAt').reverse().toArray(), []);
+
+  if (sessions === undefined) {
+    return (
+      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-gray-950 text-gray-400">
+        Loading sessions...
+      </div>
+    );
+  }
+
+  if (sessions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-4">
+        <h1 className="text-xl font-bold text-white">No sessions yet</h1>
+        <p className="text-sm text-gray-400">Record your first session to see your history here.</p>
+        <button
+          onClick={onRecordNew}
+          className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-colors"
+        >
+          Record New Session
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6">
+      <h1 className="text-xl font-bold">Session History</h1>
+
+      <button
+        onClick={onRecordNew}
+        className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-colors"
+      >
+        Record New Session
+      </button>
+
+      <div className="w-full max-w-2xl flex items-center gap-4 px-4 text-gray-400 text-sm">
+        <span className="flex-1">Session</span>
+        <span className="whitespace-nowrap">Date</span>
+        <span className="whitespace-nowrap">Duration</span>
+        <span className="w-16 text-right">Score</span>
+      </div>
+
+      <div className="flex flex-col gap-2 w-full max-w-2xl">
+        {sessions.map((s) => (
+          <SessionListItem
+            key={s.id}
+            session={s}
+            onOpen={() => onOpenSession(s.id!)}
+            onDelete={() => setDeleteTargetId(s.id!)}
+          />
+        ))}
+      </div>
+
+      <StorageQuotaBar />
+
+      {deleteTargetId !== null && (
+        <DeleteConfirmModal
+          onConfirm={async () => {
+            await db.sessions.delete(deleteTargetId!);
+            setDeleteTargetId(null);
+          }}
+          onCancel={() => setDeleteTargetId(null)}
+        />
+      )}
+    </div>
+  );
+}
