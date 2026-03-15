@@ -56,13 +56,13 @@ Sourced from: existing components (SetupScreen, Review.tsx, ScorecardView.tsx, H
 |------|------|--------|-------------|
 | Body | 14px (text-sm) | 400 (normal) | 1.5 |
 | Label | 14px (text-sm) | 400 (normal) | 1.4 |
-| Heading | 20px (text-xl) or 24px (text-2xl) | 700 (bold) | 1.2 |
+| Heading | 20px (text-xl) | 700 (bold) | 1.2 |
 | Display | 30px (text-3xl) | 700 (bold) | 1.0 |
 
 Usage mapping:
 - **Body (14px/400):** Session metadata (date, duration), storage quota label, trend direction text
 - **Label (14px/400):** Column headers in session list, dimension names in sparkline section
-- **Heading (20px/bold):** "Session History" page title (text-xl) — matches Review page pattern
+- **Heading (20px/bold):** "Session History" page title — matches Review page heading pattern
 - **Display (30px/bold):** Reserved for overall score in session list rows (consistent with ScorecardView overall score)
 
 ---
@@ -96,6 +96,8 @@ Secondary accent (informational):
 
 New components required for this phase:
 
+**Primary focal point:** session list rows — the first visible data the user scans when arriving on the history page.
+
 ### HistoryView.tsx (page)
 - Full-page layout: `flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6`
 - Contains: page heading, session list, sparkline section, storage quota bar
@@ -105,7 +107,7 @@ New components required for this phase:
 - Card row: `bg-gray-900 rounded-2xl px-4 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-800 transition-colors`
 - Columns: session title (text-white text-sm font-semibold), date (text-gray-400 text-sm), duration (text-gray-400 text-sm), overall score badge
 - Overall score badge: `text-white text-sm font-bold` with `bg-gray-700 rounded-lg px-2 py-1`
-- Delete button: icon-sized `text-gray-600 hover:text-red-400 transition-colors` — appears on row hover
+- Delete button: text button displaying "×" (`text-gray-600 hover:text-red-400 transition-colors text-lg leading-none px-2`) — text label only, consistent with design system "text labels only" rule; appears on row hover
 - Clicking the row navigates to Review view for that session (HIST-02)
 
 ### SparklineChart.tsx (component)
@@ -128,7 +130,7 @@ New components required for this phase:
 - Card: `bg-gray-900 rounded-2xl p-6 max-w-sm w-full flex flex-col gap-4`
 - Heading: `text-white font-bold text-lg`
 - Body: `text-gray-400 text-sm`
-- Buttons: Cancel (`bg-gray-700 hover:bg-gray-600`) + Confirm Delete (`bg-red-600 hover:bg-red-500`)
+- Buttons: "Keep Session" (`bg-gray-700 hover:bg-gray-600`) + "Delete Session" (`bg-red-600 hover:bg-red-500`)
 
 ---
 
@@ -173,7 +175,7 @@ New components required for this phase:
 | Delete confirmation heading | "Delete this session?" |
 | Delete confirmation body | "This will permanently remove the recording and all coaching data. This cannot be undone." |
 | Delete confirm button | "Delete Session" |
-| Delete cancel button | "Cancel" |
+| Delete cancel button | "Keep Session" |
 | Sparkline section heading | "Progress by Dimension" |
 | Sparkline empty message | "Record more sessions to see trends" |
 | Storage label format | "Storage used: {X} MB of {Y} MB" |
