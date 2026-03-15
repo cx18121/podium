@@ -1,6 +1,8 @@
-// src/pages/Review.tsx
 import { useEffect, useState } from 'react';
-import { db, type Session } from '../db/db';
+import { db, type Session, type Scorecard } from '../db/db';
+import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
+import ScorecardView from '../components/ScorecardView/ScorecardView';
+import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 
 interface ReviewPageProps {
   sessionId: number;
@@ -9,22 +11,44 @@ interface ReviewPageProps {
 
 export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps) {
   const [session, setSession] = useState<Session | null>(null);
+  const [scorecard, setScorecard] = useState<ScorecardResult | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    db.sessions.get(sessionId).then((s) => {
+    let objectUrl: string | null = null;
+    db.sessions.get(sessionId).then(async (s) => {
       if (!s) { setError('Session not found.'); return; }
+      objectUrl = URL.createObjectURL(s.videoBlob);
+      setVideoUrl(objectUrl);
       setSession(s);
-      setVideoUrl(URL.createObjectURL(s.videoBlob));
-    });
-    return () => { if (videoUrl) URL.revokeObjectURL(videoUrl); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+      if (!s.scorecard) {
+        // First view: compute and persist (SCORE-03)
+        const result = aggregateScores(s.eventLog, s.durationMs);
+        const dbScorecard: Scorecard = {
+          overall: result.overall,
+          dimensions: Object.fromEntries(
+            Object.entries(result.dimensions).map(([k, v]) => [k, v.score])
+          ),
+        };
+        await db.sessions.update(s.id!, { scorecard: dbScorecard });
+        setScorecard(result);
+      } else {
+        // Subsequent views: re-run aggregateScores to get rich DimensionScore objects
+        // (stored Scorecard has only flat numbers; we need detail strings for display)
+        setScorecard(aggregateScores(s.eventLog, s.durationMs));
+      }
+    }).catch(() => setError('Could not load session. Try recording again.'));
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [sessionId]);
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-950 text-red-400">
+      <div role="alert" className="flex items-center justify-center min-h-screen bg-gray-950 text-red-400">
         {error}
       </div>
     );
@@ -32,7 +56,7 @@ export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps
 
   if (!session || !videoUrl) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-950 text-gray-400">
+      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-gray-950 text-gray-400">
         Loading session...
       </div>
     );
@@ -44,22 +68,19 @@ export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6">
       <h1 className="text-2xl font-bold">{session.title}</h1>
-      <p className="text-gray-400 text-sm">{durationDisplay} · {session.createdAt.toLocaleDateString()}</p>
+      <p className="text-sm text-gray-400">{durationDisplay} · {session.createdAt.toLocaleDateString()}</p>
 
-      <video
-        src={videoUrl}
-        controls
-        className="w-full max-w-2xl rounded-xl bg-black"
-        aria-label="Session playback"
+      <ScorecardView scorecard={scorecard} />
+
+      <AnnotatedPlayer
+        videoUrl={videoUrl}
+        durationMs={session.durationMs}
+        events={session.eventLog}
       />
-
-      <p className="text-gray-500 text-sm text-center max-w-md">
-        Analysis and coaching events will appear here in Phase 2.
-      </p>
 
       <button
         onClick={onRecordAgain}
-        className="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold transition-colors"
+        className="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold transition-colors"
       >
         Record Another Session
       </button>
