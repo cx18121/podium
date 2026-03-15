@@ -63,12 +63,12 @@ Plans:
   3. The video timeline shows visible marker dots at the timestamps of coaching events; clicking a marker jumps the video to that exact moment
   4. Hovering or pausing on a timeline marker shows a description of the event (e.g., "filler word: 'um'" or "eye contact break")
   5. The scorecard data is persisted alongside the session so the same scores are visible when the session is reopened later
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Analysis aggregator — pure functions over event arrays to produce per-dimension scores and weighted overall score; score schema locked in Dexie sessions table
-- [ ] 03-02: Scorecard view — ScorecardView.tsx displaying per-dimension scores with supporting evidence, overall score
-- [ ] 03-03: Annotated player — AnnotatedPlayer.tsx with Canvas overlay, Timeline.tsx with event markers, eventSync.ts mapping video.currentTime to visible events, requestVideoFrameCallback with timeupdate fallback
+- [ ] 03-01-PLAN.md — Score aggregator: aggregateScores pure function + DimensionScore/ScorecardResult types + Wave 0 unit tests (SCORE-01, SCORE-02)
+- [ ] 03-02-PLAN.md — ScorecardView component: 5 dimension score bars, overall score display, loading state, component tests (SCORE-01, SCORE-02)
+- [ ] 03-03-PLAN.md — AnnotatedPlayer + Timeline + eventSync + complete Review.tsx rewrite with scorecard persistence; human verification checkpoint (PLAY-01, PLAY-02, PLAY-03, PLAY-04, SCORE-03)
 
 ### Phase 4: Session History
 **Goal**: The user can see all their past sessions in a list and track whether they are improving over time across each coaching dimension.
