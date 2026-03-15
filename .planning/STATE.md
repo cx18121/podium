@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Checkpoint 03-03-PLAN.md Task 4: human-verify annotated player in browser"
-last_updated: "2026-03-15T20:37:58.045Z"
+stopped_at: Completed 03-03-PLAN.md (all 4 tasks, including browser tooltip fix)
+last_updated: "2026-03-15T22:31:31.959Z"
 last_activity: "2026-03-15 — Quick task 260315-j5e: fixed silent data-loss bug (stopWorker before stopStream) + updated git remote to pitch-practice"
 progress:
   total_phases: 4
@@ -88,6 +88,7 @@ Recent decisions affecting current work:
 - [Phase 03-post-session-review]: ScorecardView is fully stateless — scorecard prop is ScorecardResult | null, null triggers loading state
 - [Phase Phase 03-03]: currentTimeMs in React state (not ref) to enable Timeline re-renders for nearest-marker highlight
 - [Phase Phase 03-03]: Defensive new Date(createdAt) wrap for Dexie date fields in fake-indexeddb test environment
+- [Phase 03-post-session-review]: z-10 added to marker buttons so they paint above the progress fill overlay and reliably receive hover/pointer events for native title tooltip display
 
 ### Pending Todos
 
@@ -107,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:37:57.947Z
-Stopped at: Checkpoint 03-03-PLAN.md Task 4: human-verify annotated player in browser
+Last session: 2026-03-15T22:31:31.916Z
+Stopped at: Completed 03-03-PLAN.md (all 4 tasks, including browser tooltip fix)
 Resume file: None

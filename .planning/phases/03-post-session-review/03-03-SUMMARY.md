@@ -46,6 +46,7 @@ key-files:
 key-decisions:
   - "currentTimeMs stored in React state (not ref) so Timeline re-renders to update nearest-marker highlight — RESEARCH.md recommended ref but highlight requirement requires state"
   - "new Date(session.createdAt) defensive wrap — Dexie with fake-indexeddb returns Date field as value that may not have prototype methods"
+  - "z-10 added to marker buttons so they paint above the progress fill overlay and reliably receive hover/pointer events for native title tooltip display"
 
 patterns-established:
   - "Pattern: eventSync pure utilities (getNearbyEvents, getNearestEvent) tested independently from components"
@@ -68,7 +69,7 @@ completed: 2026-03-15
 - **Duration:** 28 min
 - **Started:** 2026-03-15T20:08:28Z
 - **Completed:** 2026-03-15T20:36:00Z
-- **Tasks:** 3 of 4 (Task 4 is human-verify checkpoint)
+- **Tasks:** 4 of 4 (including tooltip bug fix from browser verification)
 - **Files modified:** 7
 
 ## Accomplishments
@@ -85,6 +86,7 @@ Each task was committed atomically:
 1. **Task 1: Build AnnotatedPlayer, Timeline, eventSync with tests** - `a6d1ce5` (feat)
 2. **Task 2: Rewrite Review.tsx — compose scorecard + player, persist scorecard** - `28b7c2a` (feat)
 3. **Task 3: Write automated persistence test for SCORE-03** - `a64a11b` (feat)
+4. **Task 4 (bug fix): Timeline marker z-index for tooltip visibility** - `48f4f54` (fix)
 
 _Note: Task 1 used TDD pattern (RED tests → GREEN implementation)_
 
@@ -125,8 +127,18 @@ _Note: Task 1 used TDD pattern (RED tests → GREEN implementation)_
 
 ---
 
-**Total deviations:** 2 auto-fixed (2 Rule 1 bugs)
-**Impact on plan:** Both fixes were test/environment correctness issues. No scope creep. Implementation matched plan exactly.
+**3. [Rule 1 - Bug] Timeline marker buttons missing z-index, blocking native title tooltip**
+- **Found during:** Task 4 (browser verification)
+- **Issue:** Marker `<button>` elements had no z-index. The absolutely-positioned progress fill div could render above them in CSS paint order, blocking hover events and preventing the browser from showing the native `title` tooltip.
+- **Fix:** Added `z-10` class to marker buttons so they always sit above the fill overlay
+- **Files modified:** src/components/AnnotatedPlayer/Timeline.tsx
+- **Verification:** All 87 tests pass; browser verified tooltips now appear on marker hover
+- **Committed in:** 48f4f54
+
+---
+
+**Total deviations:** 3 auto-fixed (3 Rule 1 bugs)
+**Impact on plan:** All fixes were correctness issues. No scope creep. Implementation matched plan exactly.
 
 ## Issues Encountered
 
@@ -140,8 +152,8 @@ None — no external service configuration required.
 ## Next Phase Readiness
 
 - Phase 3 automated tests complete: 87 passing
-- Human checkpoint (Task 4) pending: verify annotated video player end-to-end in browser
-- Phase 4 (history/session list) can proceed after Task 4 checkpoint is approved
+- Human checkpoint (Task 4) approved: annotated video player verified end-to-end in browser; tooltip bug fixed
+- Phase 4 (history/session list) can proceed — all blockers resolved
 - Review page accepts `sessionId` and `onRecordAgain` — same props interface as stub, no App.tsx changes needed
 
 ## Self-Check: PASSED
@@ -157,6 +169,7 @@ None — no external service configuration required.
 - Commit a6d1ce5: feat(03-03): build AnnotatedPlayer, Timeline, and eventSync with tests
 - Commit 28b7c2a: feat(03-03): rewrite Review.tsx with scorecard + annotated player composition
 - Commit a64a11b: feat(03-03): add Review.test.tsx for SCORE-03 persistence; fix date handling
+- Commit 48f4f54: fix(03-03): add z-10 to timeline marker buttons so tooltips are reachable
 
 ---
 *Phase: 03-post-session-review*
