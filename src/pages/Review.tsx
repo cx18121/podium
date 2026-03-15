@@ -68,7 +68,7 @@ export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6">
       <h1 className="text-2xl font-bold">{session.title}</h1>
-      <p className="text-sm text-gray-400">{durationDisplay} · {session.createdAt.toLocaleDateString()}</p>
+      <p className="text-sm text-gray-400">{durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}</p>
 
       <ScorecardView scorecard={scorecard} />
 
