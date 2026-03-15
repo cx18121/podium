@@ -43,7 +43,7 @@ Declared values (must be multiples of 4):
 
 Exceptions:
 - Timeline marker dot: 12px diameter (`w-3 h-3`) — off-scale but required for hit-target sizing; do not change to 8px or 16px
-- Touch target minimum: 44px height on marker buttons (ensure `py-2.5` padding is applied via wrapper, or rely on `hover:scale-150` to expand visual affordance)
+- Touch target minimum: 44px height on marker buttons — apply `min-h-[44px]` on the marker wrapper element; do not use `py-2.5` (not a multiple of 4)
 
 ---
 
@@ -62,7 +62,7 @@ Exceptions:
 - Scores (e.g. "82 / 100"): Label (14px regular), or Heading (24px bold) for overall score only
 - Supporting detail strings (e.g. "3 breaks", "~2.1/min"): Label (14px regular), `text-gray-400`
 - Video metadata line (duration · date): Label (14px regular), `text-gray-400`
-- "Record Another Session" button: 16px semibold (weight 600) — matches existing pattern in `Review.tsx`
+- "Record Another Session" button: 16px bold (weight 700, `font-bold`) — red on dark background; bold at 16px provides sufficient visual emphasis
 
 **Source:** Extracted from existing components. `text-4xl font-bold` used on `Home.tsx` headline only (out of scope for Phase 3). Phase 3 uses `text-2xl`/`text-3xl` max.
 
@@ -154,7 +154,7 @@ flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6
   ├── p (duration · date, Label size, text-gray-400)
   ├── ScorecardView (max-w-2xl, w-full)
   ├── AnnotatedPlayer (max-w-2xl, w-full)
-  └── button "Record Another Session" (px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold)
+  └── button "Record Another Session" (px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold)
 ```
 
 ---
