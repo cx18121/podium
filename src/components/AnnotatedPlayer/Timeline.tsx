@@ -57,7 +57,7 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
             }}
             className={[
               "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-amber-400",
-              "hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
+              "z-10 hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
               nearest === event ? "ring-2 ring-amber-200 scale-125" : "",
             ].join(" ")}
             style={{ left: `calc(${leftPct}% - 6px)` }}
