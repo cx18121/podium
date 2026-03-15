@@ -78,10 +78,12 @@ Plans:
   1. User can view a list of all past sessions showing date, duration, and overall score for each
   2. User can open any past session from the list and view its scorecard and annotated playback
   3. Per-dimension trend charts (sparklines or equivalent) show whether each metric is improving, stable, or worsening across the most recent sessions
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: History view — HistoryView.tsx with session list (metadata only, no blob preload), per-dimension sparklines using Dexie live queries, storage quota display and delete-session flow
+- [ ] 04-01-PLAN.md — HistoryView page: session list with metadata (no blob preload), delete flow with confirmation modal, storage quota bar
+- [ ] 04-02-PLAN.md — SparklineChart component with computeTrendDirection pure function (inline SVG, no charting library)
+- [ ] 04-03-PLAN.md — App.tsx state machine wiring: 'history' view, historySessionId state, onBack for ReviewPage, onViewHistory for SetupScreen, sparkline section in HistoryView
 
 ## Progress
 
