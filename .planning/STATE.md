@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 03-03-PLAN.md (all 4 tasks, including browser tooltip fix)
-last_updated: "2026-03-15T22:41:11.460Z"
-last_activity: "2026-03-15 — Quick task 260315-j5e: fixed silent data-loss bug (stopWorker before stopStream) + updated git remote to pitch-practice"
+status: in-progress
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-15T23:40:00.000Z"
+last_activity: "2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
-  percent: 100
+  total_plans: 12
+  completed_plans: 10
+  percent: 83
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation and Recording) — COMPLETE
-Plan: 3 of 3 in current phase — COMPLETE
-Status: Phase 1 complete, ready to begin Phase 2
-Last activity: 2026-03-15 — Quick task 260315-j5e: fixed silent data-loss bug (stopWorker before stopStream) + updated git remote to pitch-practice
+Phase: 4 of 4 (Session History) — IN PROGRESS
+Plan: 1 of 3 in current phase — COMPLETE
+Status: Phase 4 plan 01 complete, ready to begin plan 02 (SparklineChart)
+Last activity: 2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented
 
-Progress: [██████████] 100% (Phase 1)
+Progress: [████████░░] 83% (10/12 plans)
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 03-post-session-review P01 | 24 | 2 tasks | 3 files |
 | Phase 03-post-session-review P02 | 20 | 1 tasks | 2 files |
 | Phase 03-post-session-review P03 | 28 | 3 tasks | 7 files |
+| Phase 04-session-history P01 | 10 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Recent decisions affecting current work:
 - [Phase Phase 03-03]: currentTimeMs in React state (not ref) to enable Timeline re-renders for nearest-marker highlight
 - [Phase Phase 03-03]: Defensive new Date(createdAt) wrap for Dexie date fields in fake-indexeddb test environment
 - [Phase 03-post-session-review]: z-10 added to marker buttons so they paint above the progress fill overlay and reliably receive hover/pointer events for native title tooltip display
+- [Phase 04-01]: deleteTargetId: number | null state controls DeleteConfirmModal — null = closed, non-null = open with target id
+- [Phase 04-01]: StorageQuotaBar returns null when navigator.storage.estimate unavailable — no error state shown
+- [Phase 04-01]: videoBlob never accessed in HistoryView or SessionListItem — lazy-load-only contract enforced
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T22:31:31.916Z
-Stopped at: Completed 03-03-PLAN.md (all 4 tasks, including browser tooltip fix)
-Resume file: None
+Last session: 2026-03-15T23:40:00.000Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: .planning/phases/04-session-history/04-02-PLAN.md

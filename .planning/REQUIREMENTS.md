@@ -45,8 +45,8 @@
 
 ### Session History
 
-- [ ] **HIST-01**: User can view a list of past sessions with date, duration, and overall score
-- [ ] **HIST-02**: User can open any past session to view its scorecard and annotated playback
+- [x] **HIST-01**: User can view a list of past sessions with date, duration, and overall score
+- [x] **HIST-02**: User can open any past session to view its scorecard and annotated playback
 - [ ] **HIST-03**: Progress trends are shown per dimension across sessions (chart or sparkline)
 
 ## v2 Requirements
@@ -103,8 +103,8 @@
 | PLAY-02 | Phase 3 | Complete |
 | PLAY-03 | Phase 3 | Complete |
 | PLAY-04 | Phase 3 | Complete |
-| HIST-01 | Phase 4 | Pending |
-| HIST-02 | Phase 4 | Pending |
+| HIST-01 | Phase 4 | Complete |
+| HIST-02 | Phase 4 | Complete |
 | HIST-03 | Phase 4 | Pending |
 
 **Coverage:**
