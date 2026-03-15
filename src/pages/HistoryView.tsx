@@ -4,6 +4,7 @@ import { db } from '../db/db';
 import { SessionListItem } from '../components/SessionListItem/SessionListItem';
 import { StorageQuotaBar } from '../components/StorageQuotaBar/StorageQuotaBar';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal/DeleteConfirmModal';
+import { SparklineChart, computeTrendDirection } from '../components/SparklineChart/SparklineChart';
 
 interface HistoryViewProps {
   onOpenSession: (id: number) => void;
@@ -66,6 +67,35 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
           />
         ))}
       </div>
+
+      {(() => {
+        const recentSessions = sessions.slice(0, 10).reverse(); // oldest → newest for sparklines
+        const dimensionKeys: { key: string; label: string }[] = [
+          { key: 'eyeContact', label: 'Eye Contact' },
+          { key: 'fillers', label: 'Fillers' },
+          { key: 'pacing', label: 'Pacing' },
+          { key: 'expressiveness', label: 'Expressiveness' },
+          { key: 'gestures', label: 'Gestures' },
+        ];
+        return (
+          <div className="flex flex-col gap-4 w-full max-w-2xl">
+            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+              Progress by Dimension
+            </h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+              {dimensionKeys.map(({ key, label }) => {
+                const scores = recentSessions
+                  .filter(s => s.scorecard !== null)
+                  .map(s => s.scorecard!.dimensions[key] ?? 0);
+                const trend = computeTrendDirection(scores);
+                return (
+                  <SparklineChart key={key} scores={scores} label={label} trend={trend} />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       <StorageQuotaBar />
 
