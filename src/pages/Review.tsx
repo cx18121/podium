@@ -7,9 +7,10 @@ import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 interface ReviewPageProps {
   sessionId: number;
   onRecordAgain: () => void;
+  onBack?: () => void;
 }
 
-export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps) {
+export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewPageProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [scorecard, setScorecard] = useState<ScorecardResult | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -84,6 +85,14 @@ export default function ReviewPage({ sessionId, onRecordAgain }: ReviewPageProps
       >
         Record Another Session
       </button>
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="text-sm text-gray-400 underline hover:text-gray-200 transition-colors"
+        >
+          Back to History
+        </button>
+      )}
     </div>
   );
 }

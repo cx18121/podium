@@ -4,9 +4,10 @@ import SpeechSupportBanner from '../common/SpeechSupportBanner';
 
 interface SetupScreenProps {
   onStart: () => void;
+  onViewHistory?: () => void;
 }
 
-export default function SetupScreen({ onStart }: SetupScreenProps) {
+export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
@@ -59,6 +60,14 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
       >
         Start Recording
       </button>
+      {onViewHistory && (
+        <button
+          onClick={onViewHistory}
+          className="text-sm text-gray-400 underline hover:text-gray-200 transition-colors"
+        >
+          View History
+        </button>
+      )}
     </div>
   );
 }

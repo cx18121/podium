@@ -13,16 +13,17 @@ import SetupScreen from './components/SetupScreen/SetupScreen';
 import RecordingScreen from './components/RecordingScreen/RecordingScreen';
 import { NameSessionModal } from './components/NameSessionModal/NameSessionModal';
 import ReviewPage from './pages/Review';
+import HistoryView from './pages/HistoryView';
 
 // State machine: home -> setup -> recording -> naming -> review
-//                                    |
-//                                    v (on error)
-//                                  setup
-type AppView = 'home' | 'setup' | 'recording' | 'processing' | 'naming' | 'review';
+//                setup <-> history
+//                review -> history (back) | setup (record again)
+type AppView = 'home' | 'setup' | 'recording' | 'processing' | 'naming' | 'review' | 'history';
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
   const [savedSessionId, setSavedSessionId] = useState<number | null>(null);
+  const [historySessionId, setHistorySessionId] = useState<number | null>(null);
   const [pendingRecording, setPendingRecording] = useState<RecordingReadyData | null>(null);
 
   // SpeechCapture ref — does NOT trigger re-renders (useRef, not useState)
@@ -120,7 +121,12 @@ export default function App() {
   }
 
   if (view === 'setup') {
-    return <SetupScreen onStart={handleStart} />;
+    return (
+      <SetupScreen
+        onStart={handleStart}
+        onViewHistory={hasExistingSessions ? () => setView('history') : undefined}
+      />
+    );
   }
 
   if (view === 'recording') {
@@ -156,11 +162,29 @@ export default function App() {
     );
   }
 
-  if (view === 'review' && savedSessionId !== null) {
+  if (view === 'review') {
+    const sessionId = savedSessionId ?? historySessionId;
+    if (sessionId === null) return null;
     return (
       <ReviewPage
-        sessionId={savedSessionId}
+        sessionId={sessionId}
         onRecordAgain={() => setView('setup')}
+        onBack={historySessionId !== null ? () => {
+          setHistorySessionId(null);
+          setView('history');
+        } : undefined}
+      />
+    );
+  }
+
+  if (view === 'history') {
+    return (
+      <HistoryView
+        onOpenSession={(id) => {
+          setHistorySessionId(id);
+          setView('review');
+        }}
+        onRecordNew={() => setView('setup')}
       />
     );
   }
