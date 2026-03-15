@@ -34,14 +34,14 @@
 
 - [x] **SCORE-01**: Post-session scorecard shows per-dimension scores (eye contact, fillers, pacing, expressiveness, gestures)
 - [x] **SCORE-02**: Post-session scorecard shows a single overall score (weighted composite)
-- [ ] **SCORE-03**: Scorecard summary is stored alongside the session in IndexedDB
+- [x] **SCORE-03**: Scorecard summary is stored alongside the session in IndexedDB
 
 ### Annotated Playback
 
-- [ ] **PLAY-01**: User can watch their recorded session video in a custom player
-- [ ] **PLAY-02**: Timeline shows event markers at timestamps where feedback events occurred
-- [ ] **PLAY-03**: User can click a timestamp marker to jump to that moment in the video
-- [ ] **PLAY-04**: Hovering or pausing on a marker shows a description of the event (e.g. "filler word: 'um'")
+- [x] **PLAY-01**: User can watch their recorded session video in a custom player
+- [x] **PLAY-02**: Timeline shows event markers at timestamps where feedback events occurred
+- [x] **PLAY-03**: User can click a timestamp marker to jump to that moment in the video
+- [x] **PLAY-04**: Hovering or pausing on a marker shows a description of the event (e.g. "filler word: 'um'")
 
 ### Session History
 
@@ -98,11 +98,11 @@
 | VIS-05 | Phase 2 | Complete |
 | SCORE-01 | Phase 3 | Complete |
 | SCORE-02 | Phase 3 | Complete |
-| SCORE-03 | Phase 3 | Pending |
-| PLAY-01 | Phase 3 | Pending |
-| PLAY-02 | Phase 3 | Pending |
-| PLAY-03 | Phase 3 | Pending |
-| PLAY-04 | Phase 3 | Pending |
+| SCORE-03 | Phase 3 | Complete |
+| PLAY-01 | Phase 3 | Complete |
+| PLAY-02 | Phase 3 | Complete |
+| PLAY-03 | Phase 3 | Complete |
+| PLAY-04 | Phase 3 | Complete |
 | HIST-01 | Phase 4 | Pending |
 | HIST-02 | Phase 4 | Pending |
 | HIST-03 | Phase 4 | Pending |
