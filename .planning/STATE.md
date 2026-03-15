@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 Phase: 1 of 4 (Foundation and Recording) — COMPLETE
 Plan: 3 of 3 in current phase — COMPLETE
 Status: Phase 1 complete, ready to begin Phase 2
-Last activity: 2026-03-12 — Plan 01-03 complete (recording pipeline: MediaRecorder + webmFixDuration + IndexedDB save + NameSessionModal, 7 browser tests passed)
+Last activity: 2026-03-15 — Quick task 260315-j5e: fixed silent data-loss bug (stopWorker before stopStream) + updated git remote to pitch-practice
 
 Progress: [██████████] 100% (Phase 1)
 
@@ -89,6 +89,12 @@ None yet.
 - **[RESOLVED 01-02] MediaPipe-in-worker:** Classic-mode Web Worker with importScripts CONFIRMED working on Chrome. Proceed with this pattern in 02-01.
 - **[RESOLVED 01-02] Filler word suppression:** EMPIRICALLY CONFIRMED as partial suppression. Web Speech API captures some but not all um/uh. Filler scoring in Phase 3 must treat counts as lower bounds. Whisper.wasm is deferred to v2 (AUD-v2-01).
 - **Expressiveness and gesture thresholds uncalibrated:** No documented baseline values exist. Phase 2 implements heuristics; plan for threshold-tuning iteration after first real recordings in Phase 3.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260315-j5e | Fix missing events in IndexedDB + update git remote to pitch-practice | 2026-03-15 | 7251ed9 | [260315-j5e-fix-missing-events-in-indexeddb-and-upda](.planning/quick/260315-j5e-fix-missing-events-in-indexeddb-and-upda/) |
 
 ## Session Continuity
 
