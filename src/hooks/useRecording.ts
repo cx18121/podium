@@ -103,13 +103,15 @@ export function useRecording(
       recorder.onstop = async () => {
         setStatus('processing');
         stopTimer();
-        stopStream();
 
         const durationMs = Date.now() - startTimeRef.current;
         const rawBlob = new Blob(chunksRef.current, { type: 'video/webm' });
 
-        // Flush ML worker events BEFORE calling onRecordingReady — events must be available for save
+        // Flush ML worker events BEFORE stopping the stream — worker must be alive to respond
         const visualEvents = await mlWorker.stopWorker();
+
+        // Now stop the stream (also calls cleanupWorker internally)
+        stopStream();
 
         // REC-04: post-process with webm-fix-duration before surfacing to App
         const fixedBlob = await webmFixDuration(rawBlob, durationMs);
