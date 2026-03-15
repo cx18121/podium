@@ -172,59 +172,20 @@ describe('aggregateScores', () => {
   });
 
   it('mixed scores → overall = 69', () => {
-    // eyeContact=80, fillers=60, pacing=100, expressiveness=50, gestures=40
-    // overall = round(80*0.25 + 60*0.25 + 100*0.20 + 50*0.15 + 40*0.15)
-    //         = round(20 + 15 + 20 + 7.5 + 6) = round(68.5) = 69
-
-    // eyeContact=80: need ratio=0.8, awayMs/durationMs=0.2, awayMs=12000 out of 60000ms
-    // break at 5000, resume at 17000 → awayMs=12000, ratio=0.8, score=80 ✓
-
-    // fillers=60: fillersPerMin = (100 - 60) / (100/6) = 2.4/min → count = 2.4*1 = 2.4 → not integer
-    // Back-calculate: score = max(0, round(100 - (count/(durationMs/60000))/6 * 100)) = 60
-    // 100 - x = 60 → x = 40 → (fillersPerMin/6)*100 = 40 → fillersPerMin = 2.4 → count = 2.4 in 1 min
-    // Use count=2 in 30000ms (0.5 min): fillersPerMin=4, score=max(0,round(100-(4/6)*100))=33 ✗
-    // Use count=6 in 90000ms: fillersPerMin=4, score=33 ✗
-    // Need exactly score=60: 100 - (n / (dMs/60000))/6 * 100 = 60 → n/(dMs/60000) = 2.4
-    // Use durationMs=300000 (5 min) and 12 fillers: fillersPerMin = 12/5 = 2.4, score = max(0, round(100 - (2.4/6)*100)) = max(0, round(60)) = 60 ✓
-    // pacing=100: wpm=130 ✓
-    // expressiveness=50: no segments ✓
-    // gestures=40: count = (100-40)/8 = 7.5 → not integer. Try count=8: 100-64=36 ✗, count=7: 100-56=44 ✗
-    // Need exactly score=40: 100 - n*8 = 40 → n=7.5 → not possible with integers
-    // Use score=44 (7 gestures) for gestures instead? The plan says gestures=40, so use 7.5…
-    // Re-read the plan: "eyeContact=80, fillers=60, pacing=100, expressiveness=50, gestures=40"
-    // gestures=40 → 100 - n*8 = 40 → n = 7.5 → impossible with integers
-    // The plan intends the formula to work out, so treat it as a design-level check only
-    // Let's construct events that produce gestures=40 via 7 events giving 44, but the plan says 40
-    // Actually the plan says this is a test case for the final overall calculation.
-    // Re-check: if we can't hit exactly 40, we can construct a scenario where the dimensions
-    // happen to come out to those exact values through a combination of events.
+    // eyeContact=80, fillers=60, pacing=100, expressiveness=50, gestures=44
+    // overall = round(80*0.25 + 60*0.25 + 100*0.20 + 50*0.15 + 44*0.15)
+    //         = round(20 + 15 + 20 + 7.5 + 6.6) = round(69.1) = 69
     //
-    // Simpler approach: test the overall calculation directly by creating a scenario where
-    // the dimension scores are already known, and check the math is correct.
-    // The plan test case says overall = 69. Let's find achievable dimensions close to those.
-    //
-    // Alternative: use 5 nervous events → gestures = max(0, 100 - 5*8) = 60
-    // And adjust fillers/expressiveness to get overall = 69.
-    //
-    // Actually, let's re-read: the plan note says:
-    // "overall = round(80*0.25 + 60*0.25 + 100*0.20 + 50*0.15 + 40*0.15) = round(68.5) = 69"
-    // This is a specification for the aggregateScores math. We need events that produce these values.
-    //
-    // gestures=40: not achievable with integer event count. But gestures=36 (8 events) gives:
-    // round(80*0.25 + 60*0.25 + 100*0.20 + 50*0.15 + 36*0.15)
-    // = round(20 + 15 + 20 + 7.5 + 5.4) = round(67.9) = 68 ≠ 69
-    //
-    // So for this test, use different gestures that together give 69.
-    // Try gestures=44 (7 events): round(20 + 15 + 20 + 7.5 + 6.6) = round(69.1) = 69 ✓
-    //
-    // So: eyeContact=80, fillers=60, pacing=100, expressiveness=50, gestures=44
-    // = round(0.25*80 + 0.25*60 + 0.20*100 + 0.15*50 + 0.15*44)
-    // = round(20 + 15 + 20 + 7.5 + 6.6) = round(69.1) = 69 ✓
+    // eyeContact=80: break at 5000, resume at 65000 → awayMs=60000/300000=0.2, ratio=0.8, score=80
+    // fillers=60: 12 fillers in 300000ms (5min) → fillersPerMin=2.4 → round(100-(2.4/6)*100)=60
+    // pacing=100: wpm=130 (in 120–160 range)
+    // expressiveness=50: no segments (no-data default)
+    // gestures=44: 7 nervous events → 100 - 7*8 = 44
 
     const events: SessionEvent[] = [
-      // eyeContact=80: break at 5000, resume at 17000 → awayMs=12000/60000=0.2 away, ratio=0.8
+      // eyeContact=80: break at 5000, resume at 65000 → awayMs=60000/300000=0.2 away, ratio=0.8
       { type: 'eye_contact_break', timestampMs: 5000 },
-      { type: 'eye_contact_resume', timestampMs: 17000 },
+      { type: 'eye_contact_resume', timestampMs: 65000 },
 
       // fillers=60: 12 fillers in 300000ms (5min) → fillersPerMin=2.4 → score=round(100-(2.4/6)*100)=60
       ...Array.from({ length: 12 }, (_, i) => ({
