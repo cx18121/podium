@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Completed quick task 260315-j5e: fix missing events in IndexedDB and update git remote"
-last_updated: "2026-03-15T17:50:09.566Z"
-last_activity: "2026-03-12 — Plan 01-03 complete (recording pipeline: MediaRecorder + webmFixDuration + IndexedDB save + NameSessionModal, 7 browser tests passed)"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-15T19:55:12.894Z"
+last_activity: "2026-03-15 — Quick task 260315-j5e: fixed silent data-loss bug (stopWorker before stopStream) + updated git remote to pitch-practice"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
   percent: 100
 ---
 
@@ -53,6 +53,7 @@ Progress: [██████████] 100% (Phase 1)
 | Phase 02-analysis-pipeline P01 | 11 | 3 tasks | 11 files |
 | Phase 02-analysis-pipeline P02 | 8 | 3 tasks | 7 files |
 | Phase 02-analysis-pipeline P03 | 18 | 2 tasks | 7 files |
+| Phase 03-post-session-review P01 | 24 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase 02-analysis-pipeline]: GAZE_THRESHOLD=0.15, FACE_TOUCH_THRESHOLD=0.12, SWAY_THRESHOLD=0.04 shipped as uncalibrated heuristics — tune after Phase 3 first recordings
 - [Phase 02-03]: wpm_snapshot event at durationMs position so Phase 3 scorer can find it at the end of eventLog without scanning
 - [Phase 02-03]: SpeechCapture as plain class held in useRef — transcript accumulation does not need React re-renders
+- [Phase 03-post-session-review]: aggregateScores returns ScorecardResult with DimensionScore objects; only .score persisted to Dexie
+- [Phase 03-post-session-review]: vitest pool changed to vmThreads in vite.config.ts — forks pool times out in WSL2
+- [Phase 03-post-session-review]: [03-01] WEIGHTS: eyeContact=0.25, fillers=0.25, pacing=0.20, expressiveness=0.15, gestures=0.15 — first-pass, needs calibration after recordings
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T17:50:09.432Z
-Stopped at: Completed quick task 260315-j5e: fix missing events in IndexedDB and update git remote
+Last session: 2026-03-15T19:55:12.794Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None

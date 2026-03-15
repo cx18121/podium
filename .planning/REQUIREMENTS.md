@@ -32,8 +32,8 @@
 
 ### Scorecard
 
-- [ ] **SCORE-01**: Post-session scorecard shows per-dimension scores (eye contact, fillers, pacing, expressiveness, gestures)
-- [ ] **SCORE-02**: Post-session scorecard shows a single overall score (weighted composite)
+- [x] **SCORE-01**: Post-session scorecard shows per-dimension scores (eye contact, fillers, pacing, expressiveness, gestures)
+- [x] **SCORE-02**: Post-session scorecard shows a single overall score (weighted composite)
 - [ ] **SCORE-03**: Scorecard summary is stored alongside the session in IndexedDB
 
 ### Annotated Playback
@@ -96,8 +96,8 @@
 | VIS-03 | Phase 2 | Complete |
 | VIS-04 | Phase 2 | Complete |
 | VIS-05 | Phase 2 | Complete |
-| SCORE-01 | Phase 3 | Pending |
-| SCORE-02 | Phase 3 | Pending |
+| SCORE-01 | Phase 3 | Complete |
+| SCORE-02 | Phase 3 | Complete |
 | SCORE-03 | Phase 3 | Pending |
 | PLAY-01 | Phase 3 | Pending |
 | PLAY-02 | Phase 3 | Pending |
