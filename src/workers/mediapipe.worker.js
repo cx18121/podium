@@ -152,7 +152,7 @@ function deriveEvents(faceResult, gestureResult, poseResult, timestampMs) {
   // Expressiveness — accumulate per-frame score; emit segment event every ~5 seconds
   // At 150ms frame interval, 5000ms / 150ms ~= 33 frames per segment
   if (faceResult.faceBlendshapes && faceResult.faceBlendshapes[0]) {
-    const score = scoreExpressiveness(faceResult.faceBlendshapes[0]);
+    const score = scoreExpressiveness(faceResult.faceBlendshapes[0].categories);
     expressionFrameScores.push({ score, timestampMs });
     if (expressionFrameScores.length >= 33) {
       const avg = aggregateExpressiveness(expressionFrameScores.map(f => f.score));
