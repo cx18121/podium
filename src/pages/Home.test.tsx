@@ -22,10 +22,10 @@ describe('Home', () => {
     expect(h1.className).not.toContain('font-bold');
   });
 
-  it('footnote uses text-gray-500 (not text-gray-600)', () => {
+  it('footnote uses muted text color (not text-gray-600)', () => {
     render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
     const footnote = screen.getByText('Runs entirely in your browser. Nothing is uploaded.');
-    expect(footnote.className).toContain('text-gray-500');
+    expect(footnote.className).toContain('text-[#475569]');
     expect(footnote.className).not.toContain('text-gray-600');
   });
 
