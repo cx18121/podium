@@ -110,3 +110,25 @@ Plans:
 - [ ] 05-03-PLAN.md — Accessibility: A-02 Timeline touch targets (h-11 container, w-4 h-4 dots, 44px tap area, 8px offset)
 - [ ] 05-04-PLAN.md — Typography + layout: A-04 unified h1 across all 4 pages (text-xl font-semibold), A-06 View History affordance (arrow + no underline + padding), A-11 max-w-3xl on all page containers, A-12 footnote text-gray-500
 - [ ] 05-05-PLAN.md — Affordances + copy: A-05 processing spinner, A-09 play/pause overlay, A-10 modal cleanup, full copywriting sweep (StorageQuotaBar, SparklineChart, NameSessionModal, SpeechSupportBanner, Review)
+
+### Phase 6: interactive-ux-improvements: fix timeline tooltips with custom hover component, expand filler word detection with context-aware logic, add live caption display during session review playback
+
+**Goal:** Replace native browser title tooltips with a custom React tooltip component, expand filler word detection from 4 to 13+ patterns with context-aware "like" suppression, and add a toggleable live caption bar below the video player synced to playback time.
+**Requirements**: PLAY-04, AUD-02, REC-05
+**Depends on:** Phase 5
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Custom tooltip in Timeline.tsx: remove title attr, add tooltipIndex state, render absolutely-positioned div above hovered marker with clamp() edge clamping
+- [ ] 06-02-PLAN.md — Expanded filler detection: FILLER_PATTERNS expanded to 13 patterns, LINKING_VERBS set, isLikeAFiller() context-check, TDD with failing tests first
+- [ ] 06-03-PLAN.md — Caption system: Dexie v2 schema migration (transcript field), App.tsx transcript persistence, AnnotatedPlayer caption bar + CC toggle, Review.tsx prop wire
+
+### Phase 7: visual-redesign: elevate the overall frontend design quality with a more impressive, polished, and distinctive visual identity across all screens
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 7 to break down)
