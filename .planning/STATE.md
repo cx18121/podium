@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-03-16T03:19:33.396Z"
-last_activity: "2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-16T04:46:18.743Z"
+last_activity: "2026-03-16 — 06-01: Timeline custom tooltip replacing native title attr, aria-label preserved"
 progress:
-  total_phases: 5
+  total_phases: 7
   completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 20
+  completed_plans: 19
   percent: 83
 ---
 
@@ -64,6 +64,7 @@ Progress: [████████░░] 83% (17/20 plans)
 | Phase 05 P03 | 7 | 1 tasks | 2 files |
 | Phase 05-ui-polish-fix-all-audit-findings-and-elevate-visual-design-quality-across-the-full-app P04 | 9 | 2 tasks | 4 files |
 | Phase 05 P05 | 8 | 2 tasks | 9 files |
+| Phase 06-interactive-ux-improvements P02 | 7 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,9 @@ Recent decisions affecting current work:
 - [Phase 05-05]: [05-05] Processing spinner inlined in App.tsx — no ProcessingSpinner component per RESEARCH.md Pitfall 6
 - [Phase 06-01]: Custom tooltip via useState<number | null> index; pointer-events-none on tooltip prevents onMouseLeave on button; clamp() for viewport-safe positioning
 - [Phase 06-01]: Tests updated from getByTitle to getByRole('button', {name}) — semantically correct, tests accessible API rather than removed title attr
+- [Phase 06-02]: [06-02] SO_OBJECT_VERBS suppression: so after think/know/do = not a filler — preserves existing test and aligns with natural speech
+- [Phase 06-02]: [06-02] normalizeLabel() scoped to um+/uh+ only — general repeated-char collapse was corrupting actually/basically labels
+- [Phase 06-02]: [06-02] Pronoun I excluded from proper-noun suppression in isLikeAFiller — like I was saying is a valid filler
 
 ### Roadmap Evolution
 
@@ -143,6 +147,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T00:41:36Z
-Stopped at: Completed 06-01-PLAN.md
-Resume file: .planning/phases/06-interactive-ux-improvements-fix-timeline-tooltips-with-custom-hover-component-expand-filler-word-detection-with-context-aware-logic-add-live-caption-display-during-session-review-playback/ (next: 06-02)
+Last session: 2026-03-16T04:46:18.713Z
+Stopped at: Completed 06-02-PLAN.md
+Resume file: None
