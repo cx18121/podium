@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 
 ## Current Position
 
-Phase: 4 of 4 (Session History) — IN PROGRESS
+Phase: 6 of 7 (Interactive UX Improvements) — IN PROGRESS
 Plan: 1 of 3 in current phase — COMPLETE
-Status: Phase 4 plan 01 complete, ready to begin plan 02 (SparklineChart)
-Last activity: 2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented
+Status: Phase 6 plan 01 complete, ready to begin plan 02 (filler word detection expansion)
+Last activity: 2026-03-16 — 06-01: Timeline custom tooltip replacing native title attr, aria-label preserved
 
-Progress: [████████░░] 83% (10/12 plans)
+Progress: [████████░░] 83% (17/20 plans)
 
 ## Performance Metrics
 
@@ -116,6 +116,8 @@ Recent decisions affecting current work:
 - [Phase 05-05]: [05-05] onClick removed from video, placed on overlay button only — prevents double-toggle
 - [Phase 05-05]: [05-05] isPlaying state driven by onPlay/onPause events — authoritative video state
 - [Phase 05-05]: [05-05] Processing spinner inlined in App.tsx — no ProcessingSpinner component per RESEARCH.md Pitfall 6
+- [Phase 06-01]: Custom tooltip via useState<number | null> index; pointer-events-none on tooltip prevents onMouseLeave on button; clamp() for viewport-safe positioning
+- [Phase 06-01]: Tests updated from getByTitle to getByRole('button', {name}) — semantically correct, tests accessible API rather than removed title attr
 
 ### Roadmap Evolution
 
@@ -141,6 +143,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T03:12:21.915Z
-Stopped at: Completed 05-05-PLAN.md
-Resume file: None
+Last session: 2026-03-16T00:41:36Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: .planning/phases/06-interactive-ux-improvements-fix-timeline-tooltips-with-custom-hover-component-expand-filler-word-detection-with-context-aware-logic-add-live-caption-display-during-session-review-playback/ (next: 06-02)
