@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 08-01-PLAN.md — Dexie v3 schema migration
-last_updated: "2026-03-16T19:41:34.269Z"
+stopped_at: Completed 08-02-PLAN.md — calculateWPMWindows + App.tsx wiring
+last_updated: "2026-03-16T19:52:56.861Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 29
-  completed_plans: 28
+  completed_plans: 29
   percent: 0
 ---
 
@@ -73,6 +73,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 07-visual-redesign P07 | 13 | 2 tasks | 5 files |
 | Phase 07-visual-redesign P04 | 15 | 2 tasks | 2 files |
 | Phase 08-schema-migration-wpm-windows P01 | 7 | 1 tasks | 2 files |
+| Phase 08 P02 | 10 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -152,6 +153,7 @@ Recent decisions affecting current work:
 - [v2.0 roadmap]: Whisper worker must be ES module ({ type: 'module' }); existing MediaPipe worker remains classic-mode — two separate workers, never coexisting in memory
 - [v2.0 roadmap]: MediaPipe worker must be terminated before Whisper worker starts — combined WASM heap (300-600 MB + 100-200 MB) exceeds mid-range tab limits
 - [Phase 08-01]: [08-01] Dexie v3 schema: WPMWindow + WhisperFillerResult types exported from db.ts; Session extended with wpmWindows?, whisperFillers?, whisperStatus?; upgrade callback clears v1.0 sessions per FOUND-01
+- [Phase 08-02]: [08-02] calculateWPMWindows filters to isFinal segments; missing windows not gap-filled; wpmWindows computed at save time in handleSaveName
 
 ### Roadmap Evolution
 
@@ -179,6 +181,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-16T19:41:34.145Z
-Stopped at: Completed 08-01-PLAN.md — Dexie v3 schema migration
+Last session: 2026-03-16T19:52:56.723Z
+Stopped at: Completed 08-02-PLAN.md — calculateWPMWindows + App.tsx wiring
 Resume file: None

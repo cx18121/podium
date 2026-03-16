@@ -54,7 +54,7 @@
 ### Foundation
 
 - [x] **FOUND-01**: Dexie schema migrated to v3 with new fields (`whisperFillers`, `whisperStatus`, `wpmWindows`); v1.0 sessions cleared on upgrade (no backward compatibility required)
-- [ ] **FOUND-02**: WPM per 30s window calculated at session end and stored in `wpmWindows` for chart display
+- [x] **FOUND-02**: WPM per 30s window calculated at session end and stored in `wpmWindows` for chart display
 
 ### Analytics
 
@@ -126,7 +126,7 @@
 | HIST-02 | Phase 4 | Complete |
 | HIST-03 | Phase 4 | Complete |
 | FOUND-01 | Phase 8 | Complete |
-| FOUND-02 | Phase 8 | Pending |
+| FOUND-02 | Phase 8 | Complete |
 | ANAL-01 | Phase 9 | Pending |
 | ANAL-02 | Phase 10 | Pending |
 | ANAL-03 | Phase 10 | Pending |
