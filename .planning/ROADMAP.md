@@ -152,7 +152,11 @@ Plans:
   2. Existing v1.0 sessions in IndexedDB are either cleared or degrade gracefully — no VersionError is thrown on app load after the migration
   3. The `whisperFillers` and `whisperStatus` fields exist on session records as optional fields (undefined on new sessions until Whisper runs in Phase 13)
   4. `calculateWPMWindows()` is a pure function with unit tests passing — given a transcript with timestamps, it returns correctly bucketed 30-second windows
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Dexie v3 schema migration: WPMWindow + WhisperFillerResult types, Session interface extension, version(3) with upgrade clear
+- [ ] 08-02-PLAN.md — calculateWPMWindows() pure function with TDD tests, wired into App.tsx handleSaveName
 
 ### Phase 9: Opening/Closing Strength
 **Goal**: The user sees a new Opening/Closing scorecard dimension after every session, scored from the first and last 30 seconds of the existing event log, so they get actionable feedback on the two moments that carry the most audience impact.
@@ -225,7 +229,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 5. UI Polish | 5/5 | Complete | - |
 | 6. Interactive UX Improvements | 3/3 | Complete | - |
 | 7. Visual Redesign | 7/7 | Complete | - |
-| 8. Schema Migration + WPM Windows | 0/TBD | Not started | - |
+| 8. Schema Migration + WPM Windows | 0/2 | Not started | - |
 | 9. Opening/Closing Strength | 0/TBD | Not started | - |
 | 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
