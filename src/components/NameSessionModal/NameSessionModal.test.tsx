@@ -24,7 +24,7 @@ describe('NameSessionModal — skip path', () => {
     render(
       <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={onConfirm} onSkip={vi.fn()} />
     );
-    fireEvent.click(screen.getByRole('button', { name: /use auto name/i }));
+    fireEvent.click(screen.getByRole('button', { name: /skip/i }));
     expect(onConfirm).toHaveBeenCalledWith(AUTO_TITLE);
   });
 });

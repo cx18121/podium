@@ -28,39 +28,35 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
       role="dialog"
       aria-modal="true"
       aria-labelledby="name-session-heading"
-      className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.7)] z-50 p-4"
     >
-      <div className="bg-gray-900 rounded-2xl p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl">
-        <h2 id="name-session-heading" className="text-xl font-bold text-white">
+      <div className="bg-[#111827] border border-[rgba(255,255,255,0.10)] rounded-[20px] p-8 w-full max-w-sm flex flex-col gap-6 shadow-[0_25px_50px_rgba(0,0,0,0.6)]">
+        <h2 id="name-session-heading" className="text-xl font-semibold text-[#f1f5f9]">
           Name this session
         </h2>
-
-        <p className="text-gray-400 text-sm">
-          Give your session a name, or skip to use the auto-generated date and time.
-        </p>
 
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-600 transition-colors"
+          className="w-full px-4 py-3 bg-[#1a2235] border border-[rgba(255,255,255,0.10)] rounded-lg text-[#f1f5f9] placeholder-[#475569] focus:outline-none focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1] focus:ring-offset-0 motion-safe:transition-colors motion-safe:duration-150"
           aria-label="Session name"
           autoFocus
         />
 
-        <div className="flex gap-3 justify-end">
-          <button
-            onClick={handleSkip}
-            className="px-5 py-2.5 text-gray-400 hover:text-white transition-colors text-sm font-medium"
-          >
-            Use auto name
-          </button>
+        <div className="flex flex-col gap-3">
           <button
             onClick={handleSave}
             disabled={name.trim().length === 0}
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors text-sm"
+            className="w-full h-[48px] bg-[#6366f1] hover:bg-[#818cf8] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-2"
           >
             Save Session
+          </button>
+          <button
+            onClick={handleSkip}
+            className="text-[13px] text-[#94a3b8] hover:text-[#f1f5f9] motion-safe:transition-colors motion-safe:duration-150 text-center no-underline"
+          >
+            Skip — use date/time name
           </button>
         </div>
       </div>
