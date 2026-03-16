@@ -67,8 +67,8 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const durationDisplay = `${Math.floor(durationSec / 60)}:${String(durationSec % 60).padStart(2, '0')}`;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6">
-      <h1 className="text-2xl font-bold">{session.title}</h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6 max-w-3xl mx-auto w-full">
+      <h1 className="text-xl font-semibold">{session.title}</h1>
       <p className="text-sm text-gray-400">{durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}</p>
 
       <ScorecardView scorecard={scorecard} />

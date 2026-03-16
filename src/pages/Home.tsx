@@ -10,8 +10,8 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-8 p-8 text-center">
-      <h1 className="text-4xl font-bold tracking-tight">Presentation Coach</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-8 p-8 text-center max-w-3xl mx-auto w-full">
+      <h1 className="text-xl font-semibold tracking-tight">Presentation Coach</h1>
       <p className="text-gray-300 text-lg max-w-md leading-relaxed">
         Record yourself practicing a talk. Get back annotated video with every filler word,
         eye contact break, and nervous gesture marked at the exact moment it happened.
@@ -29,7 +29,7 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
       >
         Start Recording
       </button>
-      <p className="text-gray-600 text-xs">Runs entirely in your browser. Nothing is uploaded.</p>
+      <p className="text-gray-500 text-xs">Runs entirely in your browser. Nothing is uploaded.</p>
     </div>
   );
 }
