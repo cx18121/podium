@@ -56,12 +56,12 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
-| Display | 48px | 700 (bold) | 1.1 | Overall score number in scorecard ring |
+| Display | 48px | 600 (semibold) | 1.1 | Overall score number in scorecard ring |
 | Heading | 20px | 600 (semibold) | 1.2 | Page h1, section headings, modal titles |
 | Body | 16px | 400 (regular) | 1.5 | Paragraph copy, list items, descriptions |
-| Label | 13px | 500 (medium) | 1.4 | Dimension labels, timestamps, captions, badge text, nav secondary |
+| Label | 13px | 400 (regular) | 1.4 | Dimension labels, timestamps, captions, badge text, nav secondary |
 
-**Weights in use: 400, 500, 600, 700** — four weights justified because Display (700) is only for the score number, Label (500) fills the gap between body and heading for data labels.
+**Weights in use: 400 and 600 only** — Display uses 600 (size alone at 48px provides visual dominance; 600 vs 700 is imperceptible). Label uses 400 with `letter-spacing: 0.02em` which compensates for small-size legibility.
 
 **Font features:**
 - Timers and score numbers: `font-variant-numeric: tabular-nums` — prevents layout shift as digits change
@@ -143,7 +143,7 @@ This section is new for Phase 7 — it defines the visual depth system that give
 ### RecordingScreen (distraction-free)
 
 - Black full-viewport background (`#000`) — intentionally darker than page bg, camera frame is the content
-- Timer: Display size (48px/700), tabular-nums, slate-100, centered
+- Timer: Display size (48px/600), tabular-nums, slate-100, centered
 - Stop button: red-500 bg (`#ef4444`), 52px height, 12px radius, "Stop Recording" label — red is acceptable here as it signals a stop/danger action (not a destructive delete)
 - No decorative elements — minimal is correct for this screen
 
@@ -157,17 +157,17 @@ This section is new for Phase 7 — it defines the visual depth system that give
   - Gesture: red-400 `#f87171`
   - Pause: slate-400 `#94a3b8`
 - Active/hovered marker: 2px white ring around dot + indigo glow `rgba(99,102,241,0.4)`
-- Tooltip: `#1a2235` bg, 1px `rgba(255,255,255,0.10)` border, 8px radius, 13px/500 label text, slate-100
+- Tooltip: `#1a2235` bg, 1px `rgba(255,255,255,0.10)` border, 8px radius, 13px/400 label text, slate-100
 - CC caption bar: min-h-[2.5rem] (unchanged), `rgba(0,0,0,0.7)` bg overlay at bottom of video, 16px/400 slate-100 text
 - ScorecardView inside Review: card layout with `#111827` bg, `rgba(255,255,255,0.07)` border, 24px padding, 12px radius
 - Score ring: 120px diameter SVG circle, 6px stroke, indigo stroke, indigo-glow, display-size number centered inside
 
 ### ScorecardView (dimension bars)
 
-- Each dimension row: label (13px/500/slate-400 LEFT) + score number (13px/500/slate-100 RIGHT) + bar beneath spanning full width
+- Each dimension row: label (13px/400/slate-400 LEFT) + score number (13px/400/slate-100 RIGHT) + bar beneath spanning full width
 - Bar track: 4px tall, `#1a2235` bg, 8px radius
 - Bar fill: 4px tall, semantic score color, 8px radius, animate width from 0 on mount (300ms ease-out)
-- Overall score ring: 120px SVG, indigo stroke, score number in Display size (48px/700)
+- Overall score ring: 120px SVG, indigo stroke, score number in Display size (48px/600)
 
 ### HistoryView
 
@@ -179,7 +179,7 @@ This section is new for Phase 7 — it defines the visual depth system that give
 - Metadata row (date, duration, score): 13px/400/slate-400, tabular-nums for score
 - Score badge: small pill — semantic color bg at 15% opacity, semantic color text, 4px radius, 8px horizontal padding
 - Sparkline: 48px tall, 80px wide, indigo stroke for the series, no fill, no axes — clean signal only
-- Delete button: `#ef4444` text on transparent bg, 13px/500, hover reveals `rgba(239,68,68,0.1)` background — red is destructive here
+- Delete button: `#ef4444` text on transparent bg, 13px/400, hover reveals `rgba(239,68,68,0.1)` background — red is destructive here
 
 ### NameSessionModal
 
