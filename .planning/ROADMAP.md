@@ -96,3 +96,17 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Analysis Pipeline | 0/3 | Not started | - |
 | 3. Post-Session Review | 3/3 | Complete   | 2026-03-15 |
 | 4. Session History | 3/3 | Complete   | 2026-03-16 |
+
+### Phase 5: UI Polish — fix all audit findings and elevate visual design quality across the full app
+
+**Goal:** Fix all 12 audit findings (A-01 through A-12) from the UI audit reviews, establishing a consistent color hierarchy, WCAG-compliant touch targets, unified typography scale, and polished interaction affordances across all screens.
+**Requirements**: A-01, A-02, A-03, A-04, A-05, A-06, A-07, A-08, A-09, A-10, A-11, A-12
+**Depends on:** Phase 4
+**Plans:** 5 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Wave 0: Create 3 missing test files (SessionListItem.test.tsx, StorageQuotaBar.test.tsx, Home.test.tsx) for Nyquist compliance
+- [ ] 05-02-PLAN.md — Color system: A-01 score bar three-tier colors (ScorecardView), A-03 delete button always-visible + aria-label, A-07 score badge color coding (SessionListItem), A-08 sparkline opacity 0.9, A-01 StorageQuotaBar critical fill bg-red-500
+- [ ] 05-03-PLAN.md — Accessibility: A-02 Timeline touch targets (h-11 container, w-4 h-4 dots, 44px tap area, 8px offset)
+- [ ] 05-04-PLAN.md — Typography + layout: A-04 unified h1 across all 4 pages (text-xl font-semibold), A-06 View History affordance (arrow + no underline + padding), A-11 max-w-3xl on all page containers, A-12 footnote text-gray-500
+- [ ] 05-05-PLAN.md — Affordances + copy: A-05 processing spinner, A-09 play/pause overlay, A-10 modal cleanup, full copywriting sweep (StorageQuotaBar, SparklineChart, NameSessionModal, SpeechSupportBanner, Review)
