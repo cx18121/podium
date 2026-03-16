@@ -102,7 +102,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 **Goal:** Fix all 12 audit findings (A-01 through A-12) from the UI audit reviews, establishing a consistent color hierarchy, WCAG-compliant touch targets, unified typography scale, and polished interaction affordances across all screens.
 **Requirements**: A-01, A-02, A-03, A-04, A-05, A-06, A-07, A-08, A-09, A-10, A-11, A-12
 **Depends on:** Phase 4
-**Plans:** 3/5 plans executed
+**Plans:** 4/5 plans executed
 
 Plans:
 - [ ] 05-01-PLAN.md — Wave 0: Create 3 missing test files (SessionListItem.test.tsx, StorageQuotaBar.test.tsx, Home.test.tsx) for Nyquist compliance
