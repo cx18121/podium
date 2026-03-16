@@ -7,7 +7,7 @@ import { useRecording, type RecordingReadyData } from './hooks/useRecording';
 import { requestPersistentStorage } from './hooks/useStoragePermission';
 import { SpeechCapture } from './hooks/useSpeechCapture';
 import { detectFillers } from './analysis/fillerDetector';
-import { detectPauses, calculateWPM } from './analysis/pacing';
+import { detectPauses, calculateWPM, calculateWPMWindows } from './analysis/pacing';
 import Home from './pages/Home';
 import SetupScreen from './components/SetupScreen/SetupScreen';
 import RecordingScreen from './components/RecordingScreen/RecordingScreen';
@@ -71,6 +71,7 @@ export default function App() {
     const fillerEvents: SessionEvent[] = detectFillers(segments);
     const pauseEvents: SessionEvent[] = detectPauses(segments);
     const wpm = calculateWPM(segments, durationMs);
+    const wpmWindows = calculateWPMWindows(segments, durationMs);
     // Store WPM as a single session-end event so Phase 3 scorer can read it
     const wpmEvent: SessionEvent = {
       type: 'wpm_snapshot',
@@ -94,6 +95,7 @@ export default function App() {
       eventLog,
       scorecard: null,
       transcript: segments, // Phase 6: persist for caption display
+      wpmWindows, // FOUND-02: 30-second window WPM data for Phase 12 chart
     });
 
     // REC-06: request persistent storage after first save
