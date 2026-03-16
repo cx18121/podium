@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 07-05-PLAN.md — AnnotatedPlayer, Timeline, and Review page redesigned
-last_updated: "2026-03-16T06:09:44.423Z"
+stopped_at: Completed 07-06-PLAN.md — HistoryView, SessionListItem, SparklineChart, StorageQuotaBar redesigned
+last_updated: "2026-03-16T06:11:40.649Z"
 last_activity: "2026-03-16 — 07-03: RecordingScreen black bg + display timer + red-500 stop btn; App.tsx indigo spinner + #080c14 bg"
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 27
-  completed_plans: 24
+  completed_plans: 25
   percent: 85
 ---
 
@@ -69,6 +69,7 @@ Progress: [█████████░] 85% (23/27 plans complete)
 | Phase 07-visual-redesign P02 | 12 | 2 tasks | 3 files |
 | Phase 07-visual-redesign P03 | 15 | 2 tasks | 3 files |
 | Phase 07-visual-redesign P05 | 10 | 2 tasks | 3 files |
+| Phase 07-visual-redesign P06 | 525971 | 1 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,9 @@ Recent decisions affecting current work:
 - [Phase 07-05]: [07-05] markerBg uses inline style backgroundColor not dynamic Tailwind class — Tailwind v4 JIT cannot generate from variable strings
 - [Phase 07-05]: [07-05] 8px visual timeline track inside 48px transparent click wrapper — preserves Phase 05-03 44px tap target while visually slimming the track
 - [Phase 07-05]: [07-05] Category color scheme: amber=#fbbf24 filler, indigo=#818cf8 eye-contact, red=#f87171 gesture, slate=#94a3b8 pause
+- [Phase 07-visual-redesign]: [07-06] scoreBadgeStyle uses inline CSSProperties with rgba at 15% opacity — avoids Tailwind JIT dynamic class purging
+- [Phase 07-visual-redesign]: [07-06] StorageQuotaBar placed inline in list header row alongside Start Recording button — no standalone position
+- [Phase 07-visual-redesign]: [07-06] Amber warning message removed from StorageQuotaBar per spec — only critical state shows extra copy
 
 ### Roadmap Evolution
 
@@ -162,6 +166,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T06:09:44.332Z
-Stopped at: Completed 07-05-PLAN.md — AnnotatedPlayer, Timeline, and Review page redesigned
+Last session: 2026-03-16T06:11:40.613Z
+Stopped at: Completed 07-06-PLAN.md — HistoryView, SessionListItem, SparklineChart, StorageQuotaBar redesigned
 Resume file: None
