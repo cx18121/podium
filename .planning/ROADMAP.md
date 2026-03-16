@@ -167,7 +167,10 @@ Plans:
   2. The score reflects event density and quality in the first 30s and last 30s independently — a strong opening with a weak closing produces a different score than the reverse
   3. For sessions shorter than 60 seconds, the dimension either shows a clear "session too short" state or handles the edge case without crashing
   4. `scoreOpeningClosing()` is a pure function with unit tests covering the short-session edge case and at least two different scoring scenarios
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 10: Pause Scoring + PauseDetail Panel
 **Goal**: The pacing score reflects pause quality (not just pause count), and the user sees a PauseDetail panel on the review page showing pause count and average duration, so they can distinguish hesitation pauses from deliberate emphasis pauses.
@@ -178,7 +181,10 @@ Plans:
   2. The pacing scorecard dimension score changes when a session has many mid-clause pauses versus the same pause count at sentence boundaries — pause quality affects the score, not just frequency
   3. A session with zero pause events shows a graceful "no significant pauses detected" state in the PauseDetail panel, not a blank or error state
   4. `scorePauses()` is a pure function with unit tests covering mid-clause versus sentence-boundary classification using the ETS SpeechRater 0.145s threshold
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 11: Filler Breakdown Panel
 **Goal**: The user sees which filler words they use most often and in which part of their talk, so they can target specific habits rather than treating all fillers as one undifferentiated problem.
@@ -189,7 +195,10 @@ Plans:
   2. The panel shows which session third (opening, middle, closing) had the highest filler density, so the user knows when in their talk the habit peaks
   3. When Whisper data is available (Phase 13), the panel automatically uses `whisperFillers.byType` for counts instead of Web Speech event counts — the component is Whisper-upgradeable via props
   4. A session with zero filler events shows a graceful empty state, not a blank or error state
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 12: WPM Chart Panel
 **Goal**: The user sees their speaking rate as a line chart over time (30-second windows) in the review page, so they can identify where they rushed or slowed down rather than seeing only a single average WPM figure.
@@ -200,7 +209,10 @@ Plans:
   2. The chart x-axis labels correspond to session time segments (e.g., "0:00", "0:30", "1:00") and the y-axis shows words per minute
   3. A session recorded before Phase 8 (no `wpmWindows` in storage) shows a graceful "no data available" state, not a crash or blank chart
   4. The chart renders correctly for sessions as short as one window (30–60 seconds) and as long as 20+ minutes
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 13: Whisper Integration
 **Goal**: Post-session audio is re-analyzed by Whisper.wasm so filler counts are accurate (Web Speech suppresses disfluencies), and the user sees transparent progress while this happens, with a graceful fallback to Web Speech counts if Whisper fails.
@@ -212,7 +224,10 @@ Plans:
   3. When Whisper is downloaded for the first time (~75 MB), the user sees a progress indicator reading "Downloading speech model (first time only)..." — the app does not appear frozen
   4. Live captions during recording are unaffected — Web Speech API continues to power real-time captions exactly as before
   5. If Whisper fails (network error, unsupported browser, WASM error), the scorecard retains the Web Speech-derived filler counts and no error state is shown to the user beyond the banner updating
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ## Progress
 
@@ -230,7 +245,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 6. Interactive UX Improvements | 3/3 | Complete | - |
 | 7. Visual Redesign | 7/7 | Complete | - |
 | 8. Schema Migration + WPM Windows | 2/2 | Complete   | 2026-03-16 |
-| 9. Opening/Closing Strength | 0/TBD | Not started | - |
+| 9. Opening/Closing Strength | 0/1 | Not started | - |
 | 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
 | 12. WPM Chart Panel | 0/TBD | Not started | - |
