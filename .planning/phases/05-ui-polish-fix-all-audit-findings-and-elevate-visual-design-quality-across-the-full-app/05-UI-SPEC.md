@@ -77,11 +77,11 @@ Four roles, two weights. Resolves A-04 — locks a single heading size per role 
 | Body | 14px | 400 (regular) | 1.5 | `text-sm` | Supporting text, metadata, labels |
 | Label | 16px | 400 (regular) | 1.5 | `text-base` | List item titles, dimension names, modal body |
 | Heading | 20px | 600 (semibold) | 1.2 | `text-xl font-semibold` | All page h1, section h2 — unified across all pages (replaces current 4 inconsistent sizes) |
-| Display | 48px | 300 (light) | 1.0 | `text-5xl font-light` | RecordingScreen timer only — monospace, tabular-nums preserved |
+| Display | 48px | 600 (semibold) | 1.0 | `text-5xl font-semibold` | RecordingScreen timer only — monospace, tabular-nums preserved |
 
-Note: The existing `text-3xl font-bold` on the overall score output (`ScorecardView`) is reclassified as a one-off data-display size (30px, weight 700). It does not enter the type scale; it is a data value, not text.
+Note: The overall score output (`ScorecardView`) is a one-off data-display size (30px, `text-3xl font-semibold`). It does not enter the type scale; it is a data value, not text.
 
-Weight constraint: Only weight 400 and weight 600 are used for text roles. Weight 300 is permitted for the RecordingScreen display timer only. Weight 700 is permitted for data values (score output, session score badge) only.
+Weight constraint: Two weights only: 400 (regular) for body/label roles, 600 (semibold) for heading/CTA/data value roles.
 
 ---
 
@@ -144,7 +144,7 @@ Timeline container height raised from `h-8` (32px) to `h-11` (44px). Marker dots
 
 ### Fix A-03: Delete button keyboard accessibility
 
-SessionListItem delete button removes `opacity-0 group-hover:opacity-100`. New behavior: always rendered at full opacity but visually subdued (`text-gray-600`). On hover: `text-red-400`. On `focus-visible`: `outline-2 outline-offset-2 outline-red-500` ring visible.
+SessionListItem delete button removes `opacity-0 group-hover:opacity-100`. New behavior: always rendered at full opacity but visually subdued (`text-gray-600`). On hover: `text-red-400`. On `focus-visible`: `outline-2 outline-offset-2 outline-red-500` ring visible. Add `aria-label="Delete session"` to the button element.
 
 ### Fix A-04: Heading hierarchy
 
@@ -177,7 +177,7 @@ SparklineChart path `opacity-0.5` → `opacity-0.9`. Stroke color remains `rgb(2
 
 ### Fix A-09: Video play/pause affordance
 
-AnnotatedPlayer video: on hover, show a semi-transparent play/pause overlay icon centered on the video. Implementation: `<div>` overlay absolutely positioned, hidden by default (`opacity-0`), shown on parent hover (`group-hover:opacity-100`), containing an inline SVG play icon (when paused) or pause icon (when playing). Transition: `transition-opacity duration-150`.
+AnnotatedPlayer video: on hover, show a semi-transparent play/pause overlay icon centered on the video. Implementation: `<div>` overlay absolutely positioned, hidden by default (`opacity-0`), shown on parent hover (`group-hover:opacity-100`), containing an inline SVG play icon (when paused) or pause icon (when playing). Transition: `transition-opacity duration-150`. The overlay button must include `aria-label="Play"` when the video is paused and `aria-label="Pause"` when the video is playing.
 
 ### Fix A-10: NameSessionModal cleanup
 
