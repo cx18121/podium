@@ -18,7 +18,7 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
 
   if (sessions === undefined) {
     return (
-      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-gray-950 text-gray-400">
+      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-[#080c14] text-[#94a3b8]">
         Loading sessions...
       </div>
     );
@@ -26,35 +26,32 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
 
   if (sessions.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto w-full flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-4">
-        <h1 className="text-xl font-semibold text-white">No sessions yet</h1>
-        <p className="text-sm text-gray-400">Record your first session to see your history here.</p>
+      <div className="max-w-3xl mx-auto w-full flex flex-col items-center justify-center min-h-screen bg-[#080c14] text-[#f1f5f9] gap-4">
+        <h1 className="text-xl font-semibold text-[#f1f5f9]">No sessions yet</h1>
+        <p className="text-sm text-[#94a3b8]">Record your first practice session to see your history and track your progress.</p>
         <button
           onClick={onRecordNew}
-          className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-colors"
+          className="px-6 py-3 bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold rounded-xl motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]"
         >
-          Record New Session
+          Start Recording
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6 max-w-3xl mx-auto w-full">
-      <h1 className="text-xl font-semibold">Session History</h1>
-
-      <button
-        onClick={onRecordNew}
-        className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-colors"
-      >
-        Record New Session
-      </button>
-
-      <div className="w-full max-w-2xl flex items-center gap-4 px-4 text-gray-400 text-sm">
-        <span className="flex-1">Session</span>
-        <span className="whitespace-nowrap">Date</span>
-        <span className="whitespace-nowrap">Duration</span>
-        <span className="w-16 text-right">Score</span>
+    <div className="flex flex-col items-center min-h-screen bg-[#080c14] text-white p-8 gap-6 max-w-3xl mx-auto w-full">
+      <div className="w-full max-w-2xl flex items-center justify-between gap-4">
+        <h1 className="text-xl font-semibold text-[#f1f5f9]">Past Sessions</h1>
+        <div className="flex items-center gap-4">
+          <StorageQuotaBar />
+          <button
+            onClick={onRecordNew}
+            className="px-6 h-[44px] bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold rounded-xl text-sm motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-2"
+          >
+            Start Recording
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 w-full max-w-2xl">
@@ -79,7 +76,7 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
         ];
         return (
           <div className="flex flex-col gap-4 w-full max-w-2xl">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-[#94a3b8] tracking-wide">
               Progress by Dimension
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
@@ -96,8 +93,6 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
           </div>
         );
       })()}
-
-      <StorageQuotaBar />
 
       {deleteTargetId !== null && (
         <DeleteConfirmModal

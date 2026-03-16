@@ -28,7 +28,7 @@ describe('StorageQuotaBar', () => {
     await act(async () => {
       render(<StorageQuotaBar />);
     });
-    expect(screen.getByText(/Storage used:/)).toBeInTheDocument();
+    expect(screen.getByText(/MB of/)).toBeInTheDocument();
   });
 
   it('shows critical copy "Storage almost full. Delete older sessions to keep recording." when pct > 95', async () => {
@@ -39,12 +39,12 @@ describe('StorageQuotaBar', () => {
     expect(screen.getByText('Storage almost full. Delete older sessions to keep recording.')).toBeInTheDocument();
   });
 
-  it('shows warning copy "Storage getting full. Consider deleting older sessions." when pct 80–95', async () => {
+  it('does not show warning copy when pct is 80–95 (warning message removed per spec)', async () => {
     mockStorageEstimate(850 * 1024 * 1024, 1000 * 1024 * 1024);
     await act(async () => {
       render(<StorageQuotaBar />);
     });
-    expect(screen.getByText('Storage getting full. Consider deleting older sessions.')).toBeInTheDocument();
+    expect(screen.queryByText('Storage getting full. Consider deleting older sessions.')).not.toBeInTheDocument();
   });
 
   it('critical fill bar uses bg-red-500 (not bg-red-600) when pct > 95', async () => {
@@ -52,8 +52,8 @@ describe('StorageQuotaBar', () => {
     await act(async () => {
       render(<StorageQuotaBar />);
     });
-    // Find the fill div (has h-1 class and a width style)
-    const fillDivs = document.querySelectorAll('.h-1.rounded-full.transition-all');
+    // Find the fill div (has h-1.5 class and a width style)
+    const fillDivs = document.querySelectorAll('.h-1\\.5.rounded-full');
     const fillBar = Array.from(fillDivs).find(el => el.classList.contains('bg-red-500') || el.classList.contains('bg-red-600'));
     expect(fillBar?.className).toContain('bg-red-500');
     expect(fillBar?.className).not.toContain('bg-red-600');

@@ -34,10 +34,10 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
     return (
       <div className="flex flex-col gap-1">
         <div className="h-8 flex items-center">
-          <span className="text-xs text-gray-600">Need more sessions</span>
+          <span className="text-xs text-[#475569]">Need more sessions</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-400">{label}</span>
+          <span className="text-xs text-[#94a3b8]">{label}</span>
           {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
         </div>
       </div>
@@ -54,13 +54,13 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
   return (
     <div className="flex flex-col gap-1">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-8 w-full" aria-hidden="true">
-        <path d={d} stroke="rgb(251 191 36)" strokeWidth="1.5" fill="none" opacity="0.9" />
+        <path d={d} stroke="#6366f1" strokeWidth="1.5" fill="none" />
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="2" fill="rgb(251 191 36)" />
+          <circle key={i} cx={p.x} cy={p.y} r="2" fill="#6366f1" />
         ))}
       </svg>
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-400">{label}</span>
+        <span className="text-xs text-[#94a3b8]">{label}</span>
         {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
       </div>
     </div>

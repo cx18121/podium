@@ -33,35 +33,35 @@ describe('SessionListItem', () => {
     expect(screen.getByRole('button', { name: 'Delete session' })).toBeInTheDocument();
   });
 
-  it('score badge shows — and bg-gray-700 text-gray-400 when scorecard is null', () => {
+  it('score badge uses inline style with slate color at 15% opacity when scorecard is null', () => {
     render(<SessionListItem session={makeSession({ scorecard: null })} onOpen={vi.fn()} onDelete={vi.fn()} />);
     const badge = screen.getByText('—');
-    expect(badge.className).toContain('bg-gray-700');
-    expect(badge.className).toContain('text-gray-400');
+    expect(badge.style.backgroundColor).toBe('rgba(148, 163, 184, 0.15)');
+    expect(badge.style.color).toBe('rgb(148, 163, 184)');
   });
 
-  it('score badge shows bg-emerald-900 text-emerald-300 when overall score >= 70', () => {
+  it('score badge uses emerald inline style at 15% opacity when overall score >= 70', () => {
     const session = makeSession({ scorecard: { overall: 75, dimensions: {} } });
     render(<SessionListItem session={session} onOpen={vi.fn()} onDelete={vi.fn()} />);
     const badge = screen.getByText('75');
-    expect(badge.className).toContain('bg-emerald-900');
-    expect(badge.className).toContain('text-emerald-300');
+    expect(badge.style.backgroundColor).toBe('rgba(16, 185, 129, 0.15)');
+    expect(badge.style.color).toBe('rgb(16, 185, 129)');
   });
 
-  it('score badge shows bg-amber-900 text-amber-300 when overall score is 40–69', () => {
+  it('score badge uses amber inline style at 15% opacity when overall score is 40–69', () => {
     const session = makeSession({ scorecard: { overall: 55, dimensions: {} } });
     render(<SessionListItem session={session} onOpen={vi.fn()} onDelete={vi.fn()} />);
     const badge = screen.getByText('55');
-    expect(badge.className).toContain('bg-amber-900');
-    expect(badge.className).toContain('text-amber-300');
+    expect(badge.style.backgroundColor).toBe('rgba(251, 191, 36, 0.15)');
+    expect(badge.style.color).toBe('rgb(251, 191, 36)');
   });
 
-  it('score badge shows bg-red-900 text-red-300 when overall score < 40', () => {
+  it('score badge uses red inline style at 15% opacity when overall score < 40', () => {
     const session = makeSession({ scorecard: { overall: 25, dimensions: {} } });
     render(<SessionListItem session={session} onOpen={vi.fn()} onDelete={vi.fn()} />);
     const badge = screen.getByText('25');
-    expect(badge.className).toContain('bg-red-900');
-    expect(badge.className).toContain('text-red-300');
+    expect(badge.style.backgroundColor).toBe('rgba(239, 68, 68, 0.15)');
+    expect(badge.style.color).toBe('rgb(239, 68, 68)');
   });
 
   it('calls onDelete when delete button is clicked', () => {

@@ -32,27 +32,22 @@ export function StorageQuotaBar() {
     ? 'bg-red-500'
     : isWarning
       ? 'bg-amber-400'
-      : 'bg-gray-600';
-
-  const labelClass = isCritical ? 'text-xs text-red-400' : 'text-xs text-gray-400';
+      : 'bg-[#6366f1]';
 
   return (
-    <div className="flex flex-col gap-1 w-full max-w-2xl">
-      <span className={labelClass}>Storage used: {usedMB} MB of {totalMB} MB</span>
-      <div className="w-full h-1 bg-gray-800 rounded-full">
+    <div className="flex flex-col gap-1 w-full">
+      <div className="w-full h-1.5 bg-[#1a2235] rounded-full">
         <div
-          className={`h-1 rounded-full transition-all ${fillClass}`}
+          className={`h-1.5 rounded-full motion-safe:transition-all ${fillClass}`}
           style={{ width: `${pct}%` }}
         />
       </div>
+      <span className={`text-[13px] tracking-wide ${isCritical ? 'text-red-400' : 'text-[#94a3b8]'}`}>
+        {usedMB} MB of {totalMB} MB
+      </span>
       {isCritical && (
-        <span className="text-red-400 text-xs">
+        <span className="text-red-400 text-[13px]">
           Storage almost full. Delete older sessions to keep recording.
-        </span>
-      )}
-      {!isCritical && isWarning && (
-        <span className="text-amber-400 text-xs">
-          Storage getting full. Consider deleting older sessions.
         </span>
       )}
     </div>

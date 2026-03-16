@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Session } from '../../db/db';
 
 interface SessionListItemProps {
@@ -6,12 +7,12 @@ interface SessionListItemProps {
   onDelete: () => void;
 }
 
-function scoreBadgeClass(scorecard: Session['scorecard']): string {
-  if (scorecard === null) return 'bg-gray-700 text-gray-400';
+function scoreBadgeStyle(scorecard: Session['scorecard']): CSSProperties {
+  if (scorecard === null) return { backgroundColor: 'rgba(148,163,184,0.15)', color: '#94a3b8' };
   const s = scorecard.overall;
-  if (s >= 70) return 'bg-emerald-900 text-emerald-300';
-  if (s >= 40) return 'bg-amber-900 text-amber-300';
-  return 'bg-red-900 text-red-300';
+  if (s >= 70) return { backgroundColor: 'rgba(16,185,129,0.15)', color: '#10b981' };
+  if (s >= 40) return { backgroundColor: 'rgba(251,191,36,0.15)', color: '#fbbf24' };
+  return { backgroundColor: 'rgba(239,68,68,0.15)', color: '#ef4444' };
 }
 
 export function SessionListItem({ session, onOpen, onDelete }: SessionListItemProps) {
@@ -23,14 +24,17 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
   return (
     <div
       onClick={onOpen}
-      className="bg-gray-900 rounded-2xl px-4 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-800 transition-colors"
+      className="bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl px-4 py-4 flex items-center gap-4 cursor-pointer motion-safe:transition-colors motion-safe:duration-150 hover:bg-[#1a2235] hover:border-[rgba(255,255,255,0.12)]"
     >
       <div className="flex-1 min-w-0">
-        <span className="text-white text-sm font-semibold truncate block">{session.title}</span>
+        <span className="text-[#f1f5f9] text-base font-semibold truncate block">{session.title}</span>
       </div>
-      <span className="text-gray-400 text-sm whitespace-nowrap">{dateDisplay}</span>
-      <span className="text-gray-400 text-sm whitespace-nowrap">{durationDisplay}</span>
-      <span className={`text-sm font-bold rounded-lg px-2 py-1 ${scoreBadgeClass(session.scorecard)}`}>
+      <span className="text-[#94a3b8] text-[13px] whitespace-nowrap">{dateDisplay}</span>
+      <span className="text-[#94a3b8] text-[13px] whitespace-nowrap">{durationDisplay}</span>
+      <span
+        className="text-[13px] font-semibold rounded px-2 py-1 tabular-nums"
+        style={scoreBadgeStyle(session.scorecard)}
+      >
         {scoreDisplay}
       </span>
       <button
@@ -40,7 +44,7 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
           e.stopPropagation();
           onDelete();
         }}
-        className="text-gray-600 hover:text-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 transition-colors text-lg leading-none px-2"
+        className="text-[#475569] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.1)] motion-safe:transition-colors motion-safe:duration-150 text-[13px] leading-none px-2 py-1 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ef4444] focus-visible:outline-offset-1"
       >
         ×
       </button>
