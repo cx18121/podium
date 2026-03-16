@@ -21,6 +21,14 @@ function eventLabel(event: SessionEvent): string {
   return event.type.replace(/_/g, ' ');
 }
 
+function markerBg(event: SessionEvent): string {
+  if (event.type === 'filler_word') return '#fbbf24';          // amber-400
+  if (event.type === 'eye_contact_break' || event.type === 'eye_contact_resume') return '#818cf8'; // indigo-400
+  if (event.type === 'face_touch' || event.type === 'body_sway') return '#f87171'; // red-400
+  if (event.type === 'pause_detected') return '#94a3b8';        // slate-400
+  return '#94a3b8'; // default
+}
+
 export default function Timeline({ events, durationMs, progressPct, currentTimeMs, onSeek }: TimelineProps) {
   const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
 
@@ -35,17 +43,21 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
       aria-valuenow={progressPct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="relative w-full h-11 bg-gray-800 rounded-full cursor-pointer select-none"
+      className="relative w-full h-12 flex items-center cursor-pointer select-none"
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const fraction = (e.clientX - rect.left) / rect.width;
         onSeek(fraction * durationMs);
       }}
     >
-      <div
-        className="absolute left-0 top-0 h-full bg-gray-600 rounded-full pointer-events-none"
-        style={{ width: `${progressPct}%` }}
-      />
+      {/* 8px visual track */}
+      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-2 bg-[#1a2235] rounded-full pointer-events-none">
+        {/* Played portion fill */}
+        <div
+          className="absolute left-0 top-0 h-full bg-[#6366f1] rounded-full pointer-events-none"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
 
       {events.map((event, i) => {
         const leftPct = (event.timestampMs / durationMs) * 100;
@@ -60,16 +72,18 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
                 onSeek(event.timestampMs);
               }}
               className={[
-                "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400",
+                "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full",
                 "-mx-[14px] -my-[14px] px-[14px] py-[14px]",
-                "z-10 hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
-                nearest === event ? "ring-2 ring-amber-200 scale-125" : "",
+                "z-10 focus:outline-none",
+                "focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-1",
+                "motion-safe:transition-transform motion-safe:duration-100 hover:scale-[1.3]",
+                nearest === event ? "ring-2 ring-white scale-[1.3]" : "",
               ].join(" ")}
-              style={{ left: `calc(${leftPct}% - 8px)` }}
+              style={{ left: `calc(${leftPct}% - 8px)`, backgroundColor: markerBg(event) }}
             />
             {tooltipIndex === i && (
               <div
-                className="absolute bottom-full mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded pointer-events-none whitespace-nowrap z-20 transition-opacity opacity-100"
+                className="absolute bottom-full mb-2 px-2 py-1 bg-[#1a2235] border border-[rgba(255,255,255,0.10)] text-[#f1f5f9] text-[13px] rounded-lg pointer-events-none whitespace-nowrap z-20"
                 style={{ left: `clamp(0px, calc(${leftPct}% - 8px), calc(100% - 120px))` }}
                 role="tooltip"
               >
