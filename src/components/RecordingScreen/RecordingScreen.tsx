@@ -15,11 +15,11 @@ function formatElapsed(ms: number): string {
 
 export default function RecordingScreen({ elapsedMs, onStop }: RecordingScreenProps) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-12">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#000] text-white gap-12">
       <div
         aria-live="polite"
         aria-label="Recording timer"
-        className="text-8xl font-mono font-light tabular-nums text-red-400"
+        className="text-5xl font-semibold tabular-nums text-[#f1f5f9] tracking-tight"
       >
         {formatElapsed(elapsedMs)}
       </div>
@@ -31,9 +31,9 @@ export default function RecordingScreen({ elapsedMs, onStop }: RecordingScreenPr
 
       <button
         onClick={onStop}
-        className="px-10 py-5 bg-gray-800 hover:bg-gray-700 text-white text-xl font-semibold rounded-2xl border border-gray-600 transition-colors"
+        className="px-10 h-[52px] bg-[#ef4444] hover:bg-[#f87171] text-white font-semibold rounded-xl motion-safe:transition-colors motion-safe:duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ef4444] focus-visible:outline-offset-2"
       >
-        Stop
+        Stop Recording
       </button>
     </div>
   );
