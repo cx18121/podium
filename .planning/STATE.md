@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 07-03-PLAN.md — RecordingScreen and App.tsx processing/naming states redesigned
-last_updated: "2026-03-16T05:57:17.695Z"
+stopped_at: Completed 07-05-PLAN.md — AnnotatedPlayer, Timeline, and Review page redesigned
+last_updated: "2026-03-16T06:09:44.423Z"
 last_activity: "2026-03-16 — 07-03: RecordingScreen black bg + display timer + red-500 stop btn; App.tsx indigo spinner + #080c14 bg"
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 27
-  completed_plans: 23
-  percent: 86
+  completed_plans: 24
+  percent: 85
 ---
 
 # Project State
@@ -68,6 +68,7 @@ Progress: [█████████░] 85% (23/27 plans complete)
 | Phase 07-visual-redesign P01 | 5 | 2 tasks | 2 files |
 | Phase 07-visual-redesign P02 | 12 | 2 tasks | 3 files |
 | Phase 07-visual-redesign P03 | 15 | 2 tasks | 3 files |
+| Phase 07-visual-redesign P05 | 10 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,9 @@ Recent decisions affecting current work:
 - [Phase 07-01]: Inter loaded from Google Fonts CDN (not self-hosted) — loads only 400+600 weights
 - [Phase 07-02]: [07-02] Home/SetupScreen redesigned: indigo wordmark, accent bars, dark preview card — footnote test updated from text-gray-500 to text-[#475569]
 - [Phase 07-03]: [07-03] RecordingScreen pure black bg (#000) intentionally darker than #080c14 — distraction-free blackout; red-500 stop button is correct for danger signal; indigo spinner for loading states
+- [Phase 07-05]: [07-05] markerBg uses inline style backgroundColor not dynamic Tailwind class — Tailwind v4 JIT cannot generate from variable strings
+- [Phase 07-05]: [07-05] 8px visual timeline track inside 48px transparent click wrapper — preserves Phase 05-03 44px tap target while visually slimming the track
+- [Phase 07-05]: [07-05] Category color scheme: amber=#fbbf24 filler, indigo=#818cf8 eye-contact, red=#f87171 gesture, slate=#94a3b8 pause
 
 ### Roadmap Evolution
 
@@ -158,6 +162,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T05:57:17.668Z
-Stopped at: Completed 07-03-PLAN.md — RecordingScreen and App.tsx processing/naming states redesigned
+Last session: 2026-03-16T06:09:44.332Z
+Stopped at: Completed 07-05-PLAN.md — AnnotatedPlayer, Timeline, and Review page redesigned
 Resume file: None
