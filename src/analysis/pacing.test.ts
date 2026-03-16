@@ -2,7 +2,7 @@
 // AUD-03/AUD-04: Pacing and pause detection tests
 
 import { describe, it, expect } from 'vitest';
-import { detectPauses, calculateWPM } from './pacing';
+import { detectPauses, calculateWPM, calculateWPMWindows } from './pacing';
 import type { TranscriptSegment } from '../hooks/useSpeechCapture';
 
 describe('pacing (AUD-03/AUD-04)', () => {
@@ -54,5 +54,77 @@ describe('pacing (AUD-03/AUD-04)', () => {
     ];
     const events = detectPauses(segments);
     expect(events).toHaveLength(0);
+  });
+});
+
+describe('calculateWPMWindows (FOUND-02)', () => {
+  it('returns empty array for empty segments', () => {
+    expect(calculateWPMWindows([], 60000)).toEqual([]);
+  });
+
+  it('returns empty array when no segments are isFinal', () => {
+    const segments: TranscriptSegment[] = [
+      { text: 'interim text', timestampMs: 5000, isFinal: false },
+    ];
+    expect(calculateWPMWindows(segments, 60000)).toEqual([]);
+  });
+
+  it('returns one window for a 30s session with 60 words', () => {
+    const segments: TranscriptSegment[] = [
+      { text: Array(60).fill('word').join(' '), timestampMs: 5000, isFinal: true },
+    ];
+    const windows = calculateWPMWindows(segments, 30000);
+    expect(windows).toHaveLength(1);
+    expect(windows[0].wpm).toBe(120); // 60 words / 0.5 min
+    expect(windows[0].startMs).toBe(0);
+    expect(windows[0].endMs).toBe(30000);
+    expect(windows[0].wordCount).toBe(60);
+  });
+
+  it('buckets segments into two windows for a 60s session', () => {
+    const segments: TranscriptSegment[] = [
+      { text: Array(30).fill('word').join(' '), timestampMs: 10000, isFinal: true },
+      { text: Array(15).fill('word').join(' '), timestampMs: 40000, isFinal: true },
+    ];
+    const windows = calculateWPMWindows(segments, 60000);
+    expect(windows).toHaveLength(2);
+    expect(windows[0].startMs).toBe(0);
+    expect(windows[0].wordCount).toBe(30);
+    expect(windows[1].startMs).toBe(30000);
+    expect(windows[1].wordCount).toBe(15);
+  });
+
+  it('clamps last window endMs to durationMs', () => {
+    const segments: TranscriptSegment[] = [
+      { text: Array(10).fill('word').join(' '), timestampMs: 65000, isFinal: true },
+    ];
+    const windows = calculateWPMWindows(segments, 75000);
+    expect(windows).toHaveLength(1);
+    expect(windows[0].startMs).toBe(60000);
+    expect(windows[0].endMs).toBe(75000); // clamped, not 90000
+    // 10 words / (15000ms / 60000) = 10 / 0.25 = 40 wpm
+    expect(windows[0].wpm).toBe(40);
+  });
+
+  it('assigns segment at exactly 30000ms to window index 1', () => {
+    const segments: TranscriptSegment[] = [
+      { text: 'hello world', timestampMs: 30000, isFinal: true },
+    ];
+    const windows = calculateWPMWindows(segments, 60000);
+    expect(windows).toHaveLength(1);
+    expect(windows[0].startMs).toBe(30000);
+    expect(windows[0].endMs).toBe(60000);
+  });
+
+  it('returns windows sorted by startMs', () => {
+    const segments: TranscriptSegment[] = [
+      { text: 'late words', timestampMs: 95000, isFinal: true },
+      { text: 'early words', timestampMs: 5000, isFinal: true },
+      { text: 'mid words', timestampMs: 45000, isFinal: true },
+    ];
+    const windows = calculateWPMWindows(segments, 120000);
+    expect(windows).toHaveLength(3);
+    expect(windows[0].startMs).toBeLessThan(windows[1].startMs);
+    expect(windows[1].startMs).toBeLessThan(windows[2].startMs);
   });
 });
