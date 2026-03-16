@@ -39,7 +39,7 @@ describe('AnnotatedPlayer', () => {
     Object.defineProperty(video, 'currentTime', { value: 5, writable: true });
     Object.defineProperty(video, 'duration', { value: 10, writable: true });
     fireEvent(video, new Event('timeupdate'));
-    const markerBtn = screen.getByTitle('Filler word: "um"');
+    const markerBtn = screen.getByRole('button', { name: 'Filler word: "um"' });
     expect(markerBtn.className).toContain('ring-2');
   });
 });

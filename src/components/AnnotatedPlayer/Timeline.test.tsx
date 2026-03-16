@@ -77,7 +77,7 @@ describe('Timeline', () => {
     expect(onSeek).toHaveBeenCalledWith(1000);
   });
 
-  it('each button has the correct title attribute', () => {
+  it('each button has the correct aria-label attribute', () => {
     const specificEvents: SessionEvent[] = [
       { type: 'filler_word', timestampMs: 1000, label: 'um' },
       { type: 'eye_contact_break', timestampMs: 2000 },
@@ -96,12 +96,12 @@ describe('Timeline', () => {
         onSeek={onSeek}
       />
     );
-    expect(screen.getByTitle('Filler word: "um"')).toBeDefined();
-    expect(screen.getByTitle('Eye contact break')).toBeDefined();
-    expect(screen.getByTitle('Face touch')).toBeDefined();
-    expect(screen.getByTitle('Body sway')).toBeDefined();
-    expect(screen.getByTitle('Pause: 2.3s')).toBeDefined();
-    expect(screen.getByTitle('Expressiveness: 0.72')).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Filler word: "um"' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Eye contact break' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Face touch' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Body sway' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Pause: 2.3s' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Expressiveness: 0.72' })).toBeDefined();
   });
 
   it('clicking the timeline bar (not a marker) calls onSeek with fraction × durationMs', () => {
@@ -147,8 +147,8 @@ describe('Timeline', () => {
         onSeek={onSeek}
       />
     );
-    const nearBtn = screen.getByTitle('Filler word: "um"');
-    const farBtn = screen.getByTitle('Eye contact break');
+    const nearBtn = screen.getByRole('button', { name: 'Filler word: "um"' });
+    const farBtn = screen.getByRole('button', { name: 'Eye contact break' });
     expect(nearBtn.className).toContain('ring-2');
     expect(farBtn.className).not.toContain('ring-amber-200');
   });

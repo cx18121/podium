@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { SessionEvent } from '../../db/db';
 import { getNearestEvent } from './eventSync';
 
@@ -21,6 +22,8 @@ function eventLabel(event: SessionEvent): string {
 }
 
 export default function Timeline({ events, durationMs, progressPct, currentTimeMs, onSeek }: TimelineProps) {
+  const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
+
   if (durationMs <= 0) return null;
 
   const nearest = getNearestEvent(events, currentTimeMs);
@@ -47,22 +50,33 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
       {events.map((event, i) => {
         const leftPct = (event.timestampMs / durationMs) * 100;
         return (
-          <button
-            key={i}
-            title={eventLabel(event)}
-            aria-label={eventLabel(event)}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSeek(event.timestampMs);
-            }}
-            className={[
-              "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400",
-              "-mx-[14px] -my-[14px] px-[14px] py-[14px]",
-              "z-10 hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
-              nearest === event ? "ring-2 ring-amber-200 scale-125" : "",
-            ].join(" ")}
-            style={{ left: `calc(${leftPct}% - 8px)` }}
-          />
+          <span key={i}>
+            <button
+              aria-label={eventLabel(event)}
+              onMouseEnter={() => setTooltipIndex(i)}
+              onMouseLeave={() => setTooltipIndex(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSeek(event.timestampMs);
+              }}
+              className={[
+                "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400",
+                "-mx-[14px] -my-[14px] px-[14px] py-[14px]",
+                "z-10 hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
+                nearest === event ? "ring-2 ring-amber-200 scale-125" : "",
+              ].join(" ")}
+              style={{ left: `calc(${leftPct}% - 8px)` }}
+            />
+            {tooltipIndex === i && (
+              <div
+                className="absolute bottom-full mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded pointer-events-none whitespace-nowrap z-20 transition-opacity opacity-100"
+                style={{ left: `clamp(0px, calc(${leftPct}% - 8px), calc(100% - 120px))` }}
+                role="tooltip"
+              >
+                {eventLabel(event)}
+              </div>
+            )}
+          </span>
         );
       })}
     </div>
