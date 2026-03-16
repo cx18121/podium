@@ -229,7 +229,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 5. UI Polish | 5/5 | Complete | - |
 | 6. Interactive UX Improvements | 3/3 | Complete | - |
 | 7. Visual Redesign | 7/7 | Complete | - |
-| 8. Schema Migration + WPM Windows | 0/2 | Not started | - |
+| 8. Schema Migration + WPM Windows | 1/2 | In Progress|  |
 | 9. Opening/Closing Strength | 0/TBD | Not started | - |
 | 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
