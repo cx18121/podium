@@ -36,7 +36,7 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
         <div className="h-8 flex items-center">
           <span className="text-xs text-[#475569]">Need more sessions</span>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-0.5">
           <span className="text-xs text-[#94a3b8]">{label}</span>
           {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
         </div>
@@ -59,7 +59,7 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
           <circle key={i} cx={p.x} cy={p.y} r="2" fill="#6366f1" />
         ))}
       </svg>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-0.5">
         <span className="text-xs text-[#94a3b8]">{label}</span>
         {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
       </div>
