@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 ## Current Position
 
 Phase: 6 of 7 (Interactive UX Improvements) — IN PROGRESS
-Plan: 1 of 3 in current phase — COMPLETE
-Status: Phase 6 plan 01 complete, ready to begin plan 02 (filler word detection expansion)
-Last activity: 2026-03-16 — 06-01: Timeline custom tooltip replacing native title attr, aria-label preserved
+Plan: 3 of 3 in current phase — COMPLETE
+Status: Phase 6 all plans complete — tooltips, filler detection, live captions all shipped
+Last activity: 2026-03-16 — 06-03: Dexie v2 schema + transcript persistence + AnnotatedPlayer CC caption bar
 
-Progress: [████████░░] 83% (17/20 plans)
+Progress: [████████████░░] 86% (20/20 plans complete)
 
 ## Performance Metrics
 
@@ -117,11 +117,15 @@ Recent decisions affecting current work:
 - [Phase 05-05]: [05-05] onClick removed from video, placed on overlay button only — prevents double-toggle
 - [Phase 05-05]: [05-05] isPlaying state driven by onPlay/onPause events — authoritative video state
 - [Phase 05-05]: [05-05] Processing spinner inlined in App.tsx — no ProcessingSpinner component per RESEARCH.md Pitfall 6
+<<<<<<< HEAD
 - [Phase 06-01]: Custom tooltip via useState<number | null> index; pointer-events-none on tooltip prevents onMouseLeave on button; clamp() for viewport-safe positioning
 - [Phase 06-01]: Tests updated from getByTitle to getByRole('button', {name}) — semantically correct, tests accessible API rather than removed title attr
 - [Phase 06-02]: [06-02] SO_OBJECT_VERBS suppression: so after think/know/do = not a filler — preserves existing test and aligns with natural speech
 - [Phase 06-02]: [06-02] normalizeLabel() scoped to um+/uh+ only — general repeated-char collapse was corrupting actually/basically labels
 - [Phase 06-02]: [06-02] Pronoun I excluded from proper-noun suppression in isLikeAFiller — like I was saying is a valid filler
+- [Phase 06-03]: Dexie v2 stores() string identical to v1 — transcript is unindexed data; version block required for Dexie upgrade machinery
+- [Phase 06-03]: getCurrentCaption pure function filters isFinal segments by timestampMs <= currentTimeMs and returns last match via .at(-1)
+- [Phase 06-03]: showCaptions defaults false — CC button must be explicitly clicked; min-h-[2.5rem] on caption bar prevents layout collapse
 
 ### Roadmap Evolution
 
@@ -147,6 +151,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T04:46:18.713Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-16T05:00:00Z
+Stopped at: Completed 06-03-PLAN.md — Phase 6 all plans complete
 Resume file: None

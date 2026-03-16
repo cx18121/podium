@@ -93,6 +93,7 @@ export default function App() {
       videoBlob: fixedBlob,
       eventLog,
       scorecard: null,
+      transcript: segments, // Phase 6: persist for caption display
     });
 
     // REC-06: request persistent storage after first save

@@ -77,6 +77,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         videoUrl={videoUrl}
         durationMs={session.durationMs}
         events={session.eventLog}
+        transcript={session.transcript}
       />
 
       <button

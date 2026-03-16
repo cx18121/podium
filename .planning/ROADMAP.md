@@ -116,7 +116,7 @@ Plans:
 **Goal:** Replace native browser title tooltips with a custom React tooltip component, expand filler word detection from 4 to 13+ patterns with context-aware "like" suppression, and add a toggleable live caption bar below the video player synced to playback time.
 **Requirements**: PLAY-04, AUD-02, REC-05
 **Depends on:** Phase 5
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 - [ ] 06-01-PLAN.md — Custom tooltip in Timeline.tsx: remove title attr, add tooltipIndex state, render absolutely-positioned div above hovered marker with clamp() edge clamping
