@@ -1,8 +1,8 @@
 # Stack Research
 
 **Domain:** Browser-based client-side ML presentation coaching tool
-**Researched:** 2026-03-12
-**Confidence:** MEDIUM-HIGH (core ML and browser APIs verified via official docs; version numbers cross-checked via npm/GitHub)
+**Researched:** 2026-03-12 (v1.0) / 2026-03-16 (v2.0 additions)
+**Confidence:** HIGH (core ML and browser APIs verified via official docs; version numbers cross-checked via npm/GitHub)
 
 ---
 
@@ -166,5 +166,176 @@ This keeps the React UI at 60 FPS regardless of inference speed. Do not call Med
 
 ---
 
+---
+
+# v2.0 Stack Additions — Deeper Analytics
+
+> This section covers ONLY new packages for v2.0. Everything above (MediaPipe,
+> Web Speech API, React 19, TypeScript, Vite 6, Tailwind v4, Dexie, Vitest)
+> is the already-validated v1.0 stack and is NOT changed.
+>
+> Researched: 2026-03-16
+
+---
+
+## New Core Technologies (v2.0 only)
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `@huggingface/transformers` | `^3.4.x` (stable) | Post-session Whisper transcription in a dedicated ES-module Web Worker | This is the official HuggingFace package that supersedes `@xenova/transformers` (v1/v2 legacy). Same library, moved to the official org at Transformers.js v3. ONNX Runtime Web backend with WASM fallback. Supports word-level timestamps (`return_timestamps: 'word'`) which are required for filler timing clusters and pause gap detection. The official React + Vite tutorial creates workers with `{ type: 'module' }` — compatible with this project's Vite setup. |
+| `recharts` | `^3.8.0` | WPM-over-time line chart in the review UI | Latest stable (3.8.0, published March 2026). Works with React 19 in pure React apps — blank-render reports were traced to Preact compatibility, not React 19. `<LineChart>` + `<ResponsiveContainer>` is minimal setup for a single WPM time-series. TypeScript types included. Does not pull in a design system. |
+
+## New Supporting Libraries (v2.0 only)
+
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| `vite-plugin-coop-coep` | `^0.0.3` | Inject COOP/COEP headers in Vite dev server | `@huggingface/transformers` may require `SharedArrayBuffer` for multi-threaded ONNX inference. SharedArrayBuffer needs `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: require-corp`. Test first without the headers — single-threaded WASM may work without them. Add only if inference fails silently or throws a SharedArrayBuffer error. Production headers must be set at the hosting layer separately. |
+
+---
+
+## New Installations (v2.0 only)
+
+```bash
+# Post-session Whisper transcription
+npm install @huggingface/transformers
+
+# WPM-over-time chart
+npm install recharts
+
+# Dev: COOP/COEP headers for Vite dev server (add only if SharedArrayBuffer is required)
+npm install -D vite-plugin-coop-coep
+```
+
+---
+
+## Whisper Model Tradeoffs
+
+The `@huggingface/transformers` pipeline loads ONNX models from HuggingFace Hub on first use. Model choice affects initial download size, inference time on a ~10-minute audio session, and filler detection accuracy.
+
+| Model | Quantized ONNX Download | Accuracy (English) | ~10-min audio inference | Recommendation |
+|-------|------------------------|---------------------|-------------------------|----------------|
+| `whisper-tiny.en` | ~70 MB (q8) | Good for clean speech, occasional missed fillers | ~30–90s on mid-range laptop CPU | **Use this.** English-only variant, smallest download, adequate for filler detection where Web Speech API already produced a baseline transcript. |
+| `whisper-base.en` | ~140 MB (q8) | Noticeably fewer misses | ~60–150s | Upgrade only if tiny.en filler counts prove unreliable in testing. |
+| `whisper-small.en` | ~460 MB (q8) | Near-human for English | ~3–6 min | Too large and too slow for a post-session browser flow. |
+
+**Use model ID:** `onnx-community/whisper-tiny.en` (the actively maintained ONNX conversion on HuggingFace Hub). The `Xenova/whisper-tiny.en` namespace also works but `onnx-community/` is the canonical v3 path.
+
+**Recommended dtype config** (v3 per-module quantization):
+
+```typescript
+const transcriber = await pipeline(
+  'automatic-speech-recognition',
+  'onnx-community/whisper-tiny.en',
+  {
+    dtype: {
+      encoder_model: 'q8',
+      decoder_model_merged: 'q8',
+    },
+    device: 'wasm',   // explicit; 'webgpu' can be tried first if available
+  }
+);
+const result = await transcriber(audioFloat32Array, {
+  return_timestamps: 'word',  // required for filler timing and pause detection
+});
+```
+
+---
+
+## v2.0 Alternatives Considered
+
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| `@huggingface/transformers` (stable v3) | `@huggingface/transformers@next` (v4 preview) | v4 is under the `next` tag; API is still changing. New WebGPU runtime is being rewritten in C++. Not production-ready. Revisit when v4 goes stable. |
+| `@huggingface/transformers` | `@transcribe/transcriber` / `whisper-web-transcriber` | whisper.cpp wrappers. Smaller GGML model files (~31 MB quantized tiny) but: require SharedArrayBuffer + COOP/COEP unconditionally, have limited TypeScript support, lower community traction. Not worth the complexity tradeoff given that `@huggingface/transformers` has official docs, official tutorials, and proven Vite compatibility. |
+| `@huggingface/transformers` | `@xenova/transformers` | This is the legacy v1/v2 package. Same underlying library but no new features will land. New code must use `@huggingface/transformers`. |
+| `recharts` | `@unovis/react` + `@unovis/ts` | Unovis 1.5+ explicitly supports React 19 and is more modular. The right choice if you add multiple chart types or need CSS-variable theming. For a single WPM line chart, recharts is less setup — one package, direct component API, well-documented. |
+| `recharts` | `chart.js` + `react-chartjs-2` | Canvas-based (not SVG). Harder to compose with Tailwind styling. Heavier bundle for a single line chart. No advantage here. |
+
+---
+
+## v2.0 What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `@xenova/transformers` | Legacy package — use `@huggingface/transformers` for all new code. Both exist on npm; the legacy name causes confusion. | `@huggingface/transformers` |
+| `@huggingface/transformers@next` | v4 preview; not stable. API may change before release. | `@huggingface/transformers` (stable v3) |
+| Recharts below `3.8.0` | Earlier versions had blank-render reports against React 19 (later traced to Preact, but avoid the noise). | `recharts@^3.8.0` |
+| Replacing Web Speech API with Whisper | PROJECT.md constraint: Web Speech API stays for live captions during recording. Whisper runs post-session only. Removing Web Speech would break real-time filler highlighting during session. | Keep both: Web Speech API live + Whisper post-session. |
+
+---
+
+## v2.0 Worker Architecture
+
+The existing `mediapipe.worker.js` is a **classic-mode** worker that uses `importScripts`. It must remain classic — `@mediapipe/tasks-vision` internals depend on `importScripts` and cannot run in an ES module worker.
+
+The new Whisper transcription requires a **separate, module-type** worker because `@huggingface/transformers` uses ESM imports internally and cannot run in a classic worker.
+
+```
+mediapipe.worker.js   — classic mode, importScripts, MediaPipe inference (EXISTING, unchanged)
+whisper.worker.ts     — ES module type, @huggingface/transformers, post-session audio (NEW)
+```
+
+Instantiate the Whisper worker after session stop:
+```typescript
+const whisperWorker = new Worker(
+  new URL('./workers/whisper.worker.ts', import.meta.url),
+  { type: 'module' }   // required for @huggingface/transformers
+);
+```
+
+---
+
+## v2.0 Vite Config Changes
+
+```typescript
+// vite.config.ts — additions for v2.0
+import coopCoep from 'vite-plugin-coop-coep'; // add only if SharedArrayBuffer is needed
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+    coopCoep(),          // only if Whisper WASM requires SharedArrayBuffer
+  ],
+  optimizeDeps: {
+    exclude: ['@huggingface/transformers'],  // pre-bundling fails on WASM imports — must exclude
+  },
+  worker: {
+    format: 'es',        // whisper.worker.ts must be an ES module
+    // Note: mediapipe.worker.js is loaded via explicit URL, not processed by Vite worker transform
+  },
+  // existing test config is unchanged
+});
+```
+
+**Risk to note:** `worker: { format: 'es' }` applies globally to all Vite-processed workers. The existing `mediapipe.worker.js` is instantiated via a raw URL path and uses `importScripts` — it is NOT processed by Vite's worker bundler pipeline, so this setting should not affect it. Verify this assumption when integrating; if it causes issues, the Whisper worker can be pre-bundled manually instead.
+
+---
+
+## v2.0 Version Compatibility
+
+| Package | Compatible With | Notes |
+|---------|-----------------|-------|
+| `@huggingface/transformers@^3.x` | React 19, Vite 6, TypeScript 5.7 | Must add `optimizeDeps.exclude: ['@huggingface/transformers']` in vite.config.ts. Pre-bundling fails on WASM imports without this exclusion. |
+| `recharts@^3.8.0` | React 19 (not Preact) | Blank-render issue was Preact-specific. If peer dep warnings appear about `react-is`, add `overrides: { "react-is": "^19.0.0" }` to package.json. |
+| `vite-plugin-coop-coep` | Vite 6 | Development headers only. Production: set `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` at your hosting/CDN layer. Note: COEP headers can break third-party iframes and some font CDNs — test all existing integrations after adding. |
+
+---
+
+## v2.0 Sources
+
+- [Transformers.js v3 announcement](https://huggingface.co/blog/transformersjs-v3) — WebGPU, per-module dtype, Whisper support confirmed (HIGH)
+- [Transformers.js v4 preview announcement](https://huggingface.co/blog/transformersjs-v4) — confirmed v4 is `next` tag / preview only as of March 2026 (HIGH)
+- [HuggingFace React + Vite tutorial](https://huggingface.co/docs/transformers.js/tutorials/react) — official worker setup with `{ type: 'module' }`, Vite optimizeDeps config (HIGH)
+- [@xenova/transformers vs @huggingface/transformers issue #1291](https://github.com/huggingface/transformers.js/issues/1291) — package migration confirmed (HIGH)
+- [Xenova/whisper-tiny.en model card](https://huggingface.co/Xenova/whisper-tiny.en) — `return_timestamps: 'word'` confirmed (HIGH)
+- [recharts npm](https://www.npmjs.com/package/recharts) — version 3.8.0, published March 2026 (HIGH)
+- [Recharts React 19 blank-render issue #6857](https://github.com/recharts/recharts/issues/6857) — confirmed Preact-specific; pure React 19 unaffected (MEDIUM)
+- [vite-plugin-coop-coep GitHub](https://github.com/stagas/vite-plugin-coop-coep) — Vite COOP/COEP header injection (MEDIUM via WebSearch)
+- Whisper model size data — aggregated from ggml.ai WASM demo, openwhispr.com, and Hugging Face model cards (MEDIUM — no single authoritative ONNX quantized size source; test against actual HuggingFace Hub files)
+- [@unovis/react npm](https://www.npmjs.com/package/@unovis/react) — v1.6.2, React 19 support in 1.5+ (MEDIUM via WebSearch)
+
+---
+
 *Stack research for: Browser-based client-side ML presentation coaching tool*
-*Researched: 2026-03-12*
+*v1.0 researched: 2026-03-12 | v2.0 additions researched: 2026-03-16*

@@ -1,17 +1,17 @@
 # Project Research Summary
 
-**Project:** Cognitive Load Mapper (Browser-based Presentation Coaching Tool)
-**Domain:** Client-side ML / real-time video analysis / public speaking practice
-**Researched:** 2026-03-12
-**Confidence:** MEDIUM-HIGH
+**Project:** Pitch Practice — Browser-based Presentation Coaching App
+**Domain:** Client-side ML / real-time video analysis / speech analytics
+**Researched:** 2026-03-16 (v2.0 analytics milestone; v1.0 research: 2026-03-12)
+**Confidence:** HIGH
 
 ## Executive Summary
 
-This project is a zero-install, fully client-side browser application that records a user's webcam and microphone, runs three MediaPipe ML models (face, hand, pose landmarks) in a Web Worker, analyzes speech via the Web Speech API, and presents annotated video playback with timestamped coaching feedback. The technical approach is well-established — the MediaPipe Tasks Vision API, MediaRecorder, and IndexedDB are all production-grade — but the combination of three concurrent inference models, streaming speech recognition, and seekable video playback in a single browser tab requires careful architectural discipline from day one. The dominant pattern is capture-then-analyze: record everything, analyze in parallel during the session, surface all feedback post-session via an annotated timeline rather than real-time overlays.
+This is a browser-based, privacy-first presentation coaching tool that runs all ML inference client-side with zero video upload. The v1.0 system is already built and working: it captures webcam+mic via MediaStream, runs MediaPipe (FaceLandmarker, HandLandmarker, PoseLandmarker) in a classic-mode Web Worker for visual analysis, uses Web Speech API for live captions and filler detection, stores sessions as video Blobs in IndexedDB via Dexie, and renders a post-session scorecard with annotated video playback. The v2.0 milestone adds deeper speech analytics by integrating Whisper.wasm for post-session transcription and building five new analytics features on top of it.
 
-The recommended stack is React 19 + TypeScript + Vite 7 + `@mediapipe/tasks-vision` + Web Speech API + Dexie.js + Zustand. There are no better-fit alternatives for the core requirements. The architecture must isolate MediaPipe inference in a Web Worker from the first commit — this is not a refactor that can be deferred. Six critical pitfalls exist, three of which (Chrome filler-word suppression, MediaRecorder unseekable WebM, MediaPipe worker loading bugs) can silently appear "working" in development while being completely broken in practice. Each must be verified with an explicit spike test before any feature work depends on it.
+The recommended v2.0 approach centers on a dual-transcription architecture: Web Speech API stays for live captions during recording (low latency, good enough for display), while a separate ES-module Whisper worker processes the stored audio blob after the session ends (higher accuracy, required for filler counts). All five new analytics features — accurate filler counts with per-type breakdown, pause analytics scored as a sub-dimension, WPM-over-time chart, and opening/closing strength as a new scorecard dimension — derive from Whisper word-level timestamps. This means Whisper integration is the strict gating dependency: it must be built, validated, and producing reliable output before any of the four downstream analytics features can be completed.
 
-The key market differentiator is the annotated video timeline with timestamped events — no existing lightweight browser tool does this. The privacy story (100% client-side, no upload) is a genuine secondary differentiator versus all cloud-based competitors (Yoodli, Orai, PowerPoint Speaker Coach). The hardest technical signals are nervous gesture detection and facial expressiveness calibration; both are included in v1 per project decision but carry the highest false-positive risk and will likely need iteration after initial user feedback.
+The primary risks are technical: (1) Chrome's Web Speech API silently suppresses filler words — Whisper is not optional for accurate filler scoring; (2) Whisper.wasm requires COOP/COEP headers for SharedArrayBuffer support, which can silently break existing CDN resources; (3) the existing classic-mode MediaPipe worker and a new ES-module Whisper worker require separate instantiation patterns that cannot be merged; and (4) Whisper and MediaPipe cannot be loaded in memory simultaneously on mid-range hardware without an explicit worker lifecycle gate. Mitigating these risks requires strict sequencing: schema migration and COOP/COEP header validation before any Whisper code is written; MediaPipe worker termination before Whisper worker startup; and `OfflineAudioContext` at 16kHz for audio extraction (not raw `decodeAudioData` at device sample rate).
 
 ---
 
@@ -19,144 +19,156 @@ The key market differentiator is the annotated video timeline with timestamped e
 
 ### Recommended Stack
 
-The stack is purpose-built around browser-native capabilities with no server dependency. `@mediapipe/tasks-vision@0.10.21` (the unified Tasks API) provides all three landmark detectors from a single package; it runs WASM + WebGL and delivers 60+ FPS on GPU delegate and 10–15 FPS CPU-only. Web Speech API handles real-time transcription at zero dependency cost, but it is Chrome/Edge-only and sends audio to Google servers. Dexie.js wraps IndexedDB for video Blob persistence — localStorage is a hard disqualifier at any realistic video size. One important version friction: npm is stuck at 0.10.21 while GitHub has 0.10.26; this is a known lag and is not a blocker, but worth monitoring.
+The v1.0 stack (React 19, TypeScript 5.8, Vite 7, `@mediapipe/tasks-vision@0.10.21`, Web Speech API, MediaRecorder, Dexie 4, Zustand, Tailwind 4) is fully validated and in production. v2.0 adds two packages: `@huggingface/transformers@^3.4.x` (official Transformers.js v3, the successor to `@xenova/transformers`) for Whisper inference, and `recharts@^3.8.0` for the WPM-over-time line chart. The Whisper worker requires an ES-module worker (`{ type: 'module' }`) — incompatible with the existing classic-mode MediaPipe worker, which must remain unchanged. Vite config requires `optimizeDeps.exclude: ['@huggingface/transformers']` to prevent pre-bundling failures on WASM imports.
 
-**Core technologies:**
-- React 19 + TypeScript 5.8: UI framework — concurrent rendering keeps UI responsive during heavy WASM inference; full MediaPipe types ship with the package
-- Vite 7: Build tool — native ES module HMR, first-class Web Worker support (`worker: { format: 'es' }` required in config)
-- `@mediapipe/tasks-vision@0.10.21`: All ML inference — FaceLandmarker (468 pts), HandLandmarker (21 pts), PoseLandmarker (33 pts); single WASM runtime shared across all three
-- Web Speech API (browser built-in): Real-time transcription — Chrome/Edge only; `interimResults: true` for word-level filler detection
-- MediaRecorder API (browser built-in): Webcam + mic capture — WebM output requires `fix-webm-duration` post-processing before storage
-- Dexie.js 4.3.0: IndexedDB persistence — stores video Blobs, session metadata, and timestamped event arrays; `useLiveQuery` for reactive history
-- Zustand 5.x: Global UI state — minimal boilerplate for a single-user local app
-- `fix-webm-duration`: Required preprocessing step — MediaRecorder WebM output lacks seek metadata; must be applied before any Blob is stored
+**Core technologies (v1.0, unchanged):**
+- `React 19 + TypeScript 5.8`: Concurrent rendering keeps UI responsive during heavy WASM inference; TypeScript prevents coordinate-array type errors in MediaPipe
+- `@mediapipe/tasks-vision@0.10.21`: FaceLandmarker/HandLandmarker/PoseLandmarker in one package; GPU delegate achieves 60+ FPS; CPU fallback 10-15 FPS; note npm is behind GitHub (0.10.21 vs 0.10.26)
+- `Web Speech API (native)`: Zero-dependency live captions; Chrome/Edge only; kept for live UX display only, never for analytics counts
+- `Dexie 4.3 (IndexedDB)`: Required for video Blob storage (localStorage caps at ~5-10 MB; sessions are 50-300 MB); `useLiveQuery` enables reactive ReviewPage updates when Whisper analysis completes asynchronously
+- `Zustand 5`: Minimal-boilerplate state for recording status, active session, playback cursor
+
+**New in v2.0:**
+- `@huggingface/transformers@^3.4.x`: Official v3 Transformers.js; ONNX Runtime Web backend; use model `onnx-community/whisper-tiny.en` with `dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' }`; `device: 'wasm'` (try `webgpu` if available); must set `optimizeDeps.exclude` in vite.config.ts
+- `recharts@^3.8.0`: SVG-based line chart; React 19 compatible (earlier blank-render issue was Preact-specific); minimal setup for a single WPM time-series; TypeScript types included
+- `vite-plugin-coop-coep` (dev only, conditional): Add only if Whisper requires SharedArrayBuffer; production COOP/COEP headers must be set at the hosting layer separately
+
+See `.planning/research/STACK.md` for full version compatibility table, installation commands, and alternatives considered.
 
 ### Expected Features
 
-The feature dependency graph is critical: recording is the root; everything else flows from it. Annotated video playback is the product's core differentiator and depends on a correct event timestamp log schema established during recording. The scorecard depends on all five analysis dimensions being stable. Session history depends on a locked score schema — schema changes after v1 make historical data incomparable.
+The v1.0 product delivered all table-stakes features: webcam+mic recording, session playback, eye contact tracking, facial expressiveness scoring, nervous gesture detection, post-session scorecard, and annotated video playback (the primary differentiator — no lightweight competitor does this). v2.0 focuses exclusively on speech analytics depth.
 
-**Must have (table stakes):**
-- Webcam + mic recording with distraction-free UI — product foundation; users expect graceful permission error handling
-- Eye contact tracking via iris landmarks — highest-visibility coaching metric; every competitor has this
-- Filler word detection (um, uh, like, you know) — universally understood metric; audio pipeline validator
-- Words-per-minute and pause detection — shares transcript with filler words; low marginal cost
-- Post-session scorecard with per-dimension scores — closes the feedback loop; without it the session has no payoff
-- Annotated video playback with timestamped event markers — the core differentiator; no lightweight browser tool does this
-- Session history with trend across sessions — validates the "improvement over time" value proposition
+**Must have for v2.0 launch (table stakes at this milestone):**
+- Whisper.wasm post-session transcription replacing Web Speech filler counts — Web Speech suppresses disfluencies server-side; Whisper preserves them; inaccurate filler counts undermine scorecard credibility
+- Filler breakdown by type (um/uh vs. like/you know/basically) — users ask "which fillers do I use?"; single count is opaque; no competitor exposes per-type breakdown
+- WPM-over-time chart (30-second windows) — Microsoft Speaker Coach already has this; users expect more than a single average WPM figure
+- Pause count + average duration in the review UI — pause events already exist in the event log; users see timeline markers but have no aggregate statistics
 
-**Should have (competitive):**
-- Facial expressiveness scoring via MediaPipe blendshapes — differentiator; competitors ignore visual expressiveness
-- Nervous gesture detection (face touch, sway) — differentiator; hardest signal, highest false-positive risk; needs baseline calibration
-- Timestamped, searchable transcript alongside playback — enhances the annotated playback UX
-- Per-dimension trend charts (sparklines) — activates once 5+ sessions accumulate
-- Export session data (JSON/CSV) — trust builder before any cloud sync
+**Should have for v2.0 (differentiators — no competitor has these):**
+- Pause scored as a sub-dimension within Pacing, distinguishing mid-clause pauses (disfluent) from sentence-boundary pauses (deliberate), using ETS SpeechRater methodology (0.145s threshold, boundary vs. mid-clause classification)
+- Opening/closing strength as a new dedicated scorecard dimension — scores first 30s and last 30s independently; Harvard "thin slice" research confirms outsized audience impact; zero competitors surface this explicitly
+- Filler timing clusters by session segment — reveals behavioral patterns ("you use fillers most in transitions") vs. raw count alone
 
-**Defer (v2+):**
-- Cloud sync / user accounts — full backend scope; defer until local-only is proven insufficient
-- AI-generated coaching tips — competitors report users stop reading after 2–3 sessions; focus on quantitative data first
-- Slide deck integration — significant scope increase; only worth it if users repeatedly request it
-- Multi-language filler word lists — defer until non-English users appear
+**Defer to after v2.0 validation:**
+- WPM variance scoring component (reward deliberate variation) — validate the chart first, then add scoring
+- Per-metric breakdown within opening/closing segments — combined score validates the concept first
+- Multi-session trend charts for new v2.0 dimensions — wait for dimensions to stabilize across several sessions
+- Filler timing cluster visualization — confirm users want "when" before "how many" before building
 
-**Anti-features to avoid:**
-- Real-time feedback overlay during recording — breaks the simulation; project explicitly rules this out
-- Social sharing features — privacy-sensitive data; users practicing sensitive content will not accept this
+**Do not build (anti-features confirmed by research):**
+- Real-time Whisper during recording — runs 2-5x slower than real-time in browser; would block the UI
+- Content-level hook quality scoring (semantic NLP) — different complexity class entirely from delivery analytics
+- Cloud sync / accounts — PROJECT.md explicit deferral; infrastructure cost before core loop validation
+- AI-generated per-session coaching tips — competitors report users stop reading after 2-3 sessions; maintain quantitative data display
+
+See `.planning/research/FEATURES.md` for full competitor analysis table, feature dependency graph, and scoring formulas.
 
 ### Architecture Approach
 
-The architecture is a four-layer system: UI Layer (React views) → Orchestration Layer (SessionController, PlaybackController, AnalysisAggregator) → Analysis Pipeline Layer (MediaCapture, ML Workers, Speech Analyzer) → Persistence Layer (Dexie/IndexedDB). The dominant patterns are capture-then-analyze (not real-time overlay), a main-thread frame pump transferring `ImageBitmap` zero-copy to a Web Worker, an event stream timestamped store written in bulk at session end, and a Canvas overlay synced to video currentTime via `requestVideoFrameCallback` at playback.
+The existing architecture follows a single-orchestrator pattern: `App.tsx` owns all state and session lifecycle; all views and analysis components are stateless and prop-driven; analysis runs as pure functions over the in-memory event log before the Dexie write. v2.0 preserves this pattern exactly. The key structural additions are: (1) a new ES-module `whisper.worker.ts` running post-session (separate from and never coexisting in memory with the existing classic-mode `mediapipe.worker.js`); (2) a `useWhisperAnalysis` hook that fires after `db.sessions.add()` and writes Whisper results as separate top-level session fields (`whisperFillers`, `whisperStatus`, `wpmWindows`) — never mutating the existing `eventLog`; and (3) four new stateless detail panel components rendered below `AnnotatedPlayer` in `ReviewPage`.
 
-**Major components:**
-1. SessionController — wires MediaCapture + ML Worker + SpeechCapture together; owns recording lifecycle imperatively (not in React state)
-2. ML Worker (mediapipe.worker.ts) — isolated Web Worker running all three landmark models sequentially per frame at 5–10 fps; posts landmark arrays back to main thread
-3. SpeechCapture + fillerDetector — Web Speech API runs on main thread only (browser requirement); produces transcript with timestamps and filler event stream
-4. AnnotatedPlayer + eventSync — `<video>` element with Canvas overlay; `requestVideoFrameCallback` drives event marker rendering synced to playback position
-5. Dexie schema (sessions + events + blobs tables) — schema versioned from day one; blobs stored in non-indexed object store; metadata/events indexed separately
-6. AnalysisAggregator — pure functions over in-memory event arrays after session end; stateless and fully testable without browser APIs
+**Major components (new or modified for v2.0):**
+1. `whisper.worker.ts` (new, ES module) — receives audio ArrayBuffer via postMessage; runs `@huggingface/transformers` Whisper pipeline; returns `{ fillerCount, byType, wordTimestamps }`
+2. `useWhisperAnalysis` hook (new) — fires after save; manages worker lifecycle; writes Dexie when done; exposes status via `useLiveQuery` to ReviewPage
+3. `src/analysis/openingClosing.ts` (new) — pure scoring function; scores first/last 30s from existing event types; guards for sessions under 60s
+4. `FillerBreakdown`, `PauseDetail`, `WPMChart`, `OpeningClosingDetail`, `WhisperStatusBanner` (5 new stateless components) — all receive data as props from ReviewPage; independently testable with fixture data
+5. `scorer.ts` (modified) — adds `openingClosing` dimension; modifies `scorePacing()` to include pause penalty; accepts optional `{ fillerCount? }` override param for Whisper count; rebalances existing dimension weights
+6. `db.ts` (modified) — Dexie version bump to v3; adds `whisperFillers?`, `whisperStatus?`, `wpmWindows?` as optional unindexed fields; existing sessions degrade gracefully with undefined checks in all consumers
+
+**Key patterns to follow:**
+- Augment Dexie, don't mutate eventLog: Whisper results go into separate top-level session fields; the eventLog timeline is immutable after the initial save
+- Async analysis after save, reactive UI update: ReviewPage shows Web Speech scores immediately (within milliseconds); Whisper silently upgrades the filler score 10-30 seconds later; never block the view transition on Whisper
+- Pure functions receive override parameters: `aggregateScores(eventLog, durationMs, { fillerCount? })` keeps scorer testable without mocking Dexie
+- Strict worker lifecycle: MediaPipe worker is terminated before Whisper worker starts — never both in memory simultaneously
+
+**Recommended build order (each step independently shippable):**
+1. Dexie v3 schema + `calculateWPMWindows` — migration first, all downstream reads from Dexie
+2. `scoreOpeningClosing` + ScorecardView row — pure logic, no new dependencies; top differentiator ships early
+3. Pause scoring + `PauseDetail` panel — pause events already in event log; independent of Whisper
+4. Filler breakdown panel (Web Speech counts) — UI shell Whisper will later upgrade; validates layout independently
+5. `WPMChart` panel — reads `wpmWindows` from Step 1; purely UI
+6. Whisper worker + `useWhisperAnalysis` — highest-risk item last; all earlier phases ship value with or without it
+
+See `.planning/research/ARCHITECTURE.md` for full component inventory, modified files list, data flow diagrams, and anti-patterns.
 
 ### Critical Pitfalls
 
-1. **Chrome suppresses filler words in Web Speech API transcripts** — Test with actual um/uh-heavy speech before writing any detection logic. If suppressed (confirmed behavior), fall back to Whisper.wasm or Web Audio API `AnalyserNode` heuristics. Recovery cost: HIGH (feature redesign + 1–2 weeks).
+1. **Chrome Web Speech API silently suppresses filler words** — Google's cloud speech backend removes disfluencies from transcripts; "um, uh, like" arrive as nothing. Filler counts from Web Speech are unreliable and often zero. Confirm Whisper surfaces "um" and "uh" as the first validation step of the Whisper integration phase.
 
-2. **MediaRecorder WebM output cannot be seeked (duration = Infinity)** — Apply `fix-webm-duration` synchronously in the `MediaRecorder stop` handler, tracking elapsed time during recording, before any Blob is stored in IndexedDB. Raw blobs stored without this fix are permanently unseekable. Recovery cost: HIGH (no retroactive fix possible for stored sessions).
+2. **Whisper COOP/COEP headers silently break existing CDN resources** — SharedArrayBuffer requires `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: require-corp`. Any cross-origin resource without appropriate CORS headers (CDN fonts, analytics, iframes) will stop loading. Audit all cross-origin resources, validate `window.crossOriginIsolated === true` in both dev and production before writing any Whisper code.
 
-3. **MediaPipe in Web Workers has known loading bugs on Mac Chrome** — Spike test: load all three models in a classic Web Worker, run inference on a test frame, verify on Mac Chrome + Windows Chrome before any feature work. Keep a main-thread fallback path. Recovery cost: HIGH (worker refactor is 3–5 days if deferred).
+3. **Classic-mode MediaPipe worker and ES-module Whisper worker cannot share a file** — MediaPipe requires `importScripts` (classic); Transformers.js requires top-level `import` (module). Maintain two separate workers: existing `mediapipe.worker.js` (classic, unchanged) and new `whisper.worker.ts` (ES module, `{ type: 'module' }`).
 
-4. **Three MediaPipe models at 30fps saturate CPU** — Cap inference to 5–10 fps from the start; use sequential per-frame (FaceLandmarker → HandLandmarker → PoseLandmarker) rather than concurrent; use lite model variants. Recovery cost: HIGH if architected wrong (structural refactor).
+4. **Simultaneous MediaPipe + Whisper in memory causes OOM crashes** — MediaPipe's three models consume ~300-600 MB WASM heap; Whisper adds ~100-200 MB; combined total exceeds mid-range tab limits. Explicitly terminate the MediaPipe worker before starting Whisper — never run both simultaneously.
 
-5. **MediaPipe memory leak from missing `.close()` calls** — Call `.close()` on every task instance in the `useEffect` cleanup and recording stop handler. Make cleanup idempotent because React 19 StrictMode double-mounts in development. Recovery cost: LOW if caught during development.
+5. **`AudioContext.decodeAudioData` outputs device sample rate (44.1/48 kHz), not Whisper's required 16 kHz** — passing the wrong-rate buffer to Whisper produces garbled or empty transcripts. Use `OfflineAudioContext(1, duration * 16000, 16000)` for resampling; verify `sampleRate === 16000` before sending to the worker.
 
-6. **IndexedDB storage eviction on Safari (7-day inactivity policy)** — Call `navigator.storage.persist()` on first launch. Implement `navigator.storage.estimate()` quota check before recording starts; block recording and warn if < 200MB free. Recovery cost: MEDIUM (data already lost cannot be recovered).
+6. **Dexie schema version bump required for every structural change** — adding new session fields without bumping the version causes `VersionError` or silent `undefined` reads on existing sessions. Bump to version 3 before any v2.0 feature code touches Dexie; include an upgrade function setting new fields to `null` on existing records.
+
+7. **Whisper model download (~75 MB) blocks first-use UX without a loading strategy** — users assume the app is broken when it hangs silently for 30-120 seconds. Use Transformers.js (Cache API-based model caching is automatic); show a "Downloading speech model (first time only)..." progress indicator; never block session review on model download.
+
+See `.planning/research/PITFALLS.md` for the full 14-pitfall list with warning signs and exact phase assignments.
 
 ---
 
 ## Implications for Roadmap
 
-Based on the dependency graph from FEATURES.md and the build order from ARCHITECTURE.md, and front-loading pitfall mitigation from PITFALLS.md, the following phase structure is recommended:
+This is a continuation milestone on a working v1.0 product. The research confirms a clear dependency chain that dictates phase order. Five of the six phases deliver user-visible value independently; Whisper is last so it cannot block the rest of the release.
 
-### Phase 1: Infrastructure Spike and Foundation
-**Rationale:** The three highest-recovery-cost pitfalls (MediaPipe worker bugs, filler word suppression, WebM seek) must be verified as solvable before any feature work depends on them. This phase de-risks the entire architecture. The build order from ARCHITECTURE.md also places schema and media capture first — nothing else can be built without them.
-**Delivers:** Working project scaffold (Vite + React + TS + Tailwind), verified MediaPipe-in-worker spike (all 3 models loading and inferring on Mac + Windows Chrome), confirmed Web Speech API filler word output behavior with um/uh test, Dexie schema v1 (sessions + events + blobs tables with proper non-indexed blob store), `navigator.storage.persist()` called on app load.
-**Addresses:** Webcam + mic permission handling, Dexie schema design
-**Avoids:** MediaPipe worker loading crash (Pitfall 4), filler word suppression discovery late (Pitfall 1), schema migration pain (lock schema early)
+### Phase 1: Schema Migration + WPM Windows Foundation
+**Rationale:** All v2.0 features read from Dexie. The schema migration must exist and be validated on existing sessions before any feature code runs. `calculateWPMWindows` is a pure function with no external dependencies — cheapest to get right before UI builds on it. No user-visible output; this is the prerequisite gate for everything else.
+**Delivers:** Dexie v3 schema with `whisperFillers?`, `whisperStatus?`, `wpmWindows?`; `calculateWPMWindows()` pure function; verified backward compatibility with existing v1.0 sessions
+**Avoids:** Pitfall 8 (silent DB corruption from missing version bump); Pitfall 9 (event queue backpressure — write wpmWindows once at session end, not incrementally during recording)
+**Research flag:** Standard patterns — Dexie versioning is well-documented; no deeper research needed
 
-### Phase 2: Recording Pipeline
-**Rationale:** Recording is the root of the feature dependency graph. No other feature can be built until recording produces a correctly formed, seekable video Blob and a working event timestamp log. The event log schema established here cannot change without breaking history.
-**Delivers:** Distraction-free recording UI (timer + stop only), `MediaCapture` + `Recorder` producing WebM Blob chunks, `fix-webm-duration` applied synchronously on stop before IndexedDB write, in-memory event timestamp buffer (the schema for landmark/filler/transcript/pause events), session saved to Dexie on stop, MediaStream tracks stopped on exit (camera light off).
-**Uses:** MediaRecorder API, Dexie sessions/blobs tables, `fix-webm-duration`, SessionController (imperative, not React state)
-**Avoids:** Unseekable WebM (Pitfall 2), React state storing MediaRecorder refs (Architecture anti-pattern 4)
+### Phase 2: Opening/Closing Scorer + Scorecard Row
+**Rationale:** Pure analysis logic with zero new dependencies — works entirely from the existing event log. Delivers the top-differentiator feature (no competitor has this) immediately and validates the scoring formula before Whisper provides cleaner input data. No worker, no Dexie changes, no new chart library.
+**Delivers:** `scoreOpeningClosing()` in `src/analysis/openingClosing.ts`; `openingClosing` dimension row in ScorecardView; edge-case handling for sessions under 60 seconds
+**Avoids:** Weight rebalancing regression in existing scorer dimensions (adjust WEIGHTS constant carefully)
+**Research flag:** Standard patterns — scoring formula documented in FEATURES.md; pure function, well-understood
 
-### Phase 3: ML Inference Worker Pipeline
-**Rationale:** The Worker architecture established in Phase 1 spike becomes production-ready here. All three landmark models must run in the Worker before speech analysis (Phase 4) integrates, because SessionController wires all three together. Frame throttling and memory cleanup must be correct before any analysis code runs on top.
-**Delivers:** Production `mediapipe.worker.ts` with `ImageBitmap` transfer pattern, `workerBridge.ts` on main thread, frame pump throttled to 5–10 fps via configurable frame skip, all three landmarkers initialized with lazy loading and warm-up dummy frame, `.close()` called in all cleanup paths (idempotent), Worker-produced landmark events written to in-memory buffer and bulk-committed to Dexie `events` table at session end, memory stability verified (3 record/stop cycles, WASM heap returns to baseline).
-**Uses:** `@mediapipe/tasks-vision`, Web Worker (classic mode), `ImageBitmap` Transferable, Dexie events table
-**Implements:** ML Worker component, workerBridge, frame pump pattern, event stream → timestamped store pattern
-**Avoids:** MediaPipe on main thread (Pitfall 3), memory leak from missing .close() (Pitfall 5), 30fps inference saturation (Pitfall 3)
+### Phase 3: Pause Scoring + PauseDetail Panel
+**Rationale:** Pause events already exist in the event log from v1.0 (`detectPauses` already runs; `scorePacing()` ignores them). Scoring them and building a detail panel requires only modifying one existing function and one new stateless component. No Whisper dependency.
+**Delivers:** `scorePauses()` sub-function inside `scorePacing()`; `PauseDetail` component (count, avg duration, longest pause); pacing sub-dimension visible in the scorecard
+**Avoids:** Scoring boundary pauses the same as mid-clause pauses (use ETS SpeechRater methodology: penalize mid-clause pauses, reward sentence-boundary pauses)
+**Research flag:** Standard patterns — ETS SpeechRater methodology documented in FEATURES.md; formula ready to implement
 
-### Phase 4: Speech Analysis
-**Rationale:** Speech analysis runs on the main thread (Web Speech API browser constraint) and integrates into SessionController alongside the ML worker. Pacing and filler word detection share the same transcript — they must be built together in a single pass.
-**Delivers:** `SpeechCapture.ts` wrapping `SpeechRecognition` lifecycle, `fillerDetector.ts` matching against configurable filler word list, pacing analysis (WPM + pause detection from word timestamps), transcript events with ms-offset timestamps written to event buffer, navigator.onLine check with offline warning, verification that Chrome actually preserves um/uh in transcripts (or fallback decision executed).
-**Uses:** Web Speech API, `speech/SpeechCapture.ts`, `speech/fillerDetector.ts`, `analysis/pacing.ts`
-**Avoids:** Building filler detection on unverified Chrome output (Pitfall 1 — must be confirmed in Phase 1 spike and handled here definitively)
+### Phase 4: Filler Breakdown Panel (Web Speech Baseline)
+**Rationale:** Filler events in the event log already carry `.label` (specific word string). Building `FillerBreakdown` and `groupFillersByType()` now creates the UI shell that Whisper will later upgrade with more accurate counts. Validates layout and grouping logic independently before Whisper is integrated.
+**Delivers:** `groupFillersByType()` pure function; `FillerBreakdown` component showing per-type counts and session-thirds clustering; stateless, Whisper-upgradeable via `whisperFillers?` prop
+**Research flag:** Standard patterns — string pattern matching on existing event labels; no new dependencies
 
-### Phase 5: Analysis Aggregation and Scorecard
-**Rationale:** The scorecard is a downstream aggregation and cannot be reliable until all five analysis dimensions (eye contact, expressiveness, gestures, filler words, pacing) produce stable output. Building the scorecard before individual metrics are stable risks surfacing bad scores. This phase also locks the score schema for history.
-**Delivers:** `analysis/eyeContact.ts` (gaze direction from iris landmarks), `analysis/expressiveness.ts` (blendshape variance scoring), `analysis/gestures.ts` (hand-to-face proximity + hip/shoulder sway heuristics), `analysis/aggregator.ts` (pure functions folding all event streams into per-dimension scores), `ScorecardView.tsx` displaying per-dimension scores with what drove them, score schema locked in Dexie sessions table.
-**Uses:** Analysis pure functions (testable without browser APIs), ScorecardView
-**Implements:** AnalysisAggregator component
-**Research flag:** Expressiveness scoring and gesture detection heuristics are empirically driven — threshold values will need tuning after first real recordings. Plan for iteration.
+### Phase 5: WPM Chart Panel
+**Rationale:** `wpmWindows` data is already being written to Dexie (Phase 1). This phase is purely UI: read stored windows, render a line chart. recharts is the only new dependency.
+**Delivers:** `WPMChart` component with recharts `LineChart + ResponsiveContainer`; graceful "no data" state for old sessions lacking `wpmWindows`
+**Avoids:** Using recharts below 3.8.0 (blank-render issue with earlier versions)
+**Research flag:** Standard patterns — recharts LineChart is well-documented; minimal setup for a single time-series
 
-### Phase 6: Annotated Playback
-**Rationale:** Annotated playback is the product's core differentiator. It depends on Phase 2 (seekable video Blob), Phase 3 (landmark events in Dexie), and Phase 4 (speech events in Dexie). Building it last ensures all data it needs to display is correct and stable.
-**Delivers:** `AnnotatedPlayer.tsx` with Canvas overlay, `Timeline.tsx` with positioned event marker dots, `eventSync.ts` mapping `video.currentTime` to visible events, `PlaybackView.tsx` tying it together, `requestVideoFrameCallback` for frame-accurate marker sync (with `timeupdate` fallback), confirmed seekable playback (video.duration !== Infinity), scrubbing to arbitrary timestamps verified.
-**Uses:** `<video>` element + Canvas, Dexie events read-only queries, `requestVideoFrameCallback`, eventSync
-**Implements:** Annotated playback with Canvas overlay pattern
-**Avoids:** Infinite duration broken scrubber UX (confirmed fixed by Phase 2)
-
-### Phase 7: Session History and Persistence Polish
-**Rationale:** History is the final downstream consumer. It requires a stable score schema (locked in Phase 5) and correct persistence (established in Phase 2). Storage quota management and the "looks done but isn't" checklist items belong here.
-**Delivers:** `HistoryView.tsx` with session list (metadata only, no blob preload), per-dimension trend sparklines across last N sessions, storage quota display + delete-session flow, `navigator.storage.estimate()` quota warning before recording, Safari 7-day eviction protection verified, export session data (JSON).
-**Uses:** Dexie sessions + events (metadata queries only), charting library for trends
-**Avoids:** Loading all session blobs on history page (performance trap), silent quota failure (Pitfall 6)
+### Phase 6: Whisper Integration (Worker + Hook + Banner)
+**Rationale:** Highest technical risk, most external dependencies. Everything in Phases 1-5 provides value independently even if Whisper is delayed or descoped. Whisper must come last so that environment-specific blockers (COOP/COEP header conflicts, hosting provider constraints) cannot hold up the rest of the release.
+**Delivers:** `whisper.worker.ts` (ES module, `@huggingface/transformers`, `onnx-community/whisper-tiny.en` at q8); `useWhisperAnalysis` hook; `WhisperStatusBanner`; filler score upgraded from Web Speech count to Whisper count; `FillerBreakdown` upgraded to use `whisperFillers.byType` when available
+**Avoids:** Pitfall 1 (Web Speech suppresses fillers); Pitfall 2 (COOP/COEP header conflicts — audit first before writing code); Pitfall 3 (worker type incompatibility — two separate workers); Pitfall 4 (wrong audio sample rate — use OfflineAudioContext at 16kHz); Pitfall 5 (missing audio track — validate before sending to worker); Pitfall 6 (first-use download UX — rely on Transformers.js Cache API caching); Pitfall 7 (OOM from dual WASM heaps — terminate MediaPipe before starting Whisper); Pitfall 11 (Firefox 256 MB limit — whisper-tiny is 75 MB, well under the limit)
+**Research flag:** NEEDS RESEARCH — Validate COOP/COEP header interactions with the production hosting environment before committing to an implementation approach. Confirm `window.crossOriginIsolated === true` is achievable in production (not just Vite dev server). Prototype the two-worker instantiation pattern in isolation before wiring to the full app.
 
 ### Phase Ordering Rationale
 
-- **Spike first:** Three architectural risks (MediaPipe worker loading, filler word suppression, WebM seek) have HIGH recovery cost if discovered late. Front-loading them as Phase 1 makes every subsequent phase build on verified foundations.
-- **Recording before analysis:** The event timestamp log schema is established in Phase 2. Any analysis that depends on it (Phases 3–7) cannot be built on a schema that will change. Lock it early.
-- **Workers before speech:** Phase 3 (ML worker) and Phase 4 (speech) both integrate into SessionController. Workers go first because the worker architecture is the bigger structural risk.
-- **Aggregator before playback:** Annotated playback in Phase 6 renders whatever data is in the event store. That data needs to be correct and meaningful before the playback UX is built on top of it.
-- **History last:** History is pure reads on already-accumulated data. No other phase depends on it.
+- Schema migration is unconditionally first — any feature that reads new Dexie fields silently returns `undefined` on existing sessions without the version bump; this cannot be backfilled
+- Phases 2-5 are ordered by decreasing Whisper dependency — each delivers shippable, testable value with no dependence on Whisper being complete
+- Opening/Closing comes before Filler Breakdown because it is the highest-value differentiator and has zero new dependencies — it ships early to validate the scoring formula
+- Whisper is last because it carries two confirmed blocking pitfalls (COOP/COEP and worker type incompatibility) that require environment-specific validation before the implementation path is known; no other phase has this uncertainty profile
 
 ### Research Flags
 
-Phases likely needing deeper research or spiking during planning:
-- **Phase 1 (Infrastructure Spike):** The MediaPipe-in-worker loading issue has multiple open GitHub bugs as of early 2026 (issues #4694, #5479, #5257, #5631). The exact initialization pattern for classic workers with bundled WASM needs a working prototype, not just documentation reading. The Chrome filler-word suppression behavior also needs empirical confirmation — it is documented in community sources but not in the official Web Speech API spec.
-- **Phase 5 (Analysis Aggregation):** Expressiveness blendshape thresholds and gesture heuristic parameters (hand-to-face proximity distance, sway amplitude threshold) are not documented anywhere — they require empirical calibration on real recordings. Plan for explicit threshold-tuning iteration after first integration.
-- **Phase 4 (Speech Analysis — filler detection fallback):** If Chrome suppresses filler words (Pitfall 1), the fallback decision (Whisper.wasm vs. Web Audio API heuristics) needs a separate spike. Whisper.wasm adds ~150 MB download and significant CPU overhead on top of three running MediaPipe models — the combination may not be feasible on mid-range hardware.
+Phases requiring deeper research during planning:
+- **Phase 6 (Whisper Integration):** COOP/COEP header behavior on the production hosting environment is unknown; the two-worker constraint creates Vite config implications that need a spike/prototype to validate before the full implementation is planned; recommend a focused research session on hosting-layer header configuration and a small worker-isolation proof-of-concept
 
-Phases with standard, well-documented patterns (can skip research-phase):
-- **Phase 2 (Recording Pipeline):** `getUserMedia` + `MediaRecorder` + `fix-webm-duration` are all well-documented. The only non-obvious step (`fix-webm-duration`) is explicitly documented in this research.
-- **Phase 6 (Annotated Playback):** `requestVideoFrameCallback` + Canvas overlay is a standard pattern with MDN documentation and community examples.
-- **Phase 7 (Session History):** Dexie queries + charting library are straightforward; no novel patterns.
+Phases with standard patterns (skip research-phase):
+- **Phase 1:** Dexie versioning patterns are well-documented; window-bucketing is a straightforward algorithm
+- **Phase 2:** Scoring formula sourced from FEATURES.md; pure function with no I/O
+- **Phase 3:** ETS SpeechRater methodology fully documented; pause events already in event log
+- **Phase 4:** String pattern matching on existing data; no new infrastructure
+- **Phase 5:** recharts documentation is comprehensive; data already written in Phase 1
 
 ---
 
@@ -164,51 +176,58 @@ Phases with standard, well-documented patterns (can skip research-phase):
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Core libraries verified via npm, official docs, and GitHub. Version numbers confirmed. One gap: MediaPipe npm vs GitHub lag (0.10.21 vs 0.10.26) is a known issue with no workaround beyond manual download. |
-| Features | MEDIUM | Competitor analysis is comprehensive and cross-referenced. Feature priorities reflect project decisions. The hardest signals (gesture detection, expressiveness) are educated estimates — actual threshold values unknown until calibrated on real data. |
-| Architecture | HIGH (established patterns) / MEDIUM (worker threading specifics) | The layered architecture and data flow are well-supported by official docs. The exact MediaPipe worker initialization pattern has open GitHub bugs — confirmed fragile; needs spike to verify. |
-| Pitfalls | HIGH | Most pitfalls verified against official documentation, GitHub issues (with issue numbers), and MDN. The Chrome filler-word suppression is documented in community sources and requires empirical confirmation. |
+| Stack | HIGH | v1.0 stack in production; v2.0 additions verified via official docs and npm; version numbers cross-checked against GitHub and npm registry |
+| Features | HIGH (v1.0) / MEDIUM (v2.0) | v1.0 features validated in production; v2.0 analytics methodology sourced from ETS SpeechRater, Gao et al. 2025, and competitor analysis; scoring formulas are researcher-recommended starting points, not yet empirically tuned |
+| Architecture | HIGH | v1.0 source code is the source of truth; v2.0 integration analysis reads actual source files; data flow analysis is exact |
+| Pitfalls | HIGH | 14 pitfalls documented with warning signs and phase assignments; critical pitfalls confirmed via GitHub issues and official browser API documentation; v1.0 pitfalls production-verified |
 
-**Overall confidence:** MEDIUM-HIGH
+**Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Chrome filler word suppression confirmation:** Must be tested empirically with real um/uh speech during Phase 1 spike before any filler detection logic is written. Outcome determines whether Web Speech API or Whisper.wasm is the implementation path.
-- **MediaPipe worker loading on Mac Chrome:** Known fragile with open bugs. Must prototype classic worker + bundled WASM before any feature work. Do not assume it works from documentation alone.
-- **Expressiveness and gesture thresholds:** No documented baseline values exist. Plan explicit calibration iteration in Phase 5. Consider a per-user baseline/calibration session feature (FEATURES.md v1.x item) as mitigation for false positives.
-- **Whisper.wasm feasibility on mid-range hardware:** If needed as filler detection fallback, the combination of Whisper (high CPU) + three MediaPipe models may saturate CPU on target hardware. Needs a performance budget spike if this path is chosen.
-- **`requestVideoFrameCallback` browser support:** Chrome/Edge only. The `timeupdate` fallback fires ~4x/second — may produce visible annotation lag on fast scrubbing. Evaluate whether this is acceptable during Phase 6.
+- **Whisper scoring thresholds need empirical calibration:** The filler scoring thresholds and pause penalty weights are researcher-recommended starting points. Expect to adjust curves after testing with real user sessions.
+- **Opening/closing dimension weight within the overall scorecard is unspecified:** The new dimension must be incorporated without undermining the existing filler/pacing/eyeContact/expressiveness/gesture weights. The exact rebalancing is not yet specified and needs a deliberate decision.
+- **COOP/COEP in production hosting environment:** Which hosting provider is used determines how headers are deployed. This is not a code problem but an ops prerequisite — confirm early in Phase 6 planning before any Whisper code is written.
+- **Whisper punctuation reliability for pause boundary classification:** Pause analytics assumes Whisper-tiny produces reliable punctuation for sentence boundary detection. This holds for clean English speech but needs validation on real recorded sessions before the pause scoring formula is tuned.
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- `https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/web_js` — FaceLandmarker API, WASM init pattern, synchronous blocking behavior
-- `https://developers.googleblog.com/7-dos-and-donts-of-using-ml-on-the-web-with-mediapipe/` — lazy init, model caching, resource cleanup
-- `https://www.npmjs.com/package/@mediapipe/tasks-vision` — confirmed npm version 0.10.21
-- `https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API` — API overview, Chrome/Edge-only support
-- `https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API` — MediaRecorder, WebM format, Blob workflow
-- `https://dexie.org` — Dexie.js v4, React hooks, Blob storage guidance
+- Source code: `src/App.tsx`, `src/analysis/scorer.ts`, `src/db/db.ts`, `src/analysis/pacing.ts`, `src/pages/Review.tsx`, `src/components/ScorecardView/ScorecardView.tsx`, `src/hooks/useMLWorker.ts` — first-party source of truth for architecture
+- `.planning/STATE.md` — confirmed Web Speech filler under-counting, classic-mode worker constraint
+- `.planning/PROJECT.md` — v2.0 feature requirements
+- `https://www.npmjs.com/package/@mediapipe/tasks-vision` — version 0.10.21; npm-vs-GitHub lag confirmed
+- `https://github.com/google-ai-edge/mediapipe/issues/6098` — npm lag to 0.10.21 confirmed
+- `https://dexie.org` — Dexie 4.3.0; React hooks; versioning docs
 - `https://react.dev/blog/2025/10/01/react-19-2` — React 19.2.4 current
-- `https://vite.dev/releases` — Vite 7.3.1, Node.js requirements
-- `https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback` — frame-accurate annotation sync
-- `https://webkit.org/blog/14403/updates-to-storage-policy/` — Safari 7-day eviction policy
-- `https://github.com/MetaviewAI/webm-fix-duration` — fix-webm-duration library
-- `https://bugzilla.mozilla.org/show_bug.cgi?id=1068001` — WebM seek broken (confirmed browser bug)
+- `https://vite.dev/releases` — Vite 7.3.1; Node 20.19+ requirement
+- `https://huggingface.co/blog/transformersjs-v3` — Transformers.js v3; WebGPU; per-module dtype confirmed
+- `https://huggingface.co/blog/transformersjs-v4` — v4 is `next` tag / preview only as of March 2026
+- `https://huggingface.co/docs/transformers.js/tutorials/react` — official React + Vite worker setup; optimizeDeps.exclude config
+- `https://github.com/huggingface/transformers.js/issues/1291` — @xenova to @huggingface package migration confirmed
+- `https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API` — Chrome/Edge-only support
+- `https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/decodeAudioData` — universal browser support confirmed
+- `https://www.npmjs.com/package/recharts` — version 3.8.0, March 2026
 
 ### Secondary (MEDIUM confidence)
-- `https://github.com/google-ai-edge/mediapipe/issues/4694` (and #5479, #5257, #5631) — MediaPipe worker loading bugs on Mac Chrome
-- `https://ankdev.me/blog/how-to-run-mediapipe-task-vision-in-a-web-worker` — classic worker + `importScripts` pattern
-- `https://rxdb.info/articles/localstorage-indexeddb-cookies-opfs-sqlite-wasm.html` — OPFS vs IndexedDB performance comparison
-- `https://blog.addpipe.com/a-deep-dive-into-the-web-speech-api/` — Chrome filler word suppression behavior
-- `https://orai.com/`, `https://yoodli.ai/`, `https://virtualspeech.com/`, `https://speeko.co/` — competitor feature analysis
-- WebSearch: React vs Svelte for compute-heavy apps (2025) — multiple sources agree on React async advantage
+- `https://ai.myspeakingscore.com/distribution-of-pauses/` — ETS SpeechRater methodology (0.145s threshold; mid-clause vs. boundary pause classification)
+- `https://pmc.ncbi.nlm.nih.gov/articles/PMC11119743/` — silent pause threshold methodology 2024
+- `https://journals.sagepub.com/doi/10.1177/02655322251315792` — Gao et al. 2025; optimal pause thresholds for L2 fluency
+- `https://support.microsoft.com/en-us/office/suggestions-from-speaker-coach` — Speaker Coach WPM variance chart confirmed
+- `https://virtualspeech.com/blog/average-speaking-rate-words-per-minute` — 100-165 WPM target range
+- `https://www.toastmasters.org/magazine/magazine-issues/2025/november/how-to-hook-audiences-from-the-start` — opening strength coaching guidance
+- `https://github.com/recharts/recharts/issues/6857` — blank-render confirmed Preact-specific, not React 19
+- Multiple sources on React vs. Svelte concurrent rendering under heavy compute — React advantage corroborated
+- MediaPipe WASM GPU delegate FPS benchmarks — 60+ FPS GPU; 10-15 FPS CPU-only (corroborated across multiple sources)
 
-### Tertiary (LOW confidence — needs validation)
-- MediaPipe WASM SIMD GPU delegate FPS benchmarks (10–15 FPS CPU-only, 60+ FPS GPU) — corroborated across multiple community sources but hardware-dependent; validate on actual target hardware
-- Chrome filler word suppression — documented in community sources; requires empirical confirmation before implementation
+### Tertiary (LOW confidence)
+- `https://rxdb.info/articles/localstorage-indexeddb-cookies-opfs-sqlite-wasm.html` — OPFS vs. IndexedDB performance (third-party benchmarks; not independently verified)
+- Firefox 256 MB WASM model size limit — documented in whisper.cpp project discussion boards; not in Firefox official release notes
+- Whisper ONNX model sizes (~70 MB q8 for tiny) — aggregated from ggml.ai, openwhispr.com, and Hugging Face model cards; actual sizes should be verified against HuggingFace Hub at integration time
 
 ---
-*Research completed: 2026-03-12*
+
+*Research completed: 2026-03-16*
 *Ready for roadmap: yes*
