@@ -32,11 +32,11 @@ describe('SparklineChart', () => {
   });
   it('renders empty message when fewer than 2 scores', () => {
     render(<SparklineChart scores={[100]} label="Eye Contact" />);
-    expect(screen.getByText('Record more sessions to see trends')).toBeTruthy();
+    expect(screen.getByText('Need more sessions')).toBeTruthy();
   });
   it('renders empty message when scores array is empty', () => {
     render(<SparklineChart scores={[]} label="Eye Contact" />);
-    expect(screen.getByText('Record more sessions to see trends')).toBeTruthy();
+    expect(screen.getByText('Need more sessions')).toBeTruthy();
   });
   it('renders the label text below the chart', () => {
     render(<SparklineChart scores={[20, 80]} label="Pacing" />);

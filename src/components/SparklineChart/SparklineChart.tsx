@@ -34,7 +34,7 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
     return (
       <div className="flex flex-col gap-1">
         <div className="h-8 flex items-center">
-          <span className="text-xs text-gray-600">Record more sessions to see trends</span>
+          <span className="text-xs text-gray-600">Need more sessions</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-400">{label}</span>

@@ -40,7 +40,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         // (stored Scorecard has only flat numbers; we need detail strings for display)
         setScorecard(aggregateScores(s.eventLog, s.durationMs));
       }
-    }).catch(() => setError('Could not load session. Try recording again.'));
+    }).catch(() => setError('Could not load this session. Try recording a new one.'));
 
     return () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
