@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation and Recording** - Verified project scaffold, architecture spikes for the three HIGH-recovery-cost pitfalls, and a working recording pipeline that produces seekable WebM blobs persisted to IndexedDB
 - [ ] **Phase 2: Analysis Pipeline** - All five analysis signals (eye contact, expressiveness, nervous gestures, filler words, pacing) running in the browser via a throttled ML Worker and Web Speech API, producing a complete timestamped event log for every session
 - [x] **Phase 3: Post-Session Review** - Scorecard with per-dimension and overall scores, plus annotated video playback with a clickable event timeline — the product's core differentiator (completed 2026-03-15)
-- [ ] **Phase 4: Session History** - Persistent session list, per-dimension trend charts, and storage quota management that makes improvement over time visible and safe
+- [x] **Phase 4: Session History** - Persistent session list, per-dimension trend charts, and storage quota management that makes improvement over time visible and safe (completed 2026-03-16)
 
 ## Phase Details
 
@@ -95,4 +95,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation and Recording | 3/3 | Complete | 2026-03-12 |
 | 2. Analysis Pipeline | 0/3 | Not started | - |
 | 3. Post-Session Review | 3/3 | Complete   | 2026-03-15 |
-| 4. Session History | 2/3 | In Progress|  |
+| 4. Session History | 3/3 | Complete   | 2026-03-16 |
