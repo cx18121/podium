@@ -8,24 +8,43 @@ A browser-based tool that records your webcam and microphone while you practice 
 
 You watch your own session back with a coach's eye: every filler word, eye contact break, and nervous gesture marked at the exact moment it happened.
 
+## Current Milestone: v2.0 — Deeper Analytics
+
+**Goal:** Replace Web Speech API with Whisper.wasm for accurate filler counting, and add deeper analytics (pause scoring, filler breakdown, speaking rate variance, opening/closing strength) as both new scorecard dimensions and detail expansions within existing ones.
+
+**Target features:**
+- Whisper.wasm post-session audio analysis (alongside Web Speech API for live captions)
+- Pause analytics — scored sub-dimension under Pacing, with count/duration breakdown
+- Filler breakdown by type and timing clusters in review UI
+- Speaking rate variance over time — WPM chart per 30s window
+- Opening/closing strength — new scorecard dimension scoring first and last 30s
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ User can record a practice session (webcam + microphone, browser-based) — v1.0
+- ✓ Session UI is distraction-free — just a timer and stop button — v1.0
+- ✓ After session: annotated video playback with timestamped feedback events — v1.0
+- ✓ Eye contact tracking (gaze toward/away from camera via MediaPipe) — v1.0
+- ✓ Filler word detection (um, uh, like, you know — via Web Speech API) — v1.0
+- ✓ Pacing analysis (words per minute, notable pauses — derived from transcript) — v1.0
+- ✓ Facial expressiveness scoring (animated vs. flat delivery via landmarks) — v1.0
+- ✓ Nervous gesture detection (face touching, swaying — MediaPipe hand + pose) — v1.0
+- ✓ Post-session scorecard with per-dimension scores and an overall score — v1.0
+- ✓ Session history persisted locally — track improvement across sessions over time — v1.0
 
 ### Active
 
-- [ ] User can record a practice session (webcam + microphone, browser-based)
-- [ ] Session UI is distraction-free — just a timer and stop button
-- [ ] After session: annotated video playback with timestamped feedback events
-- [ ] Eye contact tracking (gaze toward/away from camera via MediaPipe)
-- [ ] Filler word detection (um, uh, like, you know — via Web Speech API)
-- [ ] Pacing analysis (words per minute, notable pauses — derived from transcript)
-- [ ] Facial expressiveness scoring (animated vs. flat delivery via landmarks)
-- [ ] Nervous gesture detection (face touching, swaying — MediaPipe hand + pose)
-- [ ] Post-session scorecard with per-dimension scores and an overall score
-- [ ] Session history persisted locally — track improvement across sessions over time
+- [ ] Post-session audio re-analyzed by Whisper.wasm for accurate filler counts
+- [ ] Web Speech API live captions remain during recording (Whisper runs post-session only)
+- [ ] Filler scorecard dimension uses Whisper-derived counts instead of Web Speech counts
+- [ ] Filler breakdown by type (um, uh, like, etc.) shown in review UI
+- [ ] Filler clustering by session segment visible in review UI
+- [ ] Pause analytics scored as sub-dimension under Pacing
+- [ ] Pause breakdown (count, avg duration) shown in review UI
+- [ ] Speaking rate variance shown as WPM-over-time chart in review UI
+- [ ] Opening/closing strength shown as new scorecard dimension (first 30s vs last 30s)
 
 ### Out of Scope
 
@@ -33,6 +52,7 @@ You watch your own session back with a coach's eye: every filler word, eye conta
 - Real-time feedback overlay during session — distraction-free is the design intent
 - Mobile app — web-first
 - Server-side video processing — all analysis runs client-side in the browser
+- Replacing live captions with Whisper — Web Speech API stays for real-time use
 
 ## Context
 
@@ -45,8 +65,8 @@ You watch your own session back with a coach's eye: every filler word, eye conta
 
 - **Platform**: Web browser only — must work without install
 - **Processing**: Client-side only — no video uploaded to servers (privacy and cost)
-- **ML Stack**: MediaPipe for visual analysis, Web Speech API for audio — constrained to what runs well in browser
-- **Scope**: v1 is single-user, local storage — no auth, no sync
+- **ML Stack**: MediaPipe for visual analysis; Web Speech API for live captions; Whisper.wasm for post-session accurate transcription — all client-side
+- **Scope**: single-user, local storage — no auth, no sync
 
 ## Key Decisions
 
@@ -58,4 +78,4 @@ You watch your own session back with a coach's eye: every filler word, eye conta
 | Local storage for sessions | No auth complexity for v1; history still tracked | — Pending |
 
 ---
-*Last updated: 2026-03-11 after initialization*
+*Last updated: 2026-03-16 after v2.0 milestone start*

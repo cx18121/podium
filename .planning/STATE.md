@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: Completed 07-04-PLAN.md — ScorecardView SVG ring and animated bars
-last_updated: "2026-03-16T06:15:24.921Z"
-last_activity: "2026-03-16 — 07-07: NameSessionModal indigo CTA + skip link; DeleteConfirmModal red-500 confirm; SpeechSupportBanner amber warning with dismiss"
+milestone: v2.0
+milestone_name: Deeper Analytics
+status: planning
+stopped_at: Milestone v2.0 started — defining requirements
+last_updated: "2026-03-16T00:00:00.000Z"
+last_activity: "2026-03-16 — Milestone v2.0 started"
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 
 ## Current Position
 
-Phase: 7 of 7 (Visual Redesign) — COMPLETE
-Plan: 7 of 7 in current phase — COMPLETE
-Status: Phase 7 complete — all plans executed, visual redesign shipped
-Last activity: 2026-03-16 — 07-07: NameSessionModal indigo CTA + skip link; DeleteConfirmModal red-500 confirm; SpeechSupportBanner amber warning with dismiss
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v2.0
+Last activity: 2026-03-16 — Milestone v2.0 started
 
-Progress: [██████████] 100% (27/27 plans complete)
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
