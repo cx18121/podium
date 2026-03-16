@@ -27,7 +27,7 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
   if (sessions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-4">
-        <h1 className="text-xl font-bold text-white">No sessions yet</h1>
+        <h1 className="text-xl font-semibold text-white">No sessions yet</h1>
         <p className="text-sm text-gray-400">Record your first session to see your history here.</p>
         <button
           onClick={onRecordNew}
@@ -40,8 +40,8 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6">
-      <h1 className="text-xl font-bold">Session History</h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6 max-w-3xl mx-auto w-full">
+      <h1 className="text-xl font-semibold">Session History</h1>
 
       <button
         onClick={onRecordNew}

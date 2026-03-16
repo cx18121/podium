@@ -30,8 +30,8 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-6 p-8">
-      <h1 className="text-3xl font-bold tracking-tight">Presentation Coach</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-6 p-8 max-w-3xl mx-auto w-full">
+      <h1 className="text-xl font-semibold tracking-tight">Presentation Coach</h1>
 
       <SpeechSupportBanner />
 
@@ -63,9 +63,9 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
       {onViewHistory && (
         <button
           onClick={onViewHistory}
-          className="text-sm text-gray-400 underline hover:text-gray-200 transition-colors"
+          className="text-sm text-gray-400 hover:text-white transition-colors px-4 py-2"
         >
-          View History
+          → View History
         </button>
       )}
     </div>
