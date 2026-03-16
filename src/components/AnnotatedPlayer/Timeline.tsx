@@ -32,7 +32,7 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
       aria-valuenow={progressPct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="relative w-full h-8 bg-gray-800 rounded-full cursor-pointer select-none"
+      className="relative w-full h-11 bg-gray-800 rounded-full cursor-pointer select-none"
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const fraction = (e.clientX - rect.left) / rect.width;
@@ -56,11 +56,12 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
               onSeek(event.timestampMs);
             }}
             className={[
-              "absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-amber-400",
+              "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-amber-400",
+              "-mx-[14px] -my-[14px] px-[14px] py-[14px]",
               "z-10 hover:scale-150 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-300",
               nearest === event ? "ring-2 ring-amber-200 scale-125" : "",
             ].join(" ")}
-            style={{ left: `calc(${leftPct}% - 6px)` }}
+            style={{ left: `calc(${leftPct}% - 8px)` }}
           />
         );
       })}

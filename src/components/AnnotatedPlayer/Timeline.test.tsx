@@ -38,9 +38,9 @@ describe('Timeline', () => {
       />
     );
     const buttons = screen.getAllByRole('button');
-    expect(buttons[0].style.left).toBe('calc(10% - 6px)');
-    expect(buttons[1].style.left).toBe('calc(30% - 6px)');
-    expect(buttons[2].style.left).toBe('calc(50% - 6px)');
+    expect(buttons[0].style.left).toBe('calc(10% - 8px)');
+    expect(buttons[1].style.left).toBe('calc(30% - 8px)');
+    expect(buttons[2].style.left).toBe('calc(50% - 8px)');
   });
 
   it('clicking a marker button calls onSeek with the event timestampMs', () => {
