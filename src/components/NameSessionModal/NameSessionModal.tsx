@@ -30,7 +30,7 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
       aria-labelledby="name-session-heading"
       className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4"
     >
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl">
+      <div className="bg-gray-900 rounded-2xl p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl">
         <h2 id="name-session-heading" className="text-xl font-bold text-white">
           Name this session
         </h2>
@@ -43,7 +43,7 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
+          className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-600 transition-colors"
           aria-label="Session name"
           autoFocus
         />
@@ -53,14 +53,14 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
             onClick={handleSkip}
             className="px-5 py-2.5 text-gray-400 hover:text-white transition-colors text-sm font-medium"
           >
-            Skip
+            Use auto name
           </button>
           <button
             onClick={handleSave}
             disabled={name.trim().length === 0}
             className="px-6 py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors text-sm"
           >
-            Save
+            Save Session
           </button>
         </div>
       </div>
