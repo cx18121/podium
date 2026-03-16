@@ -120,6 +120,8 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 5 added: UI Polish — fix all audit findings and elevate visual design quality across the full app
+- Phase 6 added: Interactive UX improvements — custom tooltips, smarter filler detection, live captions
+- Phase 7 added: Visual redesign — elevate frontend design quality with distinctive, impressive visual identity
 
 ### Pending Todos
 
