@@ -125,10 +125,16 @@ Plans:
 
 ### Phase 7: visual-redesign: elevate the overall frontend design quality with a more impressive, polished, and distinctive visual identity across all screens
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Replace the flat gray-950 + red-600 aesthetic with a distinctive, premium coaching-tool identity: deep blue-slate base (#080c14), single indigo accent (#6366f1), Inter 400/600 typography, layered depth via subtle borders and glows, and data visualizations (scorecard ring, sparklines, storage bar) treated as first-class design elements.
+**Requirements**: UI-FOUND-01, UI-HOME-01, UI-SETUP-01, UI-REC-01, UI-APP-01, UI-SCORE-01, UI-PLAYER-01, UI-REVIEW-01, UI-HISTORY-01, UI-MODAL-01, UI-BANNER-01
 **Depends on:** Phase 6
-**Plans:** 0 plans
+**Plans:** 7 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 7 to break down)
+- [ ] 07-01-PLAN.md — CSS foundation: Inter font in index.html, CSS custom properties + body base rule in index.css
+- [ ] 07-02-PLAN.md — Home + SetupScreen: "Pitch Practice" wordmark with indigo underline, indigo CTA with hover glow, feature list accent bars, dark surface camera preview
+- [ ] 07-03-PLAN.md — RecordingScreen + App.tsx: black bg, display-size tabular-nums timer, red-500 stop button, indigo processing spinner
+- [ ] 07-04-PLAN.md — ScorecardView: SVG score ring (120px, indigo stroke, glow), animated dimension bars (0% to score% on mount, 300ms)
+- [ ] 07-05-PLAN.md — AnnotatedPlayer + Timeline + Review.tsx: 8px timeline track, category-colored markers, indigo CC toggle, indigo CTA
+- [ ] 07-06-PLAN.md — HistoryView + SessionListItem + SparklineChart + StorageQuotaBar: "Past Sessions" header, card hover states, inline-style score badge, indigo sparkline, 6px storage bar
+- [ ] 07-07-PLAN.md — Modals + SpeechSupportBanner: NameSessionModal indigo CTA + skip link, DeleteConfirmModal spec copy, SpeechSupportBanner amber redesign with dismiss button
