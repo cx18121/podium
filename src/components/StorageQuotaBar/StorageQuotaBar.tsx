@@ -29,7 +29,7 @@ export function StorageQuotaBar() {
   const isWarning = pct > 80;
 
   const fillClass = isCritical
-    ? 'bg-red-600'
+    ? 'bg-red-500'
     : isWarning
       ? 'bg-amber-400'
       : 'bg-gray-600';
@@ -47,12 +47,12 @@ export function StorageQuotaBar() {
       </div>
       {isCritical && (
         <span className="text-red-400 text-xs">
-          Storage is almost full. Delete sessions to avoid losing new recordings.
+          Storage almost full. Delete older sessions to keep recording.
         </span>
       )}
       {!isCritical && isWarning && (
         <span className="text-amber-400 text-xs">
-          Storage is nearly full. Consider deleting older sessions.
+          Storage getting full. Consider deleting older sessions.
         </span>
       )}
     </div>

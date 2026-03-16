@@ -54,7 +54,7 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
   return (
     <div className="flex flex-col gap-1">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-8 w-full" aria-hidden="true">
-        <path d={d} stroke="rgb(251 191 36)" strokeWidth="1.5" fill="none" opacity="0.5" />
+        <path d={d} stroke="rgb(251 191 36)" strokeWidth="1.5" fill="none" opacity="0.9" />
         {pts.map((p, i) => (
           <circle key={i} cx={p.x} cy={p.y} r="2" fill="rgb(251 191 36)" />
         ))}
