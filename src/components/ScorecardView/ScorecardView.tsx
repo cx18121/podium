@@ -1,6 +1,12 @@
 // src/components/ScorecardView/ScorecardView.tsx
 import type { ScorecardResult } from '../../analysis/scorer';
 
+function scoreBarColor(score: number): string {
+  if (score >= 70) return 'bg-emerald-500';
+  if (score >= 40) return 'bg-amber-400';
+  return 'bg-red-500';
+}
+
 interface ScorecardViewProps {
   scorecard: ScorecardResult | null;
 }
@@ -52,7 +58,7 @@ export default function ScorecardView({ scorecard }: ScorecardViewProps) {
                 aria-valuenow={dim.score}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                className="h-2 bg-red-600 rounded-full"
+                className={`h-2 rounded-full ${scoreBarColor(dim.score)}`}
                 style={{ width: `${dim.score}%` }}
               />
             </div>
