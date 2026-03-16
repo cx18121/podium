@@ -13,14 +13,48 @@ export default function SpeechSupportBanner() {
   return (
     <div
       role="status"
-      className="w-full bg-[#451a03] border-l-[3px] border-amber-400 text-amber-200 text-sm px-4 py-3 rounded-r-lg flex items-start justify-between gap-2"
+      style={{
+        width: '100%',
+        maxWidth: '560px',
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: '12px',
+        padding: '11px 14px',
+        background: 'rgba(245,158,11,0.07)',
+        border: '1px solid rgba(245,158,11,0.18)',
+        borderLeft: '3px solid #f59e0b',
+        borderRadius: '10px',
+      }}
     >
-      <span>Audio analysis requires Chrome or Edge. Eye contact, expressiveness, and gesture analysis will still work.</span>
+      <span style={{
+        flex: 1,
+        fontSize: '12.5px',
+        color: '#d4a04a',
+        fontFamily: 'Figtree, system-ui, sans-serif',
+        lineHeight: 1.6,
+      }}>
+        Audio analysis requires Chrome or Edge. Eye contact, expressiveness, and gesture analysis will still work.
+      </span>
       <button
         type="button"
         aria-label="Dismiss"
         onClick={() => setDismissed(true)}
-        className="text-amber-400 text-[13px] flex-shrink-0 -mx-[14px] -my-[14px] px-[14px] py-[14px] hover:text-amber-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-1"
+        style={{
+          color: '#d4a04a',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '16px',
+          lineHeight: 1,
+          padding: '2px 4px',
+          flexShrink: 0,
+          opacity: 0.7,
+          transition: 'opacity 0.15s ease',
+          fontFamily: 'system-ui',
+        }}
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-1"
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.7'; }}
       >
         ×
       </button>

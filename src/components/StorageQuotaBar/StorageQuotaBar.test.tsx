@@ -47,15 +47,17 @@ describe('StorageQuotaBar', () => {
     expect(screen.queryByText('Storage getting full. Consider deleting older sessions.')).not.toBeInTheDocument();
   });
 
-  it('critical fill bar uses bg-red-500 (not bg-red-600) when pct > 95', async () => {
+  it('critical fill bar uses destructive red color when pct > 95', async () => {
     mockStorageEstimate(960 * 1024 * 1024, 1000 * 1024 * 1024);
     await act(async () => {
       render(<StorageQuotaBar />);
     });
-    // Find the fill div (has h-1.5 class and a width style)
-    const fillDivs = document.querySelectorAll('.h-1\\.5.rounded-full');
-    const fillBar = Array.from(fillDivs).find(el => el.classList.contains('bg-red-500') || el.classList.contains('bg-red-600'));
-    expect(fillBar?.className).toContain('bg-red-500');
-    expect(fillBar?.className).not.toContain('bg-red-600');
+    // Fill bar uses inline style background — find div with red inline background
+    const allDivs = document.querySelectorAll('div[style]');
+    const fillBar = Array.from(allDivs).find(el =>
+      (el as HTMLElement).style.background.includes('244') || // #f43f5e has 244
+      (el as HTMLElement).style.background === '#f43f5e'
+    );
+    expect(fillBar).toBeTruthy();
   });
 });

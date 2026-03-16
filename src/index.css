@@ -2,24 +2,71 @@
 
 @layer base {
   :root {
-    --color-bg: #080c14;
-    --color-surface: #111827;
-    --color-surface-raised: #1a2235;
-    --color-accent: #6366f1;
-    --color-accent-hover: #818cf8;
-    --color-accent-glow: rgba(99, 102, 241, 0.15);
-    --color-border: rgba(255, 255, 255, 0.07);
-    --color-border-hover: rgba(255, 255, 255, 0.12);
-    --color-border-modal: rgba(255, 255, 255, 0.10);
-    --color-text-primary: #f1f5f9;
-    --color-text-secondary: #94a3b8;
-    --color-text-muted: #475569;
-    --color-destructive: #ef4444;
+    --color-bg: #060911;
+    --color-surface: #0b1022;
+    --color-surface-raised: #101828;
+    --color-surface-hover: #14203a;
+    --color-accent: #5b8fff;
+    --color-accent-hover: #7ba7ff;
+    --color-accent-glow: rgba(91, 143, 255, 0.25);
+    --color-accent-2: #00d4a8;
+    --color-accent-2-glow: rgba(0, 212, 168, 0.20);
+    --color-border: rgba(255, 255, 255, 0.05);
+    --color-border-hover: rgba(255, 255, 255, 0.09);
+    --color-border-modal: rgba(255, 255, 255, 0.08);
+    --color-text-primary: #e4e9f5;
+    --color-text-secondary: #5e6f94;
+    --color-text-muted: #363e55;
+    --color-success: #00d4a8;
+    --color-warning: #f59e0b;
+    --color-destructive: #f43f5e;
   }
 
   body {
     background-color: var(--color-bg);
     color: var(--color-text-primary);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Figtree', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────── */
+
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  33%      { transform: translate(8%, -12%) scale(1.08); opacity: 0.85; }
+  66%      { transform: translate(-6%, 8%) scale(0.94); opacity: 0.50; }
+}
+
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33%      { transform: translate(-10%, 6%) scale(1.06); opacity: 0.75; }
+  66%      { transform: translate(8%, -10%) scale(0.96); opacity: 0.40; }
+}
+
+@keyframes aurora-drift-3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  50%      { transform: translate(-50%, -50%) scale(1.12); opacity: 0.60; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes rec-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }

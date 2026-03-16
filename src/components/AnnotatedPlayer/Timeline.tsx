@@ -22,11 +22,11 @@ function eventLabel(event: SessionEvent): string {
 }
 
 function markerBg(event: SessionEvent): string {
-  if (event.type === 'filler_word') return '#fbbf24';          // amber-400
-  if (event.type === 'eye_contact_break' || event.type === 'eye_contact_resume') return '#818cf8'; // indigo-400
-  if (event.type === 'face_touch' || event.type === 'body_sway') return '#f87171'; // red-400
-  if (event.type === 'pause_detected') return '#94a3b8';        // slate-400
-  return '#94a3b8'; // default
+  if (event.type === 'filler_word') return '#f59e0b';
+  if (event.type === 'eye_contact_break' || event.type === 'eye_contact_resume') return '#5b8fff';
+  if (event.type === 'face_touch' || event.type === 'body_sway') return '#f43f5e';
+  if (event.type === 'pause_detected') return '#5e6f94';
+  return '#5e6f94';
 }
 
 export default function Timeline({ events, durationMs, progressPct, currentTimeMs, onSeek }: TimelineProps) {
@@ -43,24 +43,37 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
       aria-valuenow={progressPct}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="relative w-full h-12 flex items-center cursor-pointer select-none"
+      style={{ position: 'relative', width: '100%', height: '48px', display: 'flex', alignItems: 'center', cursor: 'pointer', userSelect: 'none' }}
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const fraction = (e.clientX - rect.left) / rect.width;
         onSeek(fraction * durationMs);
       }}
     >
-      {/* 8px visual track */}
-      <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-2 bg-[#1a2235] rounded-full pointer-events-none">
-        {/* Played portion fill */}
-        <div
-          className="absolute left-0 top-0 h-full bg-[#6366f1] rounded-full pointer-events-none"
-          style={{ width: `${progressPct}%` }}
-        />
+      {/* Track */}
+      <div style={{
+        position: 'absolute', left: 0, right: 0,
+        top: '50%', transform: 'translateY(-50%)',
+        height: '6px',
+        background: 'rgba(255,255,255,0.04)',
+        borderRadius: '9999px',
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}>
+        {/* Progress fill */}
+        <div style={{
+          position: 'absolute', left: 0, top: 0, height: '100%',
+          background: 'linear-gradient(90deg, #5b8fff, #7ba7ff)',
+          borderRadius: '9999px',
+          width: `${progressPct}%`,
+          pointerEvents: 'none',
+          boxShadow: '0 0 8px rgba(91,143,255,0.40)',
+        }} />
       </div>
 
       {events.map((event, i) => {
         const leftPct = (event.timestampMs / durationMs) * 100;
+        const isNearest = nearest === event;
         return (
           <span key={i}>
             <button
@@ -71,21 +84,45 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
                 e.stopPropagation();
                 onSeek(event.timestampMs);
               }}
-              className={[
-                "absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full",
-                "-mx-[14px] -my-[14px] px-[14px] py-[14px]",
-                "z-10 focus:outline-none",
-                "focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-1",
-                "motion-safe:transition-transform motion-safe:duration-100 hover:scale-[1.3]",
-                nearest === event ? "ring-2 ring-white scale-[1.3]" : "",
-              ].join(" ")}
-              style={{ left: `calc(${leftPct}% - 8px)`, backgroundColor: markerBg(event) }}
+              style={{
+                position: 'absolute',
+                top: '50%', transform: 'translateY(-50%)',
+                left: `calc(${leftPct}% - 8px)`,
+                width: '10px', height: '10px',
+                borderRadius: '50%',
+                background: markerBg(event),
+                border: isNearest ? '2px solid rgba(255,255,255,0.80)' : '1.5px solid rgba(0,0,0,0.3)',
+                boxShadow: isNearest
+                  ? `0 0 0 3px rgba(255,255,255,0.15), 0 0 10px ${markerBg(event)}88`
+                  : `0 0 6px ${markerBg(event)}66`,
+                zIndex: 10,
+                cursor: 'pointer',
+                transition: 'transform 0.1s ease, box-shadow 0.1s ease',
+                padding: '12px',
+                margin: '-12px',
+                boxSizing: 'content-box',
+              } as React.CSSProperties}
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5b8fff] focus-visible:ring-offset-1 hover:scale-[1.4]"
             />
             {tooltipIndex === i && (
               <div
-                className="absolute bottom-full mb-2 px-2 py-1 bg-[#1a2235] border border-[rgba(255,255,255,0.10)] text-[#f1f5f9] text-[13px] rounded-lg pointer-events-none whitespace-nowrap z-20"
-                style={{ left: `clamp(0px, calc(${leftPct}% - 8px), calc(100% - 120px))` }}
                 role="tooltip"
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 4px)',
+                  left: `clamp(0px, calc(${leftPct}% - 8px), calc(100% - 130px))`,
+                  padding: '5px 10px',
+                  background: '#0f1628',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: '#e4e9f5',
+                  fontSize: '12px',
+                  fontFamily: 'Figtree',
+                  borderRadius: '8px',
+                  pointerEvents: 'none',
+                  whiteSpace: 'nowrap',
+                  zIndex: 20,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                }}
               >
                 {eventLabel(event)}
               </div>

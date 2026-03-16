@@ -28,25 +28,35 @@ export function StorageQuotaBar() {
   const isCritical = pct > 95;
   const isWarning = pct > 80;
 
-  const fillClass = isCritical
-    ? 'bg-red-500'
-    : isWarning
-      ? 'bg-amber-400'
-      : 'bg-[#6366f1]';
+  const fillColor = isCritical ? '#f43f5e' : isWarning ? '#f59e0b' : '#5b8fff';
 
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <div className="w-full h-1.5 bg-[#1a2235] rounded-full">
-        <div
-          className={`h-1.5 rounded-full motion-safe:transition-all ${fillClass}`}
-          style={{ width: `${pct}%` }}
-        />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '100px' }}>
+      <div style={{
+        width: '100%', height: '4px',
+        background: 'rgba(255,255,255,0.06)',
+        borderRadius: '9999px',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          height: '100%',
+          borderRadius: '9999px',
+          background: fillColor,
+          width: `${pct}%`,
+          transition: 'width 0.4s ease',
+          boxShadow: `0 0 6px ${fillColor}66`,
+        }} />
       </div>
-      <span className={`text-[13px] tracking-wide ${isCritical ? 'text-red-400' : 'text-[#94a3b8]'}`}>
+      <span style={{
+        fontSize: '11px',
+        fontFamily: 'Figtree',
+        color: isCritical ? '#f43f5e' : '#363e55',
+        letterSpacing: '0.02em',
+      }}>
         {usedMB} MB of {totalMB} MB
       </span>
       {isCritical && (
-        <span className="text-red-400 text-[13px]">
+        <span style={{ fontSize: '11px', color: '#f43f5e', fontFamily: 'Figtree' }}>
           Storage almost full. Delete older sessions to keep recording.
         </span>
       )}

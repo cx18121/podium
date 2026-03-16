@@ -25,7 +25,6 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       setSession(s);
 
       if (!s.scorecard) {
-        // First view: compute and persist (SCORE-03)
         const result = aggregateScores(s.eventLog, s.durationMs);
         const dbScorecard: Scorecard = {
           overall: result.overall,
@@ -36,8 +35,6 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         await db.sessions.update(s.id!, { scorecard: dbScorecard });
         setScorecard(result);
       } else {
-        // Subsequent views: re-run aggregateScores to get rich DimensionScore objects
-        // (stored Scorecard has only flat numbers; we need detail strings for display)
         setScorecard(aggregateScores(s.eventLog, s.durationMs));
       }
     }).catch(() => setError('Could not load this session. Try recording a new one.'));
@@ -49,7 +46,11 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
   if (error) {
     return (
-      <div role="alert" className="flex items-center justify-center min-h-screen bg-[#080c14] text-red-400">
+      <div role="alert" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100svh', background: '#060911', color: '#f43f5e',
+        fontFamily: 'Figtree',
+      }}>
         {error}
       </div>
     );
@@ -57,7 +58,11 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
   if (!session || !videoUrl) {
     return (
-      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-[#080c14] text-[#94a3b8]">
+      <div aria-busy="true" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100svh', background: '#060911', color: '#5e6f94',
+        fontFamily: 'Figtree',
+      }}>
         Loading session...
       </div>
     );
@@ -67,29 +72,95 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const durationDisplay = `${Math.floor(durationSec / 60)}:${String(durationSec % 60).padStart(2, '0')}`;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#080c14] text-white p-8 gap-6 max-w-3xl mx-auto w-full">
-      <h1 className="text-xl font-semibold">{session.title}</h1>
-      <p className="text-sm text-[#94a3b8]">{durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}</p>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      minHeight: '100svh',
+      background: '#060911',
+      padding: '40px 32px',
+      gap: '28px',
+      maxWidth: '768px',
+      margin: '0 auto',
+      width: '100%',
+    }}>
+      {/* Session header */}
+      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <h1 style={{
+          fontFamily: 'Syne, system-ui, sans-serif',
+          fontWeight: 700,
+          fontSize: '1.375rem',
+          letterSpacing: '-0.025em',
+          color: '#e4e9f5',
+          margin: 0,
+        }}>
+          {session.title}
+        </h1>
+        <p style={{
+          fontSize: '13px',
+          color: '#5e6f94',
+          fontFamily: 'Figtree',
+          margin: 0,
+        }}>
+          {durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}
+        </p>
+      </div>
 
       <ScorecardView scorecard={scorecard} />
 
-      <AnnotatedPlayer
-        videoUrl={videoUrl}
-        durationMs={session.durationMs}
-        events={session.eventLog}
-        transcript={session.transcript}
-      />
+      <div style={{ width: '100%', maxWidth: '672px' }}>
+        <AnnotatedPlayer
+          videoUrl={videoUrl}
+          durationMs={session.durationMs}
+          events={session.eventLog}
+          transcript={session.transcript}
+        />
+      </div>
 
       <button
         onClick={onRecordAgain}
-        className="px-6 h-[52px] bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold rounded-xl motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-2"
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
+        style={{
+          padding: '0 36px',
+          height: '52px',
+          background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
+          color: 'white',
+          fontFamily: 'Figtree, system-ui, sans-serif',
+          fontWeight: 600,
+          fontSize: '15px',
+          borderRadius: '14px',
+          border: 'none',
+          cursor: 'pointer',
+          boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
+          transition: 'all 0.18s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.50)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
       >
         Record Again
       </button>
+
       {onBack && (
         <button
           onClick={onBack}
-          className="text-sm text-[#94a3b8] hover:text-[#f1f5f9] motion-safe:transition-colors motion-safe:duration-150"
+          style={{
+            fontSize: '13px',
+            color: '#5e6f94',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            fontFamily: 'Figtree',
+            transition: 'color 0.15s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
         >
           Back to History
         </button>

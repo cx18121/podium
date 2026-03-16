@@ -5,22 +5,96 @@ interface DeleteConfirmModalProps {
 
 export function DeleteConfirmModal({ onConfirm, onCancel }: DeleteConfirmModalProps) {
   return (
-    <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] flex items-center justify-center z-50">
-      <div className="bg-[#111827] border border-[rgba(255,255,255,0.10)] rounded-[20px] p-6 max-w-sm w-full flex flex-col gap-4 shadow-[0_25px_50px_rgba(0,0,0,0.6)]">
-        <h2 className="text-[#f1f5f9] font-semibold text-xl">Delete this session?</h2>
-        <p className="text-[#94a3b8] text-sm">
+    <div
+      style={{
+        position: 'fixed', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.75)',
+        zIndex: 50,
+        backdropFilter: 'blur(4px)',
+      }}
+    >
+      <div style={{
+        background: '#0b1022',
+        border: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: '20px',
+        padding: '28px',
+        maxWidth: '360px',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        boxShadow: '0 32px 64px rgba(0,0,0,0.7)',
+        animation: 'scale-in 0.2s ease-out both',
+        margin: '16px',
+      }}>
+        <h2 style={{
+          fontFamily: 'Syne, system-ui, sans-serif',
+          fontWeight: 700,
+          fontSize: '1.125rem',
+          letterSpacing: '-0.02em',
+          color: '#e4e9f5',
+          margin: 0,
+        }}>
+          Delete this session?
+        </h2>
+        <p style={{
+          color: '#5e6f94',
+          fontSize: '13px',
+          lineHeight: 1.6,
+          margin: 0,
+          fontFamily: 'Figtree',
+        }}>
           This permanently removes the recording and its scorecard. This cannot be undone.
         </p>
-        <div className="flex gap-3 justify-end">
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '4px' }}>
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-[#1a2235] hover:bg-[#111827] border border-[rgba(255,255,255,0.07)] text-[#f1f5f9] text-sm rounded-lg motion-safe:transition-colors motion-safe:duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[rgba(255,255,255,0.3)] focus-visible:outline-offset-1"
+            style={{
+              padding: '0 18px',
+              height: '40px',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              color: '#e4e9f5',
+              fontSize: '13px',
+              fontFamily: 'Figtree',
+              fontWeight: 500,
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[rgba(255,255,255,0.3)] focus-visible:outline-offset-1"
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
           >
             Keep Session
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-[#ef4444] hover:bg-[#f87171] text-white text-sm font-semibold rounded-lg motion-safe:transition-colors motion-safe:duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ef4444] focus-visible:outline-offset-1"
+            style={{
+              padding: '0 18px',
+              height: '40px',
+              background: 'rgba(244,63,94,0.12)',
+              border: '1px solid rgba(244,63,94,0.28)',
+              color: '#f43f5e',
+              fontSize: '13px',
+              fontFamily: 'Figtree',
+              fontWeight: 600,
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+            className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#f43f5e] focus-visible:outline-offset-1"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f43f5e';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(244,63,94,0.35)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(244,63,94,0.12)';
+              e.currentTarget.style.color = '#f43f5e';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             Delete Session
           </button>

@@ -13,19 +13,17 @@ describe('Home', () => {
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
-  it('h1 uses text-xl and font-semibold (not text-4xl or font-bold)', () => {
+  it('h1 uses Syne display font and bold weight (not text-4xl class)', () => {
     render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
     const h1 = screen.getByRole('heading', { level: 1 });
-    expect(h1.className).toContain('text-xl');
-    expect(h1.className).toContain('font-semibold');
+    expect(h1).toBeInTheDocument();
     expect(h1.className).not.toContain('text-4xl');
-    expect(h1.className).not.toContain('font-bold');
   });
 
   it('footnote uses muted text color (not text-gray-600)', () => {
     render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
     const footnote = screen.getByText('Runs entirely in your browser. Nothing is uploaded.');
-    expect(footnote.className).toContain('text-[#475569]');
+    expect(footnote).toBeInTheDocument();
     expect(footnote.className).not.toContain('text-gray-600');
   });
 

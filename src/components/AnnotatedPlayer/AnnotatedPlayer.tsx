@@ -7,7 +7,7 @@ interface AnnotatedPlayerProps {
   videoUrl: string;
   durationMs: number;
   events: SessionEvent[];
-  transcript?: TranscriptSegment[]; // Phase 6: for live caption display
+  transcript?: TranscriptSegment[];
 }
 
 function getCurrentCaption(
@@ -45,34 +45,56 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-2xl">
-      <div className="relative group w-full max-w-2xl">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+      {/* Video */}
+      <div style={{ position: 'relative', width: '100%' }} className="group">
         <video
           ref={videoRef}
           src={videoUrl}
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
-          className="w-full rounded-xl bg-[#111827] cursor-pointer"
+          style={{
+            width: '100%',
+            borderRadius: '14px',
+            background: '#0b1022',
+            cursor: 'pointer',
+            display: 'block',
+          }}
           aria-label="Session playback"
         />
         <button
           onClick={handleVideoClick}
-          aria-label={isPlaying ? "Pause" : "Play"}
-          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+          }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
         >
-          {isPlaying ? (
-            <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="6" y="4" width="4" height="16" rx="1" />
-              <rect x="14" y="4" width="4" height="16" rx="1" />
-            </svg>
-          ) : (
-            <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
+          <div style={{
+            width: '52px', height: '52px',
+            borderRadius: '50%',
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+          }}>
+            {isPlaying ? (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" style={{ marginLeft: '2px' }} aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </div>
         </button>
       </div>
+
       <Timeline
         events={events}
         durationMs={durationMs}
@@ -81,31 +103,54 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
         onSeek={seekTo}
       />
 
-      {/* CC toggle and caption bar */}
-      <div className="flex flex-col gap-1">
+      {/* CC toggle + captions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <button
           onClick={() => setShowCaptions(c => !c)}
-          className={[
-            "self-end text-xs px-2 py-1 rounded font-semibold",
-            "motion-safe:transition-colors motion-safe:duration-150",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-1",
-            showCaptions
-              ? "bg-[#6366f1] text-white"
-              : "bg-[#1a2235] hover:bg-[#111827] text-[#94a3b8] border border-[rgba(255,255,255,0.07)]",
-          ].join(" ")}
           aria-label={showCaptions ? 'Hide captions' : 'Show captions'}
           aria-pressed={showCaptions}
+          style={{
+            alignSelf: 'flex-end',
+            fontSize: '11px',
+            fontFamily: 'Figtree',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            border: showCaptions
+              ? '1px solid rgba(91,143,255,0.40)'
+              : '1px solid rgba(255,255,255,0.06)',
+            background: showCaptions ? 'rgba(91,143,255,0.15)' : 'rgba(255,255,255,0.03)',
+            color: showCaptions ? '#7ba7ff' : '#5e6f94',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-1"
         >
           CC
         </button>
         {showCaptions && (
           <div
-            className="w-full min-h-[2.5rem] bg-[rgba(0,0,0,0.7)] rounded px-4 py-2 text-sm text-[#f1f5f9] text-center flex items-center justify-center"
+            style={{
+              width: '100%',
+              minHeight: '40px',
+              background: 'rgba(0,0,0,0.65)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '8px',
+              padding: '10px 16px',
+              fontSize: '13px',
+              color: '#e4e9f5',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'Figtree',
+            }}
             aria-live="polite"
             aria-atomic="true"
           >
             {transcript === undefined ? (
-              <span className="text-[#475569]">No transcript available</span>
+              <span style={{ color: '#363e55' }}>No transcript available</span>
             ) : (
               <span>{getCurrentCaption(transcript, currentTimeMs) ?? ''}</span>
             )}

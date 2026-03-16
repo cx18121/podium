@@ -30,17 +30,61 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#080c14] text-white gap-6 p-8 max-w-3xl mx-auto w-full">
-      <div className="flex flex-col items-center gap-1">
-        <h1 className="text-xl font-semibold tracking-tight text-[#f1f5f9]">Pitch Practice</h1>
-        <div className="h-[2px] w-6 bg-[#6366f1] rounded-full" aria-hidden="true" />
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100svh',
+      background: '#060911',
+      gap: '24px',
+      padding: '32px',
+    }}>
+      {/* Wordmark */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+        <h1 style={{
+          fontFamily: 'Syne, system-ui, sans-serif',
+          fontWeight: 700,
+          fontSize: '1.25rem',
+          letterSpacing: '-0.025em',
+          color: '#e4e9f5',
+          margin: 0,
+        }}>
+          Pitch Practice
+        </h1>
+        <div style={{
+          height: '2px', width: '28px',
+          background: 'linear-gradient(90deg, #5b8fff, #00d4a8)',
+          borderRadius: '2px',
+        }} aria-hidden="true" />
       </div>
 
       <SpeechSupportBanner />
 
-      <div className="w-full max-w-lg aspect-video bg-[#111827] border border-[rgba(255,255,255,0.07)] rounded-xl overflow-hidden flex items-center justify-center">
+      {/* Camera preview */}
+      <div style={{
+        width: '100%',
+        maxWidth: '560px',
+        aspectRatio: '16/9',
+        background: '#0b1022',
+        border: '1px solid rgba(91,143,255,0.12)',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 0 40px rgba(91,143,255,0.06)',
+      }}>
         {previewError ? (
-          <p className="text-[#94a3b8] text-sm text-center px-4">{previewError}</p>
+          <p style={{
+            color: '#5e6f94',
+            fontSize: '13px',
+            textAlign: 'center',
+            padding: '0 24px',
+            fontFamily: 'Figtree',
+          }}>
+            {previewError}
+          </p>
         ) : (
           <video
             ref={videoRef}
@@ -53,20 +97,63 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
         )}
       </div>
 
-      <p className="text-[#94a3b8] text-sm text-center max-w-md">
+      <p style={{
+        color: '#5e6f94',
+        fontSize: '13px',
+        textAlign: 'center',
+        maxWidth: '400px',
+        lineHeight: 1.6,
+        fontFamily: 'Figtree',
+      }}>
         Check that you are in frame, then click Start Recording. The camera feed will be hidden during your session.
       </p>
 
       <button
         onClick={onStart}
-        className="px-8 h-[52px] bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold rounded-xl motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-2"
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
+        style={{
+          padding: '0 36px',
+          height: '52px',
+          background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
+          color: 'white',
+          fontFamily: 'Figtree, system-ui, sans-serif',
+          fontWeight: 600,
+          fontSize: '15px',
+          borderRadius: '14px',
+          border: 'none',
+          cursor: 'pointer',
+          boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
+          transition: 'all 0.18s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.48)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+        onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)'; }}
+        onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
       >
         Start Recording
       </button>
+
       {onViewHistory && (
         <button
           onClick={onViewHistory}
-          className="text-sm text-[#94a3b8] hover:text-[#f1f5f9] transition-colors px-4 py-2"
+          style={{
+            fontSize: '13px',
+            color: '#5e6f94',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px 16px',
+            fontFamily: 'Figtree',
+            transition: 'color 0.15s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
         >
           → View History
         </button>

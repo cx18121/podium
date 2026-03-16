@@ -12,9 +12,9 @@ export function computeTrendDirection(scores: number[]): TrendDirection {
 }
 
 interface SparklineChartProps {
-  scores: number[];  // 0–100, oldest → newest
+  scores: number[];
   label: string;
-  trend?: TrendDirection;  // optional — rendered as label when provided
+  trend?: TrendDirection;
 }
 
 export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
@@ -23,22 +23,26 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
   const pad = 4;
 
   const trendLabel = trend === 'improving'
-    ? { text: '↑ improving', cls: 'text-green-400' }
+    ? { text: '↑ improving', color: '#00d4a8' }
     : trend === 'declining'
-    ? { text: '↓ declining', cls: 'text-red-400' }
+    ? { text: '↓ declining', color: '#f43f5e' }
     : trend === 'stable'
-    ? { text: '→ stable', cls: 'text-gray-400' }
+    ? { text: '→ stable', color: '#5e6f94' }
     : null;
 
   if (scores.length < 2) {
     return (
-      <div className="flex flex-col gap-1">
-        <div className="h-8 flex items-center">
-          <span className="text-xs text-[#475569]">Need more sessions</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div style={{ height: '32px', display: 'flex', alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', color: '#363e55', fontFamily: 'Figtree' }}>Need more sessions</span>
         </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-xs text-[#94a3b8]">{label}</span>
-          {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '11px', color: '#5e6f94', fontFamily: 'Figtree' }}>{label}</span>
+          {trendLabel && (
+            <span style={{ fontSize: '11px', color: trendLabel.color, fontFamily: 'Figtree' }}>
+              {trendLabel.text}
+            </span>
+          )}
         </div>
       </div>
     );
@@ -52,16 +56,26 @@ export function SparklineChart({ scores, label, trend }: SparklineChartProps) {
   const d = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
   return (
-    <div className="flex flex-col gap-1">
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-8 w-full" aria-hidden="true">
-        <path d={d} stroke="#6366f1" strokeWidth="1.5" fill="none" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ height: '32px', width: '100%' }} aria-hidden="true">
+        <defs>
+          <linearGradient id={`spark-fill-${label.replace(/\s/g, '')}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#5b8fff" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#5b8fff" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={d} stroke="#5b8fff" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="2" fill="#6366f1" />
+          <circle key={i} cx={p.x} cy={p.y} r="2" fill="#5b8fff" />
         ))}
       </svg>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-xs text-[#94a3b8]">{label}</span>
-        {trendLabel && <span className={`text-xs ${trendLabel.cls}`}>{trendLabel.text}</span>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+        <span style={{ fontSize: '11px', color: '#5e6f94', fontFamily: 'Figtree', fontWeight: 500 }}>{label}</span>
+        {trendLabel && (
+          <span style={{ fontSize: '11px', color: trendLabel.color, fontFamily: 'Figtree' }}>
+            {trendLabel.text}
+          </span>
+        )}
       </div>
     </div>
   );
