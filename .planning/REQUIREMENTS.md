@@ -49,32 +49,51 @@
 - [x] **HIST-02**: User can open any past session to view its scorecard and annotated playback
 - [x] **HIST-03**: Progress trends are shown per dimension across sessions (chart or sparkline)
 
-## v2 Requirements
+## v2.0 Requirements
 
-### Audio Analysis
+### Foundation
 
-- **AUD-v2-01**: Whisper WASM fallback for filler word detection when Chrome suppresses Web Speech API disfluencies
-- **AUD-v2-02**: Vocal tone analysis (confidence, energy level)
+- [ ] **FOUND-01**: Dexie schema migrated to v3 with new fields (`whisperFillers`, `whisperStatus`, `wpmWindows`); v1.0 sessions cleared on upgrade (no backward compatibility required)
+- [ ] **FOUND-02**: WPM per 30s window calculated at session end and stored in `wpmWindows` for chart display
 
-### Sharing & Export
+### Analytics
 
-- **SHARE-01**: User can export scorecard as PDF or image
-- **SHARE-02**: User can share a session summary link (requires backend)
+- [ ] **ANAL-01**: User sees opening/closing strength as a new scorecard dimension (first/last 30s scored from existing event log)
+- [ ] **ANAL-02**: User sees pause count and average duration in the review page
+- [ ] **ANAL-03**: Pause quality (hesitation vs. deliberate) contributes to the pacing score
+- [ ] **ANAL-04**: User sees filler breakdown by type (um, uh, like, you know...) in review
+- [ ] **ANAL-05**: User sees which segment of their talk had the most fillers (session thirds)
+- [ ] **ANAL-06**: User sees WPM over time as a chart (30s windows) in review
 
-### Multi-user
+### Whisper
 
-- **USER-01**: User accounts with cloud sync of session history
-- **USER-02**: Coach mode — share a session with someone else for review
+- [ ] **WHIS-01**: Filler score uses Whisper-derived counts post-session (more accurate than Web Speech)
+- [ ] **WHIS-02**: Live captions during recording remain unaffected (Web Speech API unchanged)
+- [ ] **WHIS-03**: User sees Whisper analysis status while post-session processing runs
+- [ ] **WHIS-04**: First-time model download shows a progress indicator (doesn't silently hang)
+- [ ] **WHIS-05**: App falls back to Web Speech counts if Whisper fails or is unsupported
+
+## v3.0+ Candidates
+
+- WPM variance scoring (reward deliberate rate modulation, not just display)
+- Per-metric breakdown within opening/closing segments
+- Multi-session trend charts for v2.0 dimensions
+- Filler timing cluster visualization
+- Vocal tone analysis (confidence, energy level)
+- Export scorecard as PDF/image
+- User accounts with cloud sync
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
 | Real-time feedback during recording | Explicit design intent — distraction-free session simulates real presenting |
-| Server-side video processing | Privacy requirement + no backend for v1 |
+| Real-time Whisper during recording | 2-5x slower than real-time in browser; would block UI |
+| Server-side video processing | Privacy requirement + no backend |
 | Mobile app | Web-first; MediaPipe + MediaRecorder are desktop browser primary |
-| OAuth / authentication | Single-user local-only for v1 |
-| Live audience simulation | Out of scope for solo practice tool |
+| OAuth / authentication | Single-user local-only |
+| AI-generated coaching tips | Competitors report users stop reading after 2-3 sessions |
+| Content/semantic scoring | Different complexity class from delivery analytics |
 
 ## Traceability
 
@@ -84,13 +103,13 @@
 | REC-02 | Phase 1 | Complete |
 | REC-03 | Phase 1 | Complete |
 | REC-04 | Phase 1 | Complete |
-| REC-05 | Phase 1 | In Progress (schema defined in 01-01, full save in 01-03) |
+| REC-05 | Phase 1 | Complete |
 | REC-06 | Phase 1 | Complete |
 | AUD-01 | Phase 2 | Complete |
 | AUD-02 | Phase 2 | Complete |
 | AUD-03 | Phase 2 | Complete |
 | AUD-04 | Phase 2 | Complete |
-| AUD-05 | Phase 1 | In Progress (test stub in 01-01, component in 01-03) |
+| AUD-05 | Phase 1 | Complete |
 | VIS-01 | Phase 2 | Complete |
 | VIS-02 | Phase 2 | Complete |
 | VIS-03 | Phase 2 | Complete |
@@ -106,12 +125,26 @@
 | HIST-01 | Phase 4 | Complete |
 | HIST-02 | Phase 4 | Complete |
 | HIST-03 | Phase 4 | Complete |
+| FOUND-01 | Phase 8 | Pending |
+| FOUND-02 | Phase 8 | Pending |
+| ANAL-01 | Phase 9 | Pending |
+| ANAL-02 | Phase 10 | Pending |
+| ANAL-03 | Phase 10 | Pending |
+| ANAL-04 | Phase 11 | Pending |
+| ANAL-05 | Phase 11 | Pending |
+| ANAL-06 | Phase 12 | Pending |
+| WHIS-01 | Phase 13 | Pending |
+| WHIS-02 | Phase 13 | Pending |
+| WHIS-03 | Phase 13 | Pending |
+| WHIS-04 | Phase 13 | Pending |
+| WHIS-05 | Phase 13 | Pending |
 
 **Coverage:**
-- v1 requirements: 26 total
-- Mapped to phases: 26
+- v1 requirements: 26 total — Complete ✓
+- v2.0 requirements: 13 total
+- Mapped to phases: 13
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-12*
-*Last updated: 2026-03-12 after roadmap creation*
+*Last updated: 2026-03-16 after v2.0 milestone start*
