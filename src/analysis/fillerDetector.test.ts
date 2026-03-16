@@ -75,7 +75,7 @@ describe('fillerDetector (AUD-02)', () => {
 
   it('does NOT double-match "you know what" as both "you know" and "you know what"', () => {
     const segments: TranscriptSegment[] = [
-      { text: 'you know what I mean', timestampMs: 300, isFinal: true },
+      { text: 'you know what happened', timestampMs: 300, isFinal: true },
     ];
     const events = detectFillers(segments);
     expect(events).toHaveLength(1);
