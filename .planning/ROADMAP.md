@@ -4,6 +4,8 @@
 
 Build a fully client-side browser tool that records a user practicing a talk, runs five ML-driven analysis dimensions in the browser, and delivers annotated video playback with timestamped coaching events and a scorecard. The path: establish a verified technical foundation (recording + architecture spikes), wire all analysis pipelines, surface post-session review (annotated playback + scorecard), then close the loop with session history and progress tracking.
 
+v2.0 deepens speech analytics by integrating Whisper.wasm for accurate filler counts and adding five new analytics features: opening/closing strength, pause scoring, filler breakdown by type, WPM-over-time chart, and Whisper-powered filler accuracy.
+
 ## Phases
 
 **Phase Numbering:**
@@ -12,10 +14,24 @@ Build a fully client-side browser tool that records a user practicing a talk, ru
 
 Decimal phases appear between their surrounding integers in numeric order.
 
+**v1.0 — Core Product**
+
 - [x] **Phase 1: Foundation and Recording** - Verified project scaffold, architecture spikes for the three HIGH-recovery-cost pitfalls, and a working recording pipeline that produces seekable WebM blobs persisted to IndexedDB
 - [ ] **Phase 2: Analysis Pipeline** - All five analysis signals (eye contact, expressiveness, nervous gestures, filler words, pacing) running in the browser via a throttled ML Worker and Web Speech API, producing a complete timestamped event log for every session
 - [x] **Phase 3: Post-Session Review** - Scorecard with per-dimension and overall scores, plus annotated video playback with a clickable event timeline — the product's core differentiator (completed 2026-03-15)
 - [x] **Phase 4: Session History** - Persistent session list, per-dimension trend charts, and storage quota management that makes improvement over time visible and safe (completed 2026-03-16)
+- [x] **Phase 5: UI Polish** - Fix all 12 audit findings and elevate visual design quality across the full app
+- [x] **Phase 6: Interactive UX Improvements** - Custom tooltips, smarter filler detection, and live captions during playback
+- [x] **Phase 7: Visual Redesign** - Distinctive premium visual identity across all screens
+
+**v2.0 — Deeper Analytics**
+
+- [ ] **Phase 8: Schema Migration + WPM Windows** - Dexie v3 schema with new analytics fields and WPM windowing function — prerequisite gate for all v2.0 features
+- [ ] **Phase 9: Opening/Closing Strength** - New scorecard dimension scoring first and last 30s of each session from the existing event log
+- [ ] **Phase 10: Pause Scoring + Detail Panel** - Pause quality scoring as a Pacing sub-dimension with a PauseDetail panel showing count and duration breakdown
+- [ ] **Phase 11: Filler Breakdown Panel** - Per-type filler counts and session-thirds clustering in review UI, built on Web Speech baseline and upgradeable by Whisper
+- [ ] **Phase 12: WPM Chart Panel** - Speaking rate over time as a 30-second-window line chart in review UI
+- [ ] **Phase 13: Whisper Integration** - Whisper.wasm post-session transcription replacing Web Speech filler counts, with status banner and graceful fallback
 
 ## Phase Details
 
@@ -85,18 +101,6 @@ Plans:
 - [ ] 04-02-PLAN.md — SparklineChart component with computeTrendDirection pure function (inline SVG, no charting library)
 - [ ] 04-03-PLAN.md — App.tsx state machine wiring: 'history' view, historySessionId state, onBack for ReviewPage, onViewHistory for SetupScreen, sparkline section in HistoryView
 
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation and Recording | 3/3 | Complete | 2026-03-12 |
-| 2. Analysis Pipeline | 0/3 | Not started | - |
-| 3. Post-Session Review | 3/3 | Complete   | 2026-03-15 |
-| 4. Session History | 3/3 | Complete   | 2026-03-16 |
-
 ### Phase 5: UI Polish — fix all audit findings and elevate visual design quality across the full app
 
 **Goal:** Fix all 12 audit findings (A-01 through A-12) from the UI audit reviews, establishing a consistent color hierarchy, WCAG-compliant touch targets, unified typography scale, and polished interaction affordances across all screens.
@@ -138,3 +142,92 @@ Plans:
 - [ ] 07-05-PLAN.md — AnnotatedPlayer + Timeline + Review.tsx: 8px timeline track, category-colored markers, indigo CC toggle, indigo CTA
 - [ ] 07-06-PLAN.md — HistoryView + SessionListItem + SparklineChart + StorageQuotaBar: "Past Sessions" header, card hover states, inline-style score badge, indigo sparkline, 6px storage bar
 - [ ] 07-07-PLAN.md — Modals + SpeechSupportBanner: NameSessionModal indigo CTA + skip link, DeleteConfirmModal spec copy, SpeechSupportBanner amber redesign with dismiss button
+
+### Phase 8: Schema Migration + WPM Windows
+**Goal**: The Dexie schema is migrated to v3 with all new analytics fields in place and WPM windowing data is calculated and stored at session end, so every downstream v2.0 feature reads from a consistent, versioned schema without silent undefined failures.
+**Depends on**: Phase 7
+**Requirements**: FOUND-01, FOUND-02
+**Success Criteria** (what must be TRUE):
+  1. After recording a new session, `db.sessions.get(id)` returns a record with `wpmWindows` as an array of 30-second window objects (not undefined)
+  2. Existing v1.0 sessions in IndexedDB are either cleared or degrade gracefully — no VersionError is thrown on app load after the migration
+  3. The `whisperFillers` and `whisperStatus` fields exist on session records as optional fields (undefined on new sessions until Whisper runs in Phase 13)
+  4. `calculateWPMWindows()` is a pure function with unit tests passing — given a transcript with timestamps, it returns correctly bucketed 30-second windows
+**Plans**: TBD
+
+### Phase 9: Opening/Closing Strength
+**Goal**: The user sees a new Opening/Closing scorecard dimension after every session, scored from the first and last 30 seconds of the existing event log, so they get actionable feedback on the two moments that carry the most audience impact.
+**Depends on**: Phase 8
+**Requirements**: ANAL-01
+**Success Criteria** (what must be TRUE):
+  1. The post-session scorecard shows an "Opening/Closing" dimension row alongside the existing five dimensions, with a numeric score
+  2. The score reflects event density and quality in the first 30s and last 30s independently — a strong opening with a weak closing produces a different score than the reverse
+  3. For sessions shorter than 60 seconds, the dimension either shows a clear "session too short" state or handles the edge case without crashing
+  4. `scoreOpeningClosing()` is a pure function with unit tests covering the short-session edge case and at least two different scoring scenarios
+**Plans**: TBD
+
+### Phase 10: Pause Scoring + PauseDetail Panel
+**Goal**: The pacing score reflects pause quality (not just pause count), and the user sees a PauseDetail panel on the review page showing pause count and average duration, so they can distinguish hesitation pauses from deliberate emphasis pauses.
+**Depends on**: Phase 8
+**Requirements**: ANAL-02, ANAL-03
+**Success Criteria** (what must be TRUE):
+  1. The review page shows a PauseDetail panel with total pause count, average pause duration, and longest pause duration for the session
+  2. The pacing scorecard dimension score changes when a session has many mid-clause pauses versus the same pause count at sentence boundaries — pause quality affects the score, not just frequency
+  3. A session with zero pause events shows a graceful "no significant pauses detected" state in the PauseDetail panel, not a blank or error state
+  4. `scorePauses()` is a pure function with unit tests covering mid-clause versus sentence-boundary classification using the ETS SpeechRater 0.145s threshold
+**Plans**: TBD
+
+### Phase 11: Filler Breakdown Panel
+**Goal**: The user sees which filler words they use most often and in which part of their talk, so they can target specific habits rather than treating all fillers as one undifferentiated problem.
+**Depends on**: Phase 8
+**Requirements**: ANAL-04, ANAL-05
+**Success Criteria** (what must be TRUE):
+  1. The review page shows a FillerBreakdown panel with per-type counts (um, uh, like, you know, etc.) derived from the event log filler labels
+  2. The panel shows which session third (opening, middle, closing) had the highest filler density, so the user knows when in their talk the habit peaks
+  3. When Whisper data is available (Phase 13), the panel automatically uses `whisperFillers.byType` for counts instead of Web Speech event counts — the component is Whisper-upgradeable via props
+  4. A session with zero filler events shows a graceful empty state, not a blank or error state
+**Plans**: TBD
+
+### Phase 12: WPM Chart Panel
+**Goal**: The user sees their speaking rate as a line chart over time (30-second windows) in the review page, so they can identify where they rushed or slowed down rather than seeing only a single average WPM figure.
+**Depends on**: Phase 8
+**Requirements**: ANAL-06
+**Success Criteria** (what must be TRUE):
+  1. The review page shows a WPM line chart with one data point per 30-second window, rendered using recharts
+  2. The chart x-axis labels correspond to session time segments (e.g., "0:00", "0:30", "1:00") and the y-axis shows words per minute
+  3. A session recorded before Phase 8 (no `wpmWindows` in storage) shows a graceful "no data available" state, not a crash or blank chart
+  4. The chart renders correctly for sessions as short as one window (30–60 seconds) and as long as 20+ minutes
+**Plans**: TBD
+
+### Phase 13: Whisper Integration
+**Goal**: Post-session audio is re-analyzed by Whisper.wasm so filler counts are accurate (Web Speech suppresses disfluencies), and the user sees transparent progress while this happens, with a graceful fallback to Web Speech counts if Whisper fails.
+**Depends on**: Phase 11
+**Requirements**: WHIS-01, WHIS-02, WHIS-03, WHIS-04, WHIS-05
+**Success Criteria** (what must be TRUE):
+  1. After a session ends, the filler score on the scorecard is updated within 10–30 seconds to reflect Whisper-derived counts — the review page shows Web Speech scores immediately and the score upgrades silently when Whisper finishes
+  2. A WhisperStatusBanner is visible on the review page while Whisper analysis is running, and disappears or updates to a success state when complete
+  3. When Whisper is downloaded for the first time (~75 MB), the user sees a progress indicator reading "Downloading speech model (first time only)..." — the app does not appear frozen
+  4. Live captions during recording are unaffected — Web Speech API continues to power real-time captions exactly as before
+  5. If Whisper fails (network error, unsupported browser, WASM error), the scorecard retains the Web Speech-derived filler counts and no error state is shown to the user beyond the banner updating
+**Plans**: TBD
+
+## Progress
+
+**Execution Order:**
+v1.0 phases: 1 → 2 → 3 → 4 → 5 → 6 → 7
+v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation and Recording | 3/3 | Complete | 2026-03-12 |
+| 2. Analysis Pipeline | 0/3 | Not started | - |
+| 3. Post-Session Review | 3/3 | Complete | 2026-03-15 |
+| 4. Session History | 3/3 | Complete | 2026-03-16 |
+| 5. UI Polish | 5/5 | Complete | - |
+| 6. Interactive UX Improvements | 3/3 | Complete | - |
+| 7. Visual Redesign | 7/7 | Complete | - |
+| 8. Schema Migration + WPM Windows | 0/TBD | Not started | - |
+| 9. Opening/Closing Strength | 0/TBD | Not started | - |
+| 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
+| 11. Filler Breakdown Panel | 0/TBD | Not started | - |
+| 12. WPM Chart Panel | 0/TBD | Not started | - |
+| 13. Whisper Integration | 0/TBD | Not started | - |

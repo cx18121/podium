@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Deeper Analytics
 status: planning
-stopped_at: Milestone v2.0 started — defining requirements
+stopped_at: Roadmap created for v2.0 — phases 8-13 defined, ready for phase planning
 last_updated: "2026-03-16T00:00:00.000Z"
-last_activity: "2026-03-16 — Milestone v2.0 started"
+last_activity: "2026-03-16 — v2.0 roadmap created (phases 8-13)"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,19 +18,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-11)
+See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** You watch your own session back with a coach's eye: every filler word, eye contact break, and nervous gesture marked at the exact moment it happened.
-**Current focus:** Phase 1 — Foundation and Recording
+**Current focus:** Phase 8 — Schema Migration + WPM Windows (v2.0 prerequisite gate)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (roadmap defined, ready for plan-phase 8)
 Plan: —
-Status: Defining requirements for v2.0
-Last activity: 2026-03-16 — Milestone v2.0 started
+Status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
+Last activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 
 ## Performance Metrics
 
@@ -145,22 +145,29 @@ Recent decisions affecting current work:
 - [Phase 07-07]: [07-07] NameSessionModal description paragraph removed — spec shows minimal layout (title + input + CTA + skip link only)
 - [Phase 07-07]: [07-07] SpeechSupportBanner dismiss uses session-only useState — warning banner dismissal doesn't need to persist across sessions
 - [Phase 07-04]: [07-04] SVG ring via strokeDashoffset on 54px-radius circle; RAF flag for 0-to-score% animation; vi.stubGlobal RAF in tests for synchronous jsdom assertions
+- [v2.0 roadmap]: Whisper integration is Phase 13 (last) — COOP/COEP and worker-type incompatibility are environment-specific blocking pitfalls; all other v2.0 phases ship value without it
+- [v2.0 roadmap]: Phase 8 (schema migration) is the unconditional prerequisite gate — all downstream phases read from Dexie v3 fields; undefined returns on v1 sessions without version bump
+- [v2.0 roadmap]: FillerBreakdown (Phase 11) is Whisper-upgradeable by design — built on Web Speech baseline with a whisperFillers? prop that Phase 13 populates
+- [v2.0 roadmap]: Whisper worker must be ES module ({ type: 'module' }); existing MediaPipe worker remains classic-mode — two separate workers, never coexisting in memory
+- [v2.0 roadmap]: MediaPipe worker must be terminated before Whisper worker starts — combined WASM heap (300-600 MB + 100-200 MB) exceeds mid-range tab limits
 
 ### Roadmap Evolution
 
 - Phase 5 added: UI Polish — fix all audit findings and elevate visual design quality across the full app
 - Phase 6 added: Interactive UX improvements — custom tooltips, smarter filler detection, live captions
 - Phase 7 added: Visual redesign — elevate frontend design quality with distinctive, impressive visual identity
+- Phases 8-13 added: v2.0 Deeper Analytics milestone — schema migration, analytics panels, Whisper integration
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
 - **[RESOLVED 01-02] MediaPipe-in-worker:** Classic-mode Web Worker with importScripts CONFIRMED working on Chrome. Proceed with this pattern in 02-01.
 - **[RESOLVED 01-02] Filler word suppression:** EMPIRICALLY CONFIRMED as partial suppression. Web Speech API captures some but not all um/uh. Filler scoring in Phase 3 must treat counts as lower bounds. Whisper.wasm is deferred to v2 (AUD-v2-01).
 - **Expressiveness and gesture thresholds uncalibrated:** No documented baseline values exist. Phase 2 implements heuristics; plan for threshold-tuning iteration after first real recordings in Phase 3.
+- **[Phase 13 — NEEDS RESEARCH] COOP/COEP production headers:** Confirm window.crossOriginIsolated === true is achievable on the production hosting environment before writing any Whisper code. Audit all cross-origin resources for CORP header compatibility.
 
 ### Quick Tasks Completed
 
@@ -170,6 +177,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T06:15:24.891Z
-Stopped at: Completed 07-04-PLAN.md — ScorecardView SVG ring and animated bars
+Last session: 2026-03-16T00:00:00.000Z
+Stopped at: v2.0 roadmap created — phases 8-13 defined
 Resume file: None
