@@ -49,7 +49,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
   if (error) {
     return (
-      <div role="alert" className="flex items-center justify-center min-h-screen bg-gray-950 text-red-400">
+      <div role="alert" className="flex items-center justify-center min-h-screen bg-[#080c14] text-red-400">
         {error}
       </div>
     );
@@ -57,7 +57,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
   if (!session || !videoUrl) {
     return (
-      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-gray-950 text-gray-400">
+      <div aria-busy="true" className="flex items-center justify-center min-h-screen bg-[#080c14] text-[#94a3b8]">
         Loading session...
       </div>
     );
@@ -67,9 +67,9 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const durationDisplay = `${Math.floor(durationSec / 60)}:${String(durationSec % 60).padStart(2, '0')}`;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-950 text-white p-8 gap-6 max-w-3xl mx-auto w-full">
+    <div className="flex flex-col items-center min-h-screen bg-[#080c14] text-white p-8 gap-6 max-w-3xl mx-auto w-full">
       <h1 className="text-xl font-semibold">{session.title}</h1>
-      <p className="text-sm text-gray-400">{durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}</p>
+      <p className="text-sm text-[#94a3b8]">{durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}</p>
 
       <ScorecardView scorecard={scorecard} />
 
@@ -82,14 +82,14 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
       <button
         onClick={onRecordAgain}
-        className="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold transition-colors"
+        className="px-6 h-[52px] bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold rounded-xl motion-safe:transition-shadow motion-safe:duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-2"
       >
-        Record Another Session
+        Record Again
       </button>
       {onBack && (
         <button
           onClick={onBack}
-          className="text-sm text-gray-400 underline hover:text-gray-200 transition-colors"
+          className="text-sm text-[#94a3b8] hover:text-[#f1f5f9] motion-safe:transition-colors motion-safe:duration-150"
         >
           Back to History
         </button>

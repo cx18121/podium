@@ -53,7 +53,7 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
-          className="w-full rounded-xl bg-black cursor-pointer"
+          className="w-full rounded-xl bg-[#111827] cursor-pointer"
           aria-label="Session playback"
         />
         <button
@@ -85,7 +85,14 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
       <div className="flex flex-col gap-1">
         <button
           onClick={() => setShowCaptions(c => !c)}
-          className="self-end text-xs px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+          className={[
+            "self-end text-xs px-2 py-1 rounded font-semibold",
+            "motion-safe:transition-colors motion-safe:duration-150",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#6366f1] focus-visible:outline-offset-1",
+            showCaptions
+              ? "bg-[#6366f1] text-white"
+              : "bg-[#1a2235] hover:bg-[#111827] text-[#94a3b8] border border-[rgba(255,255,255,0.07)]",
+          ].join(" ")}
           aria-label={showCaptions ? 'Hide captions' : 'Show captions'}
           aria-pressed={showCaptions}
         >
@@ -93,12 +100,12 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
         </button>
         {showCaptions && (
           <div
-            className="w-full min-h-[2.5rem] bg-gray-900/80 rounded px-4 py-2 text-sm text-white text-center flex items-center justify-center"
+            className="w-full min-h-[2.5rem] bg-[rgba(0,0,0,0.7)] rounded px-4 py-2 text-sm text-[#f1f5f9] text-center flex items-center justify-center"
             aria-live="polite"
             aria-atomic="true"
           >
             {transcript === undefined ? (
-              <span className="text-gray-500">No transcript available</span>
+              <span className="text-[#475569]">No transcript available</span>
             ) : (
               <span>{getCurrentCaption(transcript, currentTimeMs) ?? ''}</span>
             )}
