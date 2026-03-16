@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-11)
 
 ## Current Position
 
-Phase: 4 of 4 (Session History) — IN PROGRESS
-Plan: 1 of 3 in current phase — COMPLETE
-Status: Phase 4 plan 01 complete, ready to begin plan 02 (SparklineChart)
-Last activity: 2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented
+Phase: 6 of 7 (Interactive UX Improvements) — IN PROGRESS
+Plan: 3 of 3 in current phase — COMPLETE
+Status: Phase 6 plan 03 complete — live captions wired: Dexie v2 schema, transcript persistence, CC toggle bar
+Last activity: 2026-03-16 — 06-03: Dexie v2 schema + transcript persistence + AnnotatedPlayer CC caption bar
 
-Progress: [████████░░] 83% (10/12 plans)
+Progress: [████████████░░] 86% (plans completed)
 
 ## Performance Metrics
 
@@ -116,6 +116,9 @@ Recent decisions affecting current work:
 - [Phase 05-05]: [05-05] onClick removed from video, placed on overlay button only — prevents double-toggle
 - [Phase 05-05]: [05-05] isPlaying state driven by onPlay/onPause events — authoritative video state
 - [Phase 05-05]: [05-05] Processing spinner inlined in App.tsx — no ProcessingSpinner component per RESEARCH.md Pitfall 6
+- [Phase 06-03]: Dexie v2 stores() string identical to v1 — transcript is unindexed data; version block required for Dexie upgrade machinery
+- [Phase 06-03]: getCurrentCaption pure function filters isFinal segments by timestampMs <= currentTimeMs and returns last match via .at(-1)
+- [Phase 06-03]: showCaptions defaults false — CC button must be explicitly clicked; min-h-[2.5rem] on caption bar prevents layout collapse
 
 ### Roadmap Evolution
 
@@ -141,6 +144,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T03:12:21.915Z
-Stopped at: Completed 05-05-PLAN.md
-Resume file: None
+Last session: 2026-03-16T00:44:00Z
+Stopped at: Completed 06-03-PLAN.md — Phase 6 plan 03 complete
+Resume file: .planning/phases/07-visual-redesign-elevate-the-overall-frontend-design-quality-with-a-more-impressive-polished-and-distinctive-visual-identity-across-all-screens/ (next phase)
