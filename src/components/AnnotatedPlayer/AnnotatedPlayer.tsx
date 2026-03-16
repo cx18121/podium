@@ -1,18 +1,31 @@
 import { useRef, useState, useCallback } from 'react';
 import type { SessionEvent } from '../../db/db';
+import type { TranscriptSegment } from '../../hooks/useSpeechCapture';
 import Timeline from './Timeline';
 
 interface AnnotatedPlayerProps {
   videoUrl: string;
   durationMs: number;
   events: SessionEvent[];
+  transcript?: TranscriptSegment[]; // Phase 6: for live caption display
 }
 
-export default function AnnotatedPlayer({ videoUrl, durationMs, events }: AnnotatedPlayerProps) {
+function getCurrentCaption(
+  segments: TranscriptSegment[],
+  currentTimeMs: number
+): string | null {
+  const active = segments
+    .filter(s => s.isFinal && s.timestampMs <= currentTimeMs)
+    .at(-1);
+  return active?.text ?? null;
+}
+
+export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcript }: AnnotatedPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showCaptions, setShowCaptions] = useState(false);
 
   const handleTimeUpdate = useCallback(() => {
     if (!videoRef.current) return;
@@ -67,6 +80,31 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events }: Annota
         currentTimeMs={currentTimeMs}
         onSeek={seekTo}
       />
+
+      {/* CC toggle and caption bar */}
+      <div className="flex flex-col gap-1">
+        <button
+          onClick={() => setShowCaptions(c => !c)}
+          className="self-end text-xs px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+          aria-label={showCaptions ? 'Hide captions' : 'Show captions'}
+          aria-pressed={showCaptions}
+        >
+          CC
+        </button>
+        {showCaptions && (
+          <div
+            className="w-full min-h-[2.5rem] bg-gray-900/80 rounded px-4 py-2 text-sm text-white text-center flex items-center justify-center"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {transcript === undefined ? (
+              <span className="text-gray-500">No transcript available</span>
+            ) : (
+              <span>{getCurrentCaption(transcript, currentTimeMs) ?? ''}</span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
