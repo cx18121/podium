@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ScorecardView from './ScorecardView';
 import type { ScorecardResult } from '../../analysis/scorer';
 
@@ -15,6 +15,19 @@ const fixtureScorecard: ScorecardResult = {
 };
 
 describe('ScorecardView', () => {
+  beforeEach(() => {
+    // Ensure requestAnimationFrame fires synchronously in jsdom so animated bars
+    // are at their final width immediately after render
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0);
+      return 0;
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('renders the overall score number in the DOM', () => {
     render(<ScorecardView scorecard={fixtureScorecard} />);
     expect(screen.getByText('78')).toBeInTheDocument();
