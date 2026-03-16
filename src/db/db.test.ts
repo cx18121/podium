@@ -57,4 +57,33 @@ describe('Dexie sessions table', () => {
     expect(session?.videoBlob).toBeDefined();
     expect(session?.videoBlob).not.toBeNull();
   });
+
+  it('stores and retrieves a transcript array', async () => {
+    const id = await db.sessions.add({
+      title: 'Transcript test',
+      createdAt: new Date(),
+      durationMs: 10000,
+      videoBlob: new Blob(['test'], { type: 'video/webm' }),
+      eventLog: [],
+      scorecard: null,
+      transcript: [{ text: 'hello world', timestampMs: 1000, isFinal: true }],
+    });
+    const session = await db.sessions.get(id);
+    expect(session?.transcript).toEqual([
+      { text: 'hello world', timestampMs: 1000, isFinal: true },
+    ]);
+  });
+
+  it('allows sessions without transcript (backward compatibility)', async () => {
+    const id = await db.sessions.add({
+      title: 'Legacy session',
+      createdAt: new Date(),
+      durationMs: 5000,
+      videoBlob: new Blob(['test'], { type: 'video/webm' }),
+      eventLog: [],
+      scorecard: null,
+    });
+    const session = await db.sessions.get(id);
+    expect(session?.transcript).toBeUndefined();
+  });
 });

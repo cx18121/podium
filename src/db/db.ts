@@ -1,5 +1,6 @@
 // src/db/db.ts
 import Dexie, { type EntityTable } from 'dexie';
+import type { TranscriptSegment } from '../hooks/useSpeechCapture';
 
 export interface Session {
   id: number;
@@ -9,6 +10,7 @@ export interface Session {
   videoBlob: Blob;        // NOT indexed — never add to stores() index string
   eventLog: SessionEvent[]; // Phase 2 will push entries; initialized as []
   scorecard: Scorecard | null; // Phase 3 will write this; initialized as null
+  transcript?: TranscriptSegment[]; // Phase 6: undefined for sessions recorded before v2
 }
 
 export interface SessionEvent {
@@ -30,6 +32,13 @@ const db = new Dexie('CognitiveLoadMapper') as Dexie & {
 db.version(1).stores({
   sessions: '++id, createdAt, title',
   // videoBlob, eventLog, scorecard are stored as data but not indexed
+});
+
+// v2 schema: adds transcript field as unindexed data — stores() string is identical.
+// Both version blocks are required for Dexie to handle upgrade from v1 browsers.
+// NEVER add transcript to the index string — arrays cannot be Dexie indexes.
+db.version(2).stores({
+  sessions: '++id, createdAt, title',
 });
 
 export { db };
