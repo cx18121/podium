@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-16T03:04:46.503Z"
+stopped_at: Completed 05-05-PLAN.md
+last_updated: "2026-03-16T03:12:21.942Z"
 last_activity: "2026-03-15 — 04-01: HistoryView page, SessionListItem, StorageQuotaBar, DeleteConfirmModal implemented"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 17
-  completed_plans: 16
+  completed_plans: 17
   percent: 83
 ---
 
@@ -63,6 +63,7 @@ Progress: [████████░░] 83% (10/12 plans)
 | Phase 05-ui-polish-fix-all-audit-findings-and-elevate-visual-design-quality-across-the-full-app P02 | 20 | 2 tasks | 4 files |
 | Phase 05 P03 | 7 | 1 tasks | 2 files |
 | Phase 05-ui-polish-fix-all-audit-findings-and-elevate-visual-design-quality-across-the-full-app P04 | 9 | 2 tasks | 4 files |
+| Phase 05 P05 | 8 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,9 @@ Recent decisions affecting current work:
 - [Phase 05-04]: [05-04] All four page h1 elements normalized to text-xl font-semibold — eliminates four-different-sizes inconsistency
 - [Phase 05-04]: [05-04] max-w-3xl applied consistently to all page outer containers including SetupScreen for visual consistency per A-11
 - [Phase 05-04]: [05-04] View History button: removed underline, added arrow prefix and px-4 py-2 for 44px touch target compliance (A-06)
+- [Phase 05-05]: [05-05] onClick removed from video, placed on overlay button only — prevents double-toggle
+- [Phase 05-05]: [05-05] isPlaying state driven by onPlay/onPause events — authoritative video state
+- [Phase 05-05]: [05-05] Processing spinner inlined in App.tsx — no ProcessingSpinner component per RESEARCH.md Pitfall 6
 
 ### Roadmap Evolution
 
@@ -135,6 +139,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T03:04:46.478Z
-Stopped at: Completed 05-04-PLAN.md
+Last session: 2026-03-16T03:12:21.915Z
+Stopped at: Completed 05-05-PLAN.md
 Resume file: None
