@@ -5,6 +5,7 @@ import ScorecardView from '../components/ScorecardView/ScorecardView';
 import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import PauseDetail from '../components/PauseDetail/PauseDetail';
 import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
+import WPMChart from '../components/WPMChart/WPMChart';
 
 interface ReviewPageProps {
   sessionId: number;
@@ -120,6 +121,10 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
           durationMs={session.durationMs}
           whisperFillers={session.whisperFillers}
         />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '672px' }}>
+        <WPMChart wpmWindows={session.wpmWindows} />
       </div>
 
       <div style={{ width: '100%', maxWidth: '672px' }}>
