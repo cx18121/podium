@@ -184,7 +184,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 10-01-PLAN.md — scorePauses() TDD pure functions + scorePacing WPM/pause blending + PauseDetail component + Review.tsx wiring (ANAL-02, ANAL-03)
 
 ### Phase 11: Filler Breakdown Panel
 **Goal**: The user sees which filler words they use most often and in which part of their talk, so they can target specific habits rather than treating all fillers as one undifferentiated problem.
@@ -246,7 +246,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 7. Visual Redesign | 7/7 | Complete | - |
 | 8. Schema Migration + WPM Windows | 2/2 | Complete   | 2026-03-16 |
 | 9. Opening/Closing Strength | 1/1 | Complete    | 2026-03-17 |
-| 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
+| 10. Pause Scoring + PauseDetail Panel | 0/1 | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
 | 12. WPM Chart Panel | 0/TBD | Not started | - |
 | 13. Whisper Integration | 0/TBD | Not started | - |
