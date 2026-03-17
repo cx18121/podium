@@ -63,7 +63,7 @@
 - [x] **ANAL-03**: Pause quality (hesitation vs. deliberate) contributes to the pacing score
 - [x] **ANAL-04**: User sees filler breakdown by type (um, uh, like, you know...) in review
 - [x] **ANAL-05**: User sees which segment of their talk had the most fillers (session thirds)
-- [ ] **ANAL-06**: User sees WPM over time as a chart (30s windows) in review
+- [x] **ANAL-06**: User sees WPM over time as a chart (30s windows) in review
 
 ### Whisper
 
@@ -132,7 +132,7 @@
 | ANAL-03 | Phase 10 | Complete |
 | ANAL-04 | Phase 11 | Complete |
 | ANAL-05 | Phase 11 | Complete |
-| ANAL-06 | Phase 12 | Pending |
+| ANAL-06 | Phase 12 | Complete |
 | WHIS-01 | Phase 13 | Pending |
 | WHIS-02 | Phase 13 | Pending |
 | WHIS-03 | Phase 13 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 11-01-PLAN.md — Filler Breakdown panel
-last_updated: "2026-03-17T16:46:23.489Z"
+stopped_at: Completed 12-01-PLAN.md — WPM Chart Panel
+last_updated: "2026-03-17T19:34:47.472Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 11
-  total_plans: 32
-  completed_plans: 32
+  completed_phases: 12
+  total_plans: 33
+  completed_plans: 33
   percent: 0
 ---
 
@@ -77,6 +77,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 09-opening-closing-strength P01 | 5 | 2 tasks | 4 files |
 | Phase 10-pause-scoring-pausedetail-panel P01 | 8 | 3 tasks | 7 files |
 | Phase 11-filler-breakdown-panel P01 | 21 | 2 tasks | 5 files |
+| Phase 12-wpm-chart-panel P01 | 26 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -166,6 +167,9 @@ Recent decisions affecting current work:
 - [Phase 11-01]: [11-01] computeFillerBreakdown: Math.min(2,...) clamp prevents out-of-bounds third index for events at durationMs boundary
 - [Phase 11-01]: [11-01] FillerBreakdown trusts whisperFillers.byType over Web Speech when provided — empty Whisper byType shows empty state even if Web Speech found fillers
 - [Phase 11-01]: [11-01] Peak third always computed from event log timestamps; Whisper gives aggregate counts without per-event timestamps
+- [Phase 12-01]: [12-01] Tooltip formatter type uses inferred type not explicit number — recharts ValueType is number|string|undefined, explicit annotation causes TS2322
+- [Phase 12-01]: [12-01] WPMChart empty state: !wpmWindows || chartData.length === 0 — covers pre-Phase-8 sessions (undefined) and empty array edge case
+- [Phase 12-01]: [12-01] vi.mock('recharts') at top level replacing only ResponsiveContainer with fixed-size div — required for jsdom vitest compatibility
 
 ### Roadmap Evolution
 
@@ -193,6 +197,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-17T16:35:06.388Z
-Stopped at: Completed 11-01-PLAN.md — Filler Breakdown panel
+Last session: 2026-03-17T19:34:47.334Z
+Stopped at: Completed 12-01-PLAN.md — WPM Chart Panel
 Resume file: None
