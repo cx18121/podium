@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 10-01-PLAN.md — Pause scoring + PauseDetail panel
-last_updated: "2026-03-17T06:42:53.210Z"
+stopped_at: Completed 11-01-PLAN.md — Filler Breakdown panel
+last_updated: "2026-03-17T16:35:06.610Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 10
-  total_plans: 31
-  completed_plans: 31
+  completed_phases: 11
+  total_plans: 32
+  completed_plans: 32
   percent: 0
 ---
 
@@ -76,6 +76,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 08 P02 | 10 | 2 tasks | 3 files |
 | Phase 09-opening-closing-strength P01 | 5 | 2 tasks | 4 files |
 | Phase 10-pause-scoring-pausedetail-panel P01 | 8 | 3 tasks | 7 files |
+| Phase 11-filler-breakdown-panel P01 | 21 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -162,6 +163,9 @@ Recent decisions affecting current work:
 - [Phase 10-01]: [10-01] Pacing = 70% WPM + 30% pause quality when transcript available; WPM-only when undefined (backward-compat for pre-Phase 6 sessions)
 - [Phase 10-01]: [10-01] classifyPause SENTENCE_TERMINAL = /[.?!]\s*$/ on last isFinal segment before pause — hesitation default when transcript empty
 - [Phase 10-01]: [10-01] Hesitation penalty 15 pts each, deliberate = 0 penalty; floor at 0. PauseDetail omits breakdown when transcript empty.
+- [Phase 11-01]: [11-01] computeFillerBreakdown: Math.min(2,...) clamp prevents out-of-bounds third index for events at durationMs boundary
+- [Phase 11-01]: [11-01] FillerBreakdown trusts whisperFillers.byType over Web Speech when provided — empty Whisper byType shows empty state even if Web Speech found fillers
+- [Phase 11-01]: [11-01] Peak third always computed from event log timestamps; Whisper gives aggregate counts without per-event timestamps
 
 ### Roadmap Evolution
 
@@ -189,6 +193,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-17T06:39:35.276Z
-Stopped at: Completed 10-01-PLAN.md — Pause scoring + PauseDetail panel
+Last session: 2026-03-17T16:35:06.388Z
+Stopped at: Completed 11-01-PLAN.md — Filler Breakdown panel
 Resume file: None
