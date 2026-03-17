@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 08-02-PLAN.md — calculateWPMWindows + App.tsx wiring
-last_updated: "2026-03-16T19:58:00.838Z"
+stopped_at: Completed 09-01-PLAN.md — Opening/Closing Strength scorecard dimension
+last_updated: "2026-03-17T04:44:12.457Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 8
-  total_plans: 29
-  completed_plans: 29
+  completed_phases: 9
+  total_plans: 30
+  completed_plans: 30
   percent: 0
 ---
 
@@ -74,6 +74,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 07-visual-redesign P04 | 15 | 2 tasks | 2 files |
 | Phase 08-schema-migration-wpm-windows P01 | 7 | 1 tasks | 2 files |
 | Phase 08 P02 | 10 | 2 tasks | 3 files |
+| Phase 09-opening-closing-strength P01 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -154,6 +155,8 @@ Recent decisions affecting current work:
 - [v2.0 roadmap]: MediaPipe worker must be terminated before Whisper worker starts — combined WASM heap (300-600 MB + 100-200 MB) exceeds mid-range tab limits
 - [Phase 08-01]: [08-01] Dexie v3 schema: WPMWindow + WhisperFillerResult types exported from db.ts; Session extended with wpmWindows?, whisperFillers?, whisperStatus?; upgrade callback clears v1.0 sessions per FOUND-01
 - [Phase 08-02]: [08-02] calculateWPMWindows filters to isFinal segments; missing windows not gap-filled; wpmWindows computed at save time in handleSaveName
+- [Phase 09-01]: [09-01] WEIGHTS redistributed: eyeContact=0.22, fillers=0.22, pacing=0.18, expressiveness=0.14, gestures=0.14, openingClosing=0.10 (sum=1.00)
+- [Phase 09-01]: [09-01] scoreOpeningClosing: opening window 60% / closing window 40%; short-session guard for durationMs < 60s; NEGATIVE_EVENT_TYPES = filler_word, face_touch, body_sway, eye_contact_break
 
 ### Roadmap Evolution
 
@@ -181,6 +184,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-16T19:52:56.723Z
-Stopped at: Completed 08-02-PLAN.md — calculateWPMWindows + App.tsx wiring
+Last session: 2026-03-17T04:44:12.424Z
+Stopped at: Completed 09-01-PLAN.md — Opening/Closing Strength scorecard dimension
 Resume file: None

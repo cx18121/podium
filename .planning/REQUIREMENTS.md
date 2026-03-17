@@ -58,7 +58,7 @@
 
 ### Analytics
 
-- [ ] **ANAL-01**: User sees opening/closing strength as a new scorecard dimension (first/last 30s scored from existing event log)
+- [x] **ANAL-01**: User sees opening/closing strength as a new scorecard dimension (first/last 30s scored from existing event log)
 - [ ] **ANAL-02**: User sees pause count and average duration in the review page
 - [ ] **ANAL-03**: Pause quality (hesitation vs. deliberate) contributes to the pacing score
 - [ ] **ANAL-04**: User sees filler breakdown by type (um, uh, like, you know...) in review
@@ -127,7 +127,7 @@
 | HIST-03 | Phase 4 | Complete |
 | FOUND-01 | Phase 8 | Complete |
 | FOUND-02 | Phase 8 | Complete |
-| ANAL-01 | Phase 9 | Pending |
+| ANAL-01 | Phase 9 | Complete |
 | ANAL-02 | Phase 10 | Pending |
 | ANAL-03 | Phase 10 | Pending |
 | ANAL-04 | Phase 11 | Pending |

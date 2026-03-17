@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **v2.0 — Deeper Analytics**
 
 - [x] **Phase 8: Schema Migration + WPM Windows** - Dexie v3 schema with new analytics fields and WPM windowing function — prerequisite gate for all v2.0 features (completed 2026-03-16)
-- [ ] **Phase 9: Opening/Closing Strength** - New scorecard dimension scoring first and last 30s of each session from the existing event log
+- [x] **Phase 9: Opening/Closing Strength** - New scorecard dimension scoring first and last 30s of each session from the existing event log (completed 2026-03-17)
 - [ ] **Phase 10: Pause Scoring + Detail Panel** - Pause quality scoring as a Pacing sub-dimension with a PauseDetail panel showing count and duration breakdown
 - [ ] **Phase 11: Filler Breakdown Panel** - Per-type filler counts and session-thirds clustering in review UI, built on Web Speech baseline and upgradeable by Whisper
 - [ ] **Phase 12: WPM Chart Panel** - Speaking rate over time as a 30-second-window line chart in review UI
@@ -170,7 +170,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 10: Pause Scoring + PauseDetail Panel
 **Goal**: The pacing score reflects pause quality (not just pause count), and the user sees a PauseDetail panel on the review page showing pause count and average duration, so they can distinguish hesitation pauses from deliberate emphasis pauses.
@@ -184,7 +184,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 11: Filler Breakdown Panel
 **Goal**: The user sees which filler words they use most often and in which part of their talk, so they can target specific habits rather than treating all fillers as one undifferentiated problem.
@@ -198,7 +198,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 12: WPM Chart Panel
 **Goal**: The user sees their speaking rate as a line chart over time (30-second windows) in the review page, so they can identify where they rushed or slowed down rather than seeing only a single average WPM figure.
@@ -212,7 +212,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 13: Whisper Integration
 **Goal**: Post-session audio is re-analyzed by Whisper.wasm so filler counts are accurate (Web Speech suppresses disfluencies), and the user sees transparent progress while this happens, with a graceful fallback to Web Speech counts if Whisper fails.
@@ -227,7 +227,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ## Progress
 
@@ -245,7 +245,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 6. Interactive UX Improvements | 3/3 | Complete | - |
 | 7. Visual Redesign | 7/7 | Complete | - |
 | 8. Schema Migration + WPM Windows | 2/2 | Complete   | 2026-03-16 |
-| 9. Opening/Closing Strength | 0/1 | Not started | - |
+| 9. Opening/Closing Strength | 1/1 | Complete   | 2026-03-17 |
 | 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
 | 12. WPM Chart Panel | 0/TBD | Not started | - |
