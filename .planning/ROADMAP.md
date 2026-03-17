@@ -170,7 +170,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
 
 ### Phase 10: Pause Scoring + PauseDetail Panel
 **Goal**: The pacing score reflects pause quality (not just pause count), and the user sees a PauseDetail panel on the review page showing pause count and average duration, so they can distinguish hesitation pauses from deliberate emphasis pauses.
@@ -211,7 +211,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 12-01-PLAN.md — computeWPMChartData() TDD pure function + WPMChart recharts component + Review.tsx wiring (ANAL-06)
 
 ### Phase 13: Whisper Integration
 **Goal**: Post-session audio is re-analyzed by Whisper.wasm so filler counts are accurate (Web Speech suppresses disfluencies), and the user sees transparent progress while this happens, with a graceful fallback to Web Speech counts if Whisper fails.
@@ -226,13 +226,13 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row� scoreOpeningClosing() pure function + ScorecardResult extension + ScorecardView 6th dimension row
+- [ ] 13-01-PLAN.md — Whisper.wasm ES module worker, WhisperStatusBanner, filler count upgrade, graceful fallback (WHIS-01, WHIS-02, WHIS-03, WHIS-04, WHIS-05)
 
 ## Progress
 
 **Execution Order:**
-v1.0 phases: 1 → 2 → 3 → 4 → 5 → 6 → 7
-v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
+v1.0 phases: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
+v2.0 phases: 8 -> 9 -> 10 -> 11 -> 12 -> 13
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -247,5 +247,5 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 9. Opening/Closing Strength | 1/1 | Complete    | 2026-03-17 |
 | 10. Pause Scoring + PauseDetail Panel | 1/1 | Complete    | 2026-03-17 |
 | 11. Filler Breakdown Panel | 1/1 | Complete    | 2026-03-17 |
-| 12. WPM Chart Panel | 0/TBD | Not started | - |
+| 12. WPM Chart Panel | 0/1 | Not started | - |
 | 13. Whisper Integration | 0/TBD | Not started | - |
