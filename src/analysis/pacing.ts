@@ -3,7 +3,7 @@
 // from accumulated transcript segments.
 
 import type { TranscriptSegment } from '../hooks/useSpeechCapture';
-import type { WPMWindow } from '../db/db';
+import type { WPMWindow, SessionEvent } from '../db/db';
 
 export interface PacingEvent {
   type: 'pause_detected' | 'wpm_snapshot';
@@ -94,4 +94,100 @@ export function calculateWPMWindows(
   }
 
   return windows.sort((a, b) => a.startMs - b.startMs);
+}
+
+// --- Pause scoring (ANAL-03) ---
+
+const SENTENCE_TERMINAL = /[.?!]\s*$/;
+
+/**
+ * Parses the numeric duration in seconds from a pause label string.
+ * e.g. "3.0s pause" → 3.0; undefined or malformed → 0
+ */
+export function parsePauseDuration(label: string | undefined): number {
+  if (!label) return 0;
+  const match = label.match(/^([\d.]+)s/);
+  if (!match) return 0;
+  const n = parseFloat(match[1]);
+  return isNaN(n) ? 0 : n;
+}
+
+/**
+ * Classifies a pause as 'deliberate' (sentence boundary) or 'hesitation' (mid-clause).
+ * Looks at the last isFinal transcript segment before pauseTimestampMs.
+ * Conservative default: returns 'hesitation' when transcript is empty.
+ */
+export function classifyPause(
+  pauseTimestampMs: number,
+  transcript: TranscriptSegment[]
+): 'deliberate' | 'hesitation' {
+  const finalBefore = transcript
+    .filter(s => s.isFinal && s.timestampMs <= pauseTimestampMs)
+    .sort((a, b) => b.timestampMs - a.timestampMs);
+
+  if (finalBefore.length === 0) return 'hesitation';
+  return SENTENCE_TERMINAL.test(finalBefore[0].text) ? 'deliberate' : 'hesitation';
+}
+
+export interface PauseStats {
+  total: number;
+  averageDurationS: number;
+  longestDurationS: number;
+  hesitationCount: number;
+  deliberateCount: number;
+}
+
+/**
+ * Computes aggregate pause statistics from session events and transcript.
+ * Filters to 'pause_detected' events only.
+ */
+export function computePauseStats(
+  events: SessionEvent[],
+  transcript: TranscriptSegment[]
+): PauseStats {
+  const pauseEvents = events.filter(e => e.type === 'pause_detected');
+
+  if (pauseEvents.length === 0) {
+    return { total: 0, averageDurationS: 0, longestDurationS: 0, hesitationCount: 0, deliberateCount: 0 };
+  }
+
+  const durations = pauseEvents.map(e => parsePauseDuration(e.label));
+  const total = pauseEvents.length;
+  const averageDurationS = durations.reduce((sum, d) => sum + d, 0) / total;
+  const longestDurationS = Math.max(...durations);
+
+  let hesitationCount = 0;
+  let deliberateCount = 0;
+  for (const e of pauseEvents) {
+    if (classifyPause(e.timestampMs, transcript) === 'deliberate') {
+      deliberateCount++;
+    } else {
+      hesitationCount++;
+    }
+  }
+
+  return { total, averageDurationS, longestDurationS, hesitationCount, deliberateCount };
+}
+
+/**
+ * Scores pause quality based on hesitation vs deliberate pause counts.
+ * Returns a plain score object (no import of DimensionScore to avoid circular dependency).
+ * Score: 85 base when no pauses; 100 - hesitationCount * 15, floored at 0.
+ */
+export function scorePauses(
+  events: SessionEvent[],
+  transcript: TranscriptSegment[]
+): { score: number; label: string; detail?: string } {
+  const stats = computePauseStats(events, transcript);
+
+  if (stats.total === 0) {
+    return { score: 85, label: '85 / 100', detail: 'No significant pauses detected' };
+  }
+
+  const score = Math.max(0, Math.min(100, 100 - stats.hesitationCount * 15));
+  return {
+    score,
+    label: `${score} / 100`,
+    detail: `${stats.total} pause(s) — ${stats.hesitationCount} hesitation, ${stats.deliberateCount} deliberate`,
+  };
 }

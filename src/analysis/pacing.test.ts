@@ -2,8 +2,9 @@
 // AUD-03/AUD-04: Pacing and pause detection tests
 
 import { describe, it, expect } from 'vitest';
-import { detectPauses, calculateWPM, calculateWPMWindows } from './pacing';
+import { detectPauses, calculateWPM, calculateWPMWindows, parsePauseDuration, classifyPause, computePauseStats, scorePauses } from './pacing';
 import type { TranscriptSegment } from '../hooks/useSpeechCapture';
+import type { SessionEvent } from '../db/db';
 
 describe('pacing (AUD-03/AUD-04)', () => {
   it('calculateWPM returns correct WPM for known word count and duration', () => {
@@ -126,5 +127,149 @@ describe('calculateWPMWindows (FOUND-02)', () => {
     expect(windows).toHaveLength(3);
     expect(windows[0].startMs).toBeLessThan(windows[1].startMs);
     expect(windows[1].startMs).toBeLessThan(windows[2].startMs);
+  });
+});
+
+describe('parsePauseDuration', () => {
+  it('parsePauseDuration("3.0s pause") returns 3.0', () => {
+    expect(parsePauseDuration('3.0s pause')).toBe(3.0);
+  });
+
+  it('parsePauseDuration(undefined) returns 0', () => {
+    expect(parsePauseDuration(undefined)).toBe(0);
+  });
+
+  it('parsePauseDuration("malformed") returns 0', () => {
+    expect(parsePauseDuration('malformed')).toBe(0);
+  });
+});
+
+describe('classifyPause', () => {
+  it('returns "deliberate" when last final segment ends with a period', () => {
+    const transcript: TranscriptSegment[] = [
+      { text: 'That is the point.', timestampMs: 4000, isFinal: true },
+    ];
+    expect(classifyPause(5000, transcript)).toBe('deliberate');
+  });
+
+  it('returns "deliberate" when last final segment ends with a question mark', () => {
+    const transcript: TranscriptSegment[] = [
+      { text: 'Are you sure?', timestampMs: 4000, isFinal: true },
+    ];
+    expect(classifyPause(5000, transcript)).toBe('deliberate');
+  });
+
+  it('returns "deliberate" when last final segment ends with an exclamation mark', () => {
+    const transcript: TranscriptSegment[] = [
+      { text: 'That is amazing!', timestampMs: 4000, isFinal: true },
+    ];
+    expect(classifyPause(5000, transcript)).toBe('deliberate');
+  });
+
+  it('returns "hesitation" when last final segment has no terminal punctuation', () => {
+    const transcript: TranscriptSegment[] = [
+      { text: 'and then we', timestampMs: 4000, isFinal: true },
+    ];
+    expect(classifyPause(5000, transcript)).toBe('hesitation');
+  });
+
+  it('returns "hesitation" when transcript is empty (conservative default)', () => {
+    expect(classifyPause(5000, [])).toBe('hesitation');
+  });
+});
+
+describe('computePauseStats', () => {
+  it('returns zeros for empty event array', () => {
+    const stats = computePauseStats([], []);
+    expect(stats.total).toBe(0);
+    expect(stats.averageDurationS).toBe(0);
+    expect(stats.longestDurationS).toBe(0);
+    expect(stats.hesitationCount).toBe(0);
+    expect(stats.deliberateCount).toBe(0);
+  });
+
+  it('computes average and longest from label strings (2.0s + 4.5s => avg 3.25, longest 4.5)', () => {
+    const events: SessionEvent[] = [
+      { type: 'pause_detected', timestampMs: 3000, label: '2.0s pause' },
+      { type: 'pause_detected', timestampMs: 8000, label: '4.5s pause' },
+    ];
+    const stats = computePauseStats(events, []);
+    expect(stats.total).toBe(2);
+    expect(stats.averageDurationS).toBe(3.25);
+    expect(stats.longestDurationS).toBe(4.5);
+  });
+
+  it('counts hesitation vs deliberate correctly', () => {
+    const events: SessionEvent[] = [
+      { type: 'pause_detected', timestampMs: 5000, label: '2.5s pause' },
+      { type: 'pause_detected', timestampMs: 12000, label: '3.0s pause' },
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: 'That is the point.', timestampMs: 4000, isFinal: true },
+      { text: 'and then we', timestampMs: 11000, isFinal: true },
+    ];
+    const stats = computePauseStats(events, transcript);
+    expect(stats.deliberateCount).toBe(1);
+    expect(stats.hesitationCount).toBe(1);
+  });
+});
+
+describe('scorePauses (ANAL-03)', () => {
+  it('0 pause events returns score=85, detail matches /no significant pauses/i', () => {
+    const result = scorePauses([], []);
+    expect(result.score).toBe(85);
+    expect(result.detail).toMatch(/no significant pauses/i);
+  });
+
+  it('1 mid-clause pause (no terminal punctuation) returns score=85 (100 - 1*15)', () => {
+    const events: SessionEvent[] = [
+      { type: 'pause_detected', timestampMs: 5000, label: '2.5s pause' },
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: 'and then we', timestampMs: 4000, isFinal: true },
+    ];
+    const result = scorePauses(events, transcript);
+    expect(result.score).toBe(85);
+  });
+
+  it('1 sentence-boundary pause (terminal punctuation) returns score=100', () => {
+    const events: SessionEvent[] = [
+      { type: 'pause_detected', timestampMs: 5000, label: '2.5s pause' },
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: 'That is the point.', timestampMs: 4000, isFinal: true },
+    ];
+    const result = scorePauses(events, transcript);
+    expect(result.score).toBe(100);
+  });
+
+  it('2 hesitation + 1 deliberate returns score=70 (100 - 2*15)', () => {
+    const events: SessionEvent[] = [
+      { type: 'pause_detected', timestampMs: 5000, label: '2.5s pause' },
+      { type: 'pause_detected', timestampMs: 12000, label: '3.0s pause' },
+      { type: 'pause_detected', timestampMs: 18000, label: '2.0s pause' },
+    ];
+    const transcript: TranscriptSegment[] = [
+      { text: 'and then we', timestampMs: 4000, isFinal: true },
+      { text: 'That is the point.', timestampMs: 11000, isFinal: true },
+      { text: 'so basically', timestampMs: 17000, isFinal: true },
+    ];
+    const result = scorePauses(events, transcript);
+    expect(result.score).toBe(70);
+  });
+
+  it('7 hesitation pauses returns score=0 (floor)', () => {
+    const events: SessionEvent[] = Array.from({ length: 7 }, (_, i) => ({
+      type: 'pause_detected' as const,
+      timestampMs: (i + 1) * 5000,
+      label: '2.5s pause',
+    }));
+    const transcript: TranscriptSegment[] = Array.from({ length: 7 }, (_, i) => ({
+      text: 'and then we',
+      timestampMs: (i + 1) * 5000 - 1000,
+      isFinal: true,
+    }));
+    const result = scorePauses(events, transcript);
+    expect(result.score).toBe(0);
   });
 });
