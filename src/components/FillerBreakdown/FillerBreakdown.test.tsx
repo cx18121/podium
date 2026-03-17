@@ -53,4 +53,38 @@ describe('FillerBreakdown (ANAL-04, ANAL-05)', () => {
     render(<FillerBreakdown events={events} durationMs={60000} whisperFillers={whisperFillers} />);
     expect(screen.getByText(/no filler words detected/i)).toBeInTheDocument();
   });
+
+  it('uses Web Speech event counts when whisperFillers is undefined (WHIS-05 fallback)', () => {
+    const events = [
+      { type: 'filler_word', timestampMs: 1000, label: 'um' },
+      { type: 'filler_word', timestampMs: 2000, label: 'uh' },
+      { type: 'filler_word', timestampMs: 3000, label: 'um' },
+    ];
+    render(<FillerBreakdown events={events} durationMs={60000} />);
+    // Should show Web Speech counts since whisperFillers is not provided
+    expect(screen.getByText('um')).toBeInTheDocument();
+    expect(screen.getByText('uh')).toBeInTheDocument();
+  });
+
+  it('uses whisperFillers.byType when provided (Whisper overrides Web Speech)', () => {
+    const events = [
+      { type: 'filler_word', timestampMs: 1000, label: 'um' },
+    ];
+    const whisperFillers = { byType: { um: 5, uh: 3, like: 2 } };
+    render(<FillerBreakdown events={events} durationMs={60000} whisperFillers={whisperFillers} />);
+    // Should show Whisper counts (5 um, 3 uh, 2 like) not Web Speech (1 um)
+    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+  });
+
+  it('shows empty state when whisperFillers.byType is empty (Whisper found no fillers)', () => {
+    const events = [
+      { type: 'filler_word', timestampMs: 1000, label: 'um' },
+    ];
+    const whisperFillers = { byType: {} };
+    render(<FillerBreakdown events={events} durationMs={60000} whisperFillers={whisperFillers} />);
+    // Whisper empty byType = 0 total => empty state (even though Web Speech found 1)
+    expect(screen.getByText('No filler words detected')).toBeInTheDocument();
+  });
 });
