@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 09-01-PLAN.md — Opening/Closing Strength scorecard dimension
-last_updated: "2026-03-17T04:46:55.109Z"
+stopped_at: Completed 10-01-PLAN.md — Pause scoring + PauseDetail panel
+last_updated: "2026-03-17T06:39:35.316Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 9
-  total_plans: 30
-  completed_plans: 30
+  completed_phases: 10
+  total_plans: 31
+  completed_plans: 31
   percent: 0
 ---
 
@@ -75,6 +75,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 08-schema-migration-wpm-windows P01 | 7 | 1 tasks | 2 files |
 | Phase 08 P02 | 10 | 2 tasks | 3 files |
 | Phase 09-opening-closing-strength P01 | 5 | 2 tasks | 4 files |
+| Phase 10-pause-scoring-pausedetail-panel P01 | 8 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -157,6 +158,10 @@ Recent decisions affecting current work:
 - [Phase 08-02]: [08-02] calculateWPMWindows filters to isFinal segments; missing windows not gap-filled; wpmWindows computed at save time in handleSaveName
 - [Phase 09-01]: [09-01] WEIGHTS redistributed: eyeContact=0.22, fillers=0.22, pacing=0.18, expressiveness=0.14, gestures=0.14, openingClosing=0.10 (sum=1.00)
 - [Phase 09-01]: [09-01] scoreOpeningClosing: opening window 60% / closing window 40%; short-session guard for durationMs < 60s; NEGATIVE_EVENT_TYPES = filler_word, face_touch, body_sway, eye_contact_break
+- [Phase 10-01]: [10-01] scorePauses returns plain {score, label, detail} — no DimensionScore import to avoid circular dependency; structural typing satisfies call site
+- [Phase 10-01]: [10-01] Pacing = 70% WPM + 30% pause quality when transcript available; WPM-only when undefined (backward-compat for pre-Phase 6 sessions)
+- [Phase 10-01]: [10-01] classifyPause SENTENCE_TERMINAL = /[.?!]\s*$/ on last isFinal segment before pause — hesitation default when transcript empty
+- [Phase 10-01]: [10-01] Hesitation penalty 15 pts each, deliberate = 0 penalty; floor at 0. PauseDetail omits breakdown when transcript empty.
 
 ### Roadmap Evolution
 
@@ -184,6 +189,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-17T04:44:12.424Z
-Stopped at: Completed 09-01-PLAN.md — Opening/Closing Strength scorecard dimension
+Last session: 2026-03-17T06:39:35.276Z
+Stopped at: Completed 10-01-PLAN.md — Pause scoring + PauseDetail panel
 Resume file: None

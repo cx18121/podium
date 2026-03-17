@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 8: Schema Migration + WPM Windows** - Dexie v3 schema with new analytics fields and WPM windowing function — prerequisite gate for all v2.0 features (completed 2026-03-16)
 - [x] **Phase 9: Opening/Closing Strength** - New scorecard dimension scoring first and last 30s of each session from the existing event log (completed 2026-03-17)
-- [ ] **Phase 10: Pause Scoring + Detail Panel** - Pause quality scoring as a Pacing sub-dimension with a PauseDetail panel showing count and duration breakdown
+- [x] **Phase 10: Pause Scoring + Detail Panel** - Pause quality scoring as a Pacing sub-dimension with a PauseDetail panel showing count and duration breakdown (completed 2026-03-17)
 - [ ] **Phase 11: Filler Breakdown Panel** - Per-type filler counts and session-thirds clustering in review UI, built on Web Speech baseline and upgradeable by Whisper
 - [ ] **Phase 12: WPM Chart Panel** - Speaking rate over time as a 30-second-window line chart in review UI
 - [ ] **Phase 13: Whisper Integration** - Whisper.wasm post-session transcription replacing Web Speech filler counts, with status banner and graceful fallback
@@ -246,7 +246,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 7. Visual Redesign | 7/7 | Complete | - |
 | 8. Schema Migration + WPM Windows | 2/2 | Complete   | 2026-03-16 |
 | 9. Opening/Closing Strength | 1/1 | Complete    | 2026-03-17 |
-| 10. Pause Scoring + PauseDetail Panel | 0/1 | Not started | - |
+| 10. Pause Scoring + PauseDetail Panel | 1/1 | Complete   | 2026-03-17 |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
 | 12. WPM Chart Panel | 0/TBD | Not started | - |
 | 13. Whisper Integration | 0/TBD | Not started | - |

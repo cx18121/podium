@@ -59,8 +59,8 @@
 ### Analytics
 
 - [x] **ANAL-01**: User sees opening/closing strength as a new scorecard dimension (first/last 30s scored from existing event log)
-- [ ] **ANAL-02**: User sees pause count and average duration in the review page
-- [ ] **ANAL-03**: Pause quality (hesitation vs. deliberate) contributes to the pacing score
+- [x] **ANAL-02**: User sees pause count and average duration in the review page
+- [x] **ANAL-03**: Pause quality (hesitation vs. deliberate) contributes to the pacing score
 - [ ] **ANAL-04**: User sees filler breakdown by type (um, uh, like, you know...) in review
 - [ ] **ANAL-05**: User sees which segment of their talk had the most fillers (session thirds)
 - [ ] **ANAL-06**: User sees WPM over time as a chart (30s windows) in review
@@ -128,8 +128,8 @@
 | FOUND-01 | Phase 8 | Complete |
 | FOUND-02 | Phase 8 | Complete |
 | ANAL-01 | Phase 9 | Complete |
-| ANAL-02 | Phase 10 | Pending |
-| ANAL-03 | Phase 10 | Pending |
+| ANAL-02 | Phase 10 | Complete |
+| ANAL-03 | Phase 10 | Complete |
 | ANAL-04 | Phase 11 | Pending |
 | ANAL-05 | Phase 11 | Pending |
 | ANAL-06 | Phase 12 | Pending |
