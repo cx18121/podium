@@ -223,10 +223,11 @@ Plans:
   3. When Whisper is downloaded for the first time (~75 MB), the user sees a progress indicator reading "Downloading speech model (first time only)..." — the app does not appear frozen
   4. Live captions during recording are unaffected — Web Speech API continues to power real-time captions exactly as before
   5. If Whisper fails (network error, unsupported browser, WASM error), the scorecard retains the Web Speech-derived filler counts and no error state is shown to the user beyond the banner updating
-**Plans**: 1 plan
+**Plans**: 2 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — Whisper.wasm ES module worker, WhisperStatusBanner, filler count upgrade, graceful fallback (WHIS-01, WHIS-02, WHIS-03, WHIS-04, WHIS-05)
+- [ ] 13-01-PLAN.md — COOP/COEP infrastructure, countFillersFromTranscript pure function, WhisperStatusBanner component, FillerBreakdown fallback tests
+- [ ] 13-02-PLAN.md — Whisper ES module worker, Review.tsx integration with banner + scorecard upgrade + graceful fallback, human verification
 
 ## Progress
 
