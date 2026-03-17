@@ -157,12 +157,59 @@ describe('scoreGestures', () => {
 });
 
 // ---------------------------------------------------------------------------
+// scoreOpeningClosing
+// ---------------------------------------------------------------------------
+describe('scoreOpeningClosing', () => {
+  it('durationMs=0 returns score=50 with "No data" detail', () => {
+    const result = aggregateScores([], 0);
+    expect(result.dimensions.openingClosing.score).toBe(50);
+    expect(result.dimensions.openingClosing.detail).toBe('No data');
+  });
+
+  it('session < 60s returns score=50 with "Session too short" detail', () => {
+    const events: SessionEvent[] = [{ type: 'filler_word', timestampMs: 5000, label: 'um' }];
+    const result = aggregateScores(events, 45000);
+    expect(result.dimensions.openingClosing.score).toBe(50);
+    expect(result.dimensions.openingClosing.detail).toMatch(/too short/i);
+  });
+
+  it('clean opening + clean closing in 120s session → score = 100', () => {
+    const events: SessionEvent[] = [{ type: 'wpm_snapshot', timestampMs: 120000, label: '130' }];
+    const result = aggregateScores(events, 120000);
+    expect(result.dimensions.openingClosing.score).toBe(100);
+  });
+
+  it('strong opening + weak closing → 60', () => {
+    const closingEvents: SessionEvent[] = Array.from({ length: 20 }, (_, i) => ({
+      type: 'filler_word' as const, timestampMs: 90000 + (i + 1) * 1000, label: 'um',
+    }));
+    const result = aggregateScores(closingEvents, 120000);
+    expect(result.dimensions.openingClosing.score).toBe(60);
+  });
+
+  it('weak opening + strong closing → 40', () => {
+    const openingEvents: SessionEvent[] = Array.from({ length: 20 }, (_, i) => ({
+      type: 'filler_word' as const, timestampMs: (i + 1) * 1000, label: 'um',
+    }));
+    const result = aggregateScores(openingEvents, 120000);
+    expect(result.dimensions.openingClosing.score).toBe(40);
+  });
+
+  it('exactly 60s session: no short-session guard, score=100 with no events', () => {
+    const result = aggregateScores([], 60000);
+    expect(result.dimensions.openingClosing.detail).not.toMatch(/too short/i);
+    expect(result.dimensions.openingClosing.score).toBe(100);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // aggregateScores overall
 // ---------------------------------------------------------------------------
 describe('aggregateScores', () => {
   it('all dimension scores = 100 → overall = 100', () => {
     // 0ms away (eyeContact=100), 0 fillers (fillers=100), wpm=130 (pacing=100),
     // expressiveness_segment=1.0 (expressiveness=100), 0 gestures (gestures=100)
+    // openingClosing=100: 60s session, no negative events in either window
     const events: SessionEvent[] = [
       { type: 'wpm_snapshot', timestampMs: 60000, label: '130' },
       { type: 'expressiveness_segment', timestampMs: 30000, label: '1.0' },
@@ -171,10 +218,15 @@ describe('aggregateScores', () => {
     expect(result.overall).toBe(100);
   });
 
-  it('mixed scores → overall = 69', () => {
-    // eyeContact=80, fillers=60, pacing=100, expressiveness=50, gestures=44
-    // overall = round(80*0.25 + 60*0.25 + 100*0.20 + 50*0.15 + 44*0.15)
-    //         = round(20 + 15 + 20 + 7.5 + 6.6) = round(69.1) = 69
+  it('mixed scores → overall = 65', () => {
+    // overall = round(80*0.22 + 60*0.22 + 100*0.18 + 50*0.14 + 44*0.14 + 33*0.10)
+    //         = round(17.6 + 13.2 + 18 + 7 + 6.16 + 3.3) = round(65.26) = 65
+    //
+    // openingClosing=33: Opening window (0-30000ms): 1 filler_word at 25000 + 1 eye_contact_break at 5000 = 2 negatives
+    //   negPerMin = 2/0.5 = 4; score = round(100 - (4/6)*100) = 33
+    //   Closing window (270000-300000ms): 1 filler_word at 275000 + 1 face_touch at 280000 = 2 negatives
+    //   negPerMin = 2/0.5 = 4; score = 33
+    //   Composite: round(33*0.6 + 33*0.4) = 33
     //
     // eyeContact=80: break at 5000, resume at 65000 → awayMs=60000/300000=0.2, ratio=0.8, score=80
     // fillers=60: 12 fillers in 300000ms (5min) → fillersPerMin=2.4 → round(100-(2.4/6)*100)=60
@@ -207,6 +259,6 @@ describe('aggregateScores', () => {
     ];
 
     const result = aggregateScores(events, 300000);
-    expect(result.overall).toBe(69);
+    expect(result.overall).toBe(65);
   });
 });
