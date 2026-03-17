@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
     "@mediapipe/tasks-vision": "^0.10.32",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
