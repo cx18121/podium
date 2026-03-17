@@ -106,6 +106,22 @@ describe('scorePacing', () => {
     const result = aggregateScores(events, 60000);
     expect(result.dimensions.pacing.score).toBe(50);
   });
+
+  it('wpm=130 + 2 hesitation pauses with transcript → blended score = round(100*0.7 + 70*0.3) = 91', () => {
+    const events: SessionEvent[] = [
+      { type: 'wpm_snapshot', timestampMs: 60000, label: '130' },
+      { type: 'pause_detected', timestampMs: 5000, label: '2.5s pause' },
+      { type: 'pause_detected', timestampMs: 15000, label: '3.0s pause' },
+    ];
+    const transcript = [
+      { text: 'and then we', timestampMs: 4000, isFinal: true },
+      { text: 'so the thing is', timestampMs: 14000, isFinal: true },
+    ];
+    const result = aggregateScores(events, 60000, transcript);
+    // wpmScore=100 (130 in range), pauseScore=70 (100-2*15, both hesitation)
+    // blended = round(100*0.7 + 70*0.3) = round(91) = 91
+    expect(result.dimensions.pacing.score).toBe(91);
+  });
 });
 
 // ---------------------------------------------------------------------------

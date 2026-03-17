@@ -25,7 +25,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       setSession(s);
 
       if (!s.scorecard) {
-        const result = aggregateScores(s.eventLog, s.durationMs);
+        const result = aggregateScores(s.eventLog, s.durationMs, s.transcript);
         const dbScorecard: Scorecard = {
           overall: result.overall,
           dimensions: Object.fromEntries(
@@ -35,7 +35,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         await db.sessions.update(s.id!, { scorecard: dbScorecard });
         setScorecard(result);
       } else {
-        setScorecard(aggregateScores(s.eventLog, s.durationMs));
+        setScorecard(aggregateScores(s.eventLog, s.durationMs, s.transcript));
       }
     }).catch(() => setError('Could not load this session. Try recording a new one.'));
 

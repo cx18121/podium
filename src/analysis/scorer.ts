@@ -3,6 +3,8 @@
 //         presentation research (120–160 wpm sweet spot), and Phase 2 event schema.
 
 import type { SessionEvent } from '../db/db';
+import { scorePauses } from './pacing';
+import type { TranscriptSegment } from '../hooks/useSpeechCapture';
 
 export interface DimensionScore {
   score: number;     // 0–100
@@ -108,29 +110,38 @@ function scoreFillers(events: SessionEvent[], durationMs: number): DimensionScor
 
 // --- Pacing ---
 // Metric: WPM from wpm_snapshot event; compare to 120–160 wpm target range
-// Score: 100 at 120–160 wpm; degrades as WPM moves outside that range
+// Score (no transcript): 100 at 120–160 wpm; degrades as WPM moves outside that range
+// Score (with transcript): 70% WPM + 30% pause quality blend
 // Reference: Microsoft Speaker Coach 100–165 wpm; academic sweet spot 120–160 wpm
-function scorePacing(events: SessionEvent[]): DimensionScore {
+function scorePacing(events: SessionEvent[], transcript?: TranscriptSegment[]): DimensionScore {
   const wpmEvent = events.find(e => e.type === 'wpm_snapshot');
   if (!wpmEvent || !wpmEvent.label) return { score: 50, label: '50 / 100', detail: 'No WPM data' };
 
   const wpm = parseInt(wpmEvent.label, 10);
   if (isNaN(wpm)) return { score: 50, label: '50 / 100', detail: 'No WPM data' };
 
-  let score: number;
+  let wpmScore: number;
   if (wpm >= 120 && wpm <= 160) {
-    score = 100;
+    wpmScore = 100;
   } else if (wpm < 120) {
     // Below target: 100 → 0 from 120 → 60 wpm
-    score = Math.max(0, Math.round(((wpm - 60) / 60) * 100));
+    wpmScore = Math.max(0, Math.round(((wpm - 60) / 60) * 100));
   } else {
     // Above target: 100 → 0 from 160 → 220 wpm
-    score = Math.max(0, Math.round(((220 - wpm) / 60) * 100));
+    wpmScore = Math.max(0, Math.round(((220 - wpm) / 60) * 100));
   }
+
+  if (!transcript) {
+    // Backward compat: no transcript available (sessions before Phase 6)
+    return { score: wpmScore, label: `${wpmScore} / 100`, detail: `${wpm} wpm` };
+  }
+
+  const pauseQuality = scorePauses(events, transcript);
+  const blended = Math.round(wpmScore * 0.7 + pauseQuality.score * 0.3);
   return {
-    score,
-    label: `${score} / 100`,
-    detail: `${wpm} wpm`,
+    score: blended,
+    label: `${blended} / 100`,
+    detail: `${wpm} wpm · ${pauseQuality.detail}`,
   };
 }
 
@@ -177,13 +188,14 @@ const WEIGHTS = {
 
 export function aggregateScores(
   eventLog: SessionEvent[],
-  durationMs: number
+  durationMs: number,
+  transcript?: TranscriptSegment[]
 ): ScorecardResult {
   const eyeContact = scoreEyeContact(eventLog, durationMs);
   const expressiveness = scoreExpressiveness(eventLog);
   const gestures = scoreGestures(eventLog);
   const fillers = scoreFillers(eventLog, durationMs);
-  const pacing = scorePacing(eventLog);
+  const pacing = scorePacing(eventLog, transcript);
   const openingClosing = scoreOpeningClosing(eventLog, durationMs);
 
   const overall = Math.round(
