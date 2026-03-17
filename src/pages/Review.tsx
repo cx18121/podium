@@ -4,6 +4,7 @@ import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
 import ScorecardView from '../components/ScorecardView/ScorecardView';
 import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import PauseDetail from '../components/PauseDetail/PauseDetail';
+import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
 
 interface ReviewPageProps {
   sessionId: number;
@@ -111,6 +112,14 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
       <div style={{ width: '100%', maxWidth: '672px' }}>
         <PauseDetail events={session.eventLog} transcript={session.transcript} />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '672px' }}>
+        <FillerBreakdown
+          events={session.eventLog}
+          durationMs={session.durationMs}
+          whisperFillers={session.whisperFillers}
+        />
       </div>
 
       <div style={{ width: '100%', maxWidth: '672px' }}>
