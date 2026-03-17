@@ -24,6 +24,7 @@ const DIMENSIONS: { key: keyof ScorecardResult['dimensions']; label: string }[] 
   { key: 'pacing', label: 'Pacing' },
   { key: 'expressiveness', label: 'Expressiveness' },
   { key: 'gestures', label: 'Nervous Gestures' },
+  { key: 'openingClosing', label: 'Opening / Closing' },
 ];
 
 const RADIUS = 66;

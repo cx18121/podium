@@ -11,6 +11,7 @@ const fixtureScorecard: ScorecardResult = {
     pacing: { score: 100, label: '100 / 100', detail: '130 wpm' },
     expressiveness: { score: 70, label: '70 / 100', detail: '4 segments analyzed' },
     gestures: { score: 84, label: '84 / 100', detail: '2 nervous gestures' },
+    openingClosing: { score: 75, label: '75 / 100', detail: 'Opening 85, Closing 60' },
   },
 };
 
@@ -33,13 +34,14 @@ describe('ScorecardView', () => {
     expect(screen.getByText('78')).toBeInTheDocument();
   });
 
-  it('renders exactly 5 dimension name labels', () => {
+  it('renders exactly 6 dimension name labels', () => {
     render(<ScorecardView scorecard={fixtureScorecard} />);
     expect(screen.getByText('Eye Contact')).toBeInTheDocument();
     expect(screen.getByText('Filler Words')).toBeInTheDocument();
     expect(screen.getByText('Pacing')).toBeInTheDocument();
     expect(screen.getByText('Expressiveness')).toBeInTheDocument();
     expect(screen.getByText('Nervous Gestures')).toBeInTheDocument();
+    expect(screen.getByText('Opening / Closing')).toBeInTheDocument();
   });
 
   it('each score bar fill div has style.width matching the dimension score%', () => {
@@ -54,6 +56,8 @@ describe('ScorecardView', () => {
     expect(expressivenessBar).toHaveStyle({ width: '70%' });
     const gesturesBar = screen.getByRole('meter', { name: 'Nervous Gestures score' });
     expect(gesturesBar).toHaveStyle({ width: '84%' });
+    const openingClosingBar = screen.getByRole('meter', { name: 'Opening / Closing score' });
+    expect(openingClosingBar).toHaveStyle({ width: '75%' });
   });
 
   it('renders each dimension detail string in the DOM', () => {
@@ -63,6 +67,7 @@ describe('ScorecardView', () => {
     expect(screen.getByText('130 wpm')).toBeInTheDocument();
     expect(screen.getByText('4 segments analyzed')).toBeInTheDocument();
     expect(screen.getByText('2 nervous gestures')).toBeInTheDocument();
+    expect(screen.getByText('Opening 85, Closing 60')).toBeInTheDocument();
   });
 
   it('renders "Calculating scores..." when scorecard prop is null', () => {
