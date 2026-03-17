@@ -245,7 +245,7 @@ v2.0 phases: 8 → 9 → 10 → 11 → 12 → 13
 | 6. Interactive UX Improvements | 3/3 | Complete | - |
 | 7. Visual Redesign | 7/7 | Complete | - |
 | 8. Schema Migration + WPM Windows | 2/2 | Complete   | 2026-03-16 |
-| 9. Opening/Closing Strength | 1/1 | Complete   | 2026-03-17 |
+| 9. Opening/Closing Strength | 1/1 | Complete    | 2026-03-17 |
 | 10. Pause Scoring + PauseDetail Panel | 0/TBD | Not started | - |
 | 11. Filler Breakdown Panel | 0/TBD | Not started | - |
 | 12. WPM Chart Panel | 0/TBD | Not started | - |
