@@ -18,6 +18,7 @@ export interface ScorecardResult {
     gestures: DimensionScore;
     fillers: DimensionScore;
     pacing: DimensionScore;
+    openingClosing: DimensionScore;
   };
 }
 
@@ -133,15 +134,45 @@ function scorePacing(events: SessionEvent[]): DimensionScore {
   };
 }
 
+// --- Opening / Closing Strength ---
+// Metric: negative event density in first 30s (opening) and last 30s (closing) of the session
+// Score: opening window weighted 60%, closing window 40%
+// Short-session guard: sessions < 60s return neutral score=50 with 'Session too short' detail
+const NEGATIVE_EVENT_TYPES = new Set([
+  'filler_word', 'face_touch', 'body_sway', 'eye_contact_break',
+]);
+const OC_WINDOW_MS = 30000;
+
+function scoreSegment(events: SessionEvent[], startMs: number, endMs: number): number {
+  const windowMs = endMs - startMs;
+  if (windowMs <= 0) return 50;
+  const windowEvents = events.filter(e => e.timestampMs >= startMs && e.timestampMs < endMs);
+  const negativeCount = windowEvents.filter(e => NEGATIVE_EVENT_TYPES.has(e.type)).length;
+  const negPerMin = negativeCount / (windowMs / 60000);
+  return Math.max(0, Math.round(100 - (negPerMin / 6) * 100));
+}
+
+function scoreOpeningClosing(events: SessionEvent[], durationMs: number): DimensionScore {
+  if (durationMs <= 0) return { score: 50, label: '50 / 100', detail: 'No data' };
+  if (durationMs < OC_WINDOW_MS * 2) {
+    return { score: 50, label: '50 / 100', detail: 'Session too short (< 60s)' };
+  }
+  const openingScore = scoreSegment(events, 0, OC_WINDOW_MS);
+  const closingScore = scoreSegment(events, durationMs - OC_WINDOW_MS, durationMs);
+  const score = Math.round(openingScore * 0.6 + closingScore * 0.4);
+  return { score, label: `${score} / 100`, detail: `Opening ${openingScore}, Closing ${closingScore}` };
+}
+
 // --- Weighted Overall ---
-// Weights: eyeContact 25%, fillers 25%, pacing 20%, expressiveness 15%, gestures 15%
+// Weights: eyeContact 22%, fillers 22%, pacing 18%, expressiveness 14%, gestures 14%, openingClosing 10%
 // Rationale: the core differentiators (eye contact, filler-free speech) carry the most weight
 const WEIGHTS = {
-  eyeContact: 0.25,
-  fillers: 0.25,
-  pacing: 0.20,
-  expressiveness: 0.15,
-  gestures: 0.15,
+  eyeContact: 0.22,
+  fillers: 0.22,
+  pacing: 0.18,
+  expressiveness: 0.14,
+  gestures: 0.14,
+  openingClosing: 0.10,
 };
 
 export function aggregateScores(
@@ -153,17 +184,19 @@ export function aggregateScores(
   const gestures = scoreGestures(eventLog);
   const fillers = scoreFillers(eventLog, durationMs);
   const pacing = scorePacing(eventLog);
+  const openingClosing = scoreOpeningClosing(eventLog, durationMs);
 
   const overall = Math.round(
     eyeContact.score * WEIGHTS.eyeContact +
     fillers.score * WEIGHTS.fillers +
     pacing.score * WEIGHTS.pacing +
     expressiveness.score * WEIGHTS.expressiveness +
-    gestures.score * WEIGHTS.gestures
+    gestures.score * WEIGHTS.gestures +
+    openingClosing.score * WEIGHTS.openingClosing
   );
 
   return {
     overall,
-    dimensions: { eyeContact, expressiveness, gestures, fillers, pacing },
+    dimensions: { eyeContact, expressiveness, gestures, fillers, pacing, openingClosing },
   };
 }
