@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { db, type Session, type Scorecard } from '../db/db';
+import { db, type Session, type Scorecard, type WhisperFillerResult } from '../db/db';
 import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
 import ScorecardView from '../components/ScorecardView/ScorecardView';
 import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import PauseDetail from '../components/PauseDetail/PauseDetail';
 import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
 import WPMChart from '../components/WPMChart/WPMChart';
+import WhisperStatusBanner, { type WhisperBannerStatus } from '../components/WhisperStatusBanner/WhisperStatusBanner';
+import { countFillersFromTranscript } from '../analysis/whisperFillerCounter';
 
 interface ReviewPageProps {
   sessionId: number;
@@ -13,11 +15,22 @@ interface ReviewPageProps {
   onBack?: () => void;
 }
 
+async function audioBlobToFloat32(blob: Blob): Promise<Float32Array> {
+  const arrayBuffer = await blob.arrayBuffer();
+  const audioContext = new AudioContext({ sampleRate: 16000 });
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  const pcm = audioBuffer.getChannelData(0);
+  await audioContext.close();
+  return pcm;
+}
+
 export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewPageProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [scorecard, setScorecard] = useState<ScorecardResult | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [whisperBannerStatus, setWhisperBannerStatus] = useState<WhisperBannerStatus | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     let objectUrl: string | null = null;
@@ -46,6 +59,83 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [sessionId]);
+
+  // Whisper worker lifecycle: runs post-session, updates filler counts from ASR transcript
+  useEffect(() => {
+    if (!session) return;
+    if (session.whisperStatus === 'complete') return;
+
+    if (!window.crossOriginIsolated) {
+      db.sessions.update(session.id!, { whisperStatus: 'failed' });
+      setWhisperBannerStatus('failed');
+      return;
+    }
+
+    const worker = new Worker(
+      new URL('../workers/whisper.worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    db.sessions.update(session.id!, { whisperStatus: 'pending' });
+    setWhisperBannerStatus('pending');
+
+    worker.onmessage = async (e) => {
+      const msg = e.data;
+
+      if (msg.type === 'progress') {
+        if (msg.data?.status === 'progress' && msg.data.progress != null) {
+          setWhisperBannerStatus('downloading');
+          setDownloadProgress(msg.data.progress);
+        }
+      }
+
+      if (msg.type === 'ready') {
+        setWhisperBannerStatus('pending');
+        setDownloadProgress(undefined);
+        try {
+          const pcm = await audioBlobToFloat32(session.videoBlob);
+          worker.postMessage({ type: 'transcribe', audioData: pcm }, [pcm.buffer]);
+        } catch {
+          await db.sessions.update(session.id!, { whisperStatus: 'failed' });
+          setWhisperBannerStatus('failed');
+          worker.terminate();
+        }
+      }
+
+      if (msg.type === 'result') {
+        const byType = countFillersFromTranscript(msg.text);
+        const whisperFillers: WhisperFillerResult = { byType };
+        await db.sessions.update(session.id!, {
+          whisperFillers,
+          whisperStatus: 'complete',
+        });
+        // Re-read session to get updated data and trigger re-render
+        const updated = await db.sessions.get(session.id!);
+        if (updated) {
+          setSession(updated);
+          setScorecard(aggregateScores(updated.eventLog, updated.durationMs, updated.transcript));
+        }
+        setWhisperBannerStatus('complete');
+        worker.terminate();
+      }
+
+      if (msg.type === 'error') {
+        await db.sessions.update(session.id!, { whisperStatus: 'failed' });
+        setWhisperBannerStatus('failed');
+        worker.terminate();
+      }
+    };
+
+    worker.onerror = async () => {
+      await db.sessions.update(session.id!, { whisperStatus: 'failed' });
+      setWhisperBannerStatus('failed');
+      worker.terminate();
+    };
+
+    worker.postMessage({ type: 'init' });
+
+    return () => worker.terminate();
+  }, [session?.id, session?.whisperStatus]);
 
   if (error) {
     return (
@@ -107,6 +197,13 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         }}>
           {durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}
         </p>
+      </div>
+
+      {/* Whisper status banner — shown during downloading/pending, hidden on complete/failed */}
+      <div style={{ width: '100%', maxWidth: '672px' }}>
+        {whisperBannerStatus && (
+          <WhisperStatusBanner status={whisperBannerStatus} downloadProgress={downloadProgress} />
+        )}
       </div>
 
       <ScorecardView scorecard={scorecard} />
