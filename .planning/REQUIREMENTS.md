@@ -68,7 +68,7 @@
 ### Whisper
 
 - [x] **WHIS-01**: Filler score uses Whisper-derived counts post-session (more accurate than Web Speech)
-- [ ] **WHIS-02**: Live captions during recording remain unaffected (Web Speech API unchanged)
+- [x] **WHIS-02**: Live captions during recording remain unaffected (Web Speech API unchanged)
 - [x] **WHIS-03**: User sees Whisper analysis status while post-session processing runs
 - [x] **WHIS-04**: First-time model download shows a progress indicator (doesn't silently hang)
 - [x] **WHIS-05**: App falls back to Web Speech counts if Whisper fails or is unsupported
@@ -134,7 +134,7 @@
 | ANAL-05 | Phase 11 | Complete |
 | ANAL-06 | Phase 12 | Complete |
 | WHIS-01 | Phase 13 | Complete |
-| WHIS-02 | Phase 13 | Pending |
+| WHIS-02 | Phase 13 | Complete |
 | WHIS-03 | Phase 13 | Complete |
 | WHIS-04 | Phase 13 | Complete |
 | WHIS-05 | Phase 13 | Complete |

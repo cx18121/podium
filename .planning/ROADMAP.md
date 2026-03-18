@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: Pause Scoring + Detail Panel** - Pause quality scoring as a Pacing sub-dimension with a PauseDetail panel showing count and duration breakdown (completed 2026-03-17)
 - [x] **Phase 11: Filler Breakdown Panel** - Per-type filler counts and session-thirds clustering in review UI, built on Web Speech baseline and upgradeable by Whisper (completed 2026-03-17)
 - [x] **Phase 12: WPM Chart Panel** - Speaking rate over time as a 30-second-window line chart in review UI (completed 2026-03-17)
-- [ ] **Phase 13: Whisper Integration** - Whisper.wasm post-session transcription replacing Web Speech filler counts, with status banner and graceful fallback
+- [x] **Phase 13: Whisper Integration** - Whisper.wasm post-session transcription replacing Web Speech filler counts, with status banner and graceful fallback (completed 2026-03-18)
 
 ## Phase Details
 
@@ -249,4 +249,4 @@ v2.0 phases: 8 -> 9 -> 10 -> 11 -> 12 -> 13
 | 10. Pause Scoring + PauseDetail Panel | 1/1 | Complete    | 2026-03-17 |
 | 11. Filler Breakdown Panel | 1/1 | Complete    | 2026-03-17 |
 | 12. WPM Chart Panel | 1/1 | Complete    | 2026-03-17 |
-| 13. Whisper Integration | 1/2 | In Progress|  |
+| 13. Whisper Integration | 2/2 | Complete   | 2026-03-18 |

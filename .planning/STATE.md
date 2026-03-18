@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed 13-01-PLAN.md — Whisper Infrastructure
-last_updated: "2026-03-17T23:20:33.684Z"
+stopped_at: Completed 13-02 Tasks 1-2; awaiting human verification at checkpoint Task 3
+last_updated: "2026-03-18T00:30:49.822Z"
 last_activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
 progress:
   total_phases: 13
-  completed_phases: 12
+  completed_phases: 13
   total_plans: 35
-  completed_plans: 34
+  completed_plans: 35
   percent: 0
 ---
 
@@ -79,6 +79,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 11-filler-breakdown-panel P01 | 21 | 2 tasks | 5 files |
 | Phase 12-wpm-chart-panel P01 | 26 | 2 tasks | 7 files |
 | Phase 13-whisper-integration P01 | 11 | 2 tasks | 8 files |
+| Phase 13-whisper-integration P02 | 15 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -174,6 +175,8 @@ Recent decisions affecting current work:
 - [Phase 13-01]: [13-01] COEP uses credentialless not require-corp: avoids CORP issues with Google Fonts CDN
 - [Phase 13-01]: [13-01] countFillersFromTranscript placed in src/analysis/ not src/workers/: worker can't run in jsdom, pure function is unit-testable and imported by worker in Plan 02
 - [Phase 13-01]: [13-01] WhisperStatusBanner returns null for complete/failed states: silent fallback design per WHIS-05
+- [Phase 13-02]: [13-02] pipeline() and transcribe options cast with 'as any' — @huggingface/transformers type definitions produce union complexity errors; runtime behavior is correct
+- [Phase 13-02]: [13-02] useEffect dependency array: [session?.id, session?.whisperStatus] — whisperStatus included so effect does not re-run after completion; guard at top prevents re-analysis on complete sessions
 
 ### Roadmap Evolution
 
@@ -201,6 +204,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-17T23:20:33.499Z
-Stopped at: Completed 13-01-PLAN.md — Whisper Infrastructure
+Last session: 2026-03-18T00:30:49.675Z
+Stopped at: Completed 13-02 Tasks 1-2; awaiting human verification at checkpoint Task 3
 Resume file: None
