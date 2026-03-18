@@ -51,7 +51,7 @@ const FILLER_PATTERNS = /\b(you know what|you know|kind of|sort of|i mean|um+|uh
  *   - followed by an article ("like the", "like a", "like an") — preference context
  *   - followed by a capitalized word that is not the pronoun "I"
  */
-function isLikeAFiller(text: string, matchIndex: number, words: string[]): boolean {
+function isLikeAFiller(_text: string, matchIndex: number, words: string[]): boolean {
   // Find the word index corresponding to matchIndex by accumulating char lengths
   let charCount = 0;
   let wordIdx = -1;
