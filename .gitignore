@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Planning files
+.planning/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
