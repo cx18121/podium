@@ -87,14 +87,12 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
               style={{
                 position: 'absolute',
                 top: '50%', transform: 'translateY(-50%)',
-                left: `calc(${leftPct}% - 8px)`,
-                width: '10px', height: '10px',
-                borderRadius: '50%',
-                background: markerBg(event),
-                border: isNearest ? '2px solid rgba(255,255,255,0.80)' : '1.5px solid rgba(0,0,0,0.3)',
-                boxShadow: isNearest
-                  ? `0 0 0 3px rgba(255,255,255,0.15), 0 0 10px ${markerBg(event)}88`
-                  : `0 0 6px ${markerBg(event)}66`,
+                left: `calc(${leftPct}% - 1.25px)`,
+                width: '2.5px', height: '14px',
+                borderRadius: '1px',
+                backgroundColor: markerBg(event),
+                opacity: isNearest ? 1 : 0.85,
+                boxShadow: isNearest ? `0 0 6px ${markerBg(event)}88` : undefined,
                 zIndex: 10,
                 cursor: 'pointer',
                 transition: 'transform 0.1s ease, box-shadow 0.1s ease',
@@ -102,7 +100,7 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
                 margin: '-12px',
                 boxSizing: 'content-box',
               } as React.CSSProperties}
-              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5b8fff] focus-visible:ring-offset-1 hover:scale-[1.4]"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5b8fff] focus-visible:ring-offset-1 hover:scale-y-[1.3]"
             />
             {tooltipIndex === i && (
               <div

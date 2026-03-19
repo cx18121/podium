@@ -38,9 +38,9 @@ describe('Timeline', () => {
       />
     );
     const buttons = screen.getAllByRole('button');
-    expect(buttons[0].style.left).toBe('calc(10% - 8px)');
-    expect(buttons[1].style.left).toBe('calc(30% - 8px)');
-    expect(buttons[2].style.left).toBe('calc(50% - 8px)');
+    expect(buttons[0].style.left).toBe('calc(10% - 1.25px)');
+    expect(buttons[1].style.left).toBe('calc(30% - 1.25px)');
+    expect(buttons[2].style.left).toBe('calc(50% - 1.25px)');
   });
 
   it('clicking a marker button calls onSeek with the event timestampMs', () => {
@@ -149,7 +149,7 @@ describe('Timeline', () => {
     );
     const nearBtn = screen.getByRole('button', { name: 'Filler word: "um"' });
     const farBtn = screen.getByRole('button', { name: 'Eye contact break' });
-    expect(nearBtn.className).toContain('ring-2');
-    expect(farBtn.className).not.toContain('ring-amber-200');
+    expect(nearBtn.style.boxShadow).toBeTruthy();
+    expect(farBtn.style.boxShadow).toBeFalsy();
   });
 });
