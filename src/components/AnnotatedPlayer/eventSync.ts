@@ -1,15 +1,5 @@
 import type { SessionEvent } from '../../db/db';
 
-export function getNearbyEvents(
-  events: SessionEvent[],
-  currentTimeMs: number,
-  windowMs = 1000
-): SessionEvent[] {
-  return events.filter(
-    e => Math.abs(e.timestampMs - currentTimeMs) <= windowMs
-  );
-}
-
 export function getNearestEvent(
   events: SessionEvent[],
   currentTimeMs: number
