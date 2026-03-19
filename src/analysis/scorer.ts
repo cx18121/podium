@@ -30,15 +30,16 @@ export interface ScorecardResult {
 function scoreEyeContact(events: SessionEvent[], durationMs: number): DimensionScore {
   if (durationMs <= 0) return { score: 50, label: '50 / 100', detail: 'No data' };
 
-  const breaks = events.filter(e => e.type === 'eye_contact_break');
+  const contactEvents = events.filter(
+    e => e.type === 'eye_contact_break' || e.type === 'eye_contact_resume'
+  ).sort((a, b) => a.timestampMs - b.timestampMs);
+  const breakCount = contactEvents.filter(e => e.type === 'eye_contact_break').length;
 
   // Calculate total time "away"
   let awayMs = 0;
   let breakStart = 0;
   let inBreak = false;
-  for (const e of events.filter(
-    e => e.type === 'eye_contact_break' || e.type === 'eye_contact_resume'
-  ).sort((a, b) => a.timestampMs - b.timestampMs)) {
+  for (const e of contactEvents) {
     if (e.type === 'eye_contact_break' && !inBreak) {
       breakStart = e.timestampMs;
       inBreak = true;
@@ -54,7 +55,7 @@ function scoreEyeContact(events: SessionEvent[], durationMs: number): DimensionS
   return {
     score,
     label: `${score} / 100`,
-    detail: `${breaks.length} break${breaks.length !== 1 ? 's' : ''}`,
+    detail: `${breakCount} break${breakCount !== 1 ? 's' : ''}`,
   };
 }
 

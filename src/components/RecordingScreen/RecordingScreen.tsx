@@ -35,7 +35,6 @@ export default function RecordingScreen({ elapsedMs, onStop }: RecordingScreenPr
           letterSpacing: '-0.05em',
           color: '#e4e9f5',
           lineHeight: 1,
-          tabularNums: 'tabular-nums',
           fontVariantNumeric: 'tabular-nums',
         } as React.CSSProperties}
         className="tabular-nums"
