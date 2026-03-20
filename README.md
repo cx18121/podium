@@ -11,7 +11,7 @@ Record a practice session using your webcam and microphone. While you speak, rea
 ### Scoring Dimensions
 
 - **Eye contact** — gaze toward/away from camera via MediaPipe Face Landmarker
-- **Filler words** — detects um, uh, like, you know, so, actually, basically via Web Speech API live + Whisper.wasm post-session for accurate counts
+- **Filler words** — detects "um, uh, like, you know, so, actually, basically" via Web Speech API live + Whisper.wasm post-session for accurate counts
 - **Pacing** — words per minute scored against a 120-160 wpm target; pause quality scored as a sub-dimension (deliberate vs. hesitation)
 - **Facial expressiveness** — animated vs. flat delivery via facial landmark variance
 - **Nervous gestures** — face touching and body swaying via MediaPipe Hand and Pose Landmarkers
@@ -19,9 +19,9 @@ Record a practice session using your webcam and microphone. While you speak, rea
 
 ### Analytics Panels
 
-- Filler breakdown by type and timing cluster
-- WPM chart — speaking rate over 30-second windows (Recharts)
-- Pause detail — count and average duration breakdown
+- Filler word breakdown by type and timing cluster
+- WPM chart — speaking rate over 30-second windows
+- Pauses in speech — count and average duration breakdown
 
 ### Review & Playback
 
@@ -31,8 +31,8 @@ Record a practice session using your webcam and microphone. While you speak, rea
 
 ### Session History
 
-- Session list with sparkline trend charts per dimension
-- Local storage via IndexedDB (Dexie) — sessions persist across visits
+- Session list with trendline charts per dimension
+- Local storage via IndexedDB (Dexie) so sessions persist across visits
 - Storage quota bar showing browser storage usage
 
 ## Privacy
@@ -45,7 +45,7 @@ Runs entirely in the browser. No server, no uploads, no accounts. Video, audio, 
 - Tailwind CSS v4
 - MediaPipe Vision (Face, Hand, Pose Landmarkers) via Web Worker
 - Web Speech API (live transcript and captions)
-- Whisper.wasm via `@huggingface/transformers` (post-session filler re-analysis — requires `crossOriginIsolated`)
+- Whisper.wasm via `@huggingface/transformers` (post-session filler re-analysis)
 - Dexie (IndexedDB wrapper) for session persistence
 - Recharts for WPM chart
 - Vitest + Testing Library for tests
@@ -56,10 +56,6 @@ Runs entirely in the browser. No server, no uploads, no accounts. Video, audio, 
 npm install
 npm run dev
 ```
-
-Open [http://localhost:5173](http://localhost:5173) in Chrome.
-
-> **Note:** The Whisper post-session analysis requires cross-origin isolation headers (COOP/COEP). The dev server includes `coi-serviceworker` to enable this automatically.
 
 ## Browser Requirements
 
