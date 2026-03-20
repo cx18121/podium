@@ -24,6 +24,12 @@ let prevShoulderX = null;           // number | null
 let prevFaceTouching = false;       // boolean
 let expressionFrameScores = [];     // rolling per-frame scores for 5s windows
 
+// Calibration accumulators — active only during calibrate_frame messages
+let calibrationGazeOffsets = [];
+let calibrationFaceTouchDistances = [];
+let calibrationShoulderDeltas = [];
+let calibrationPrevShoulderX = null;
+
 // ============================================================
 // Inlined analysis functions (no ES module imports in classic-mode worker)
 // Source: src/analysis/eyeContact.ts, expressiveness.ts, gestures.ts
@@ -272,6 +278,93 @@ self.onmessage = async (e) => {
       if (bitmap) bitmap.close();
       busy = false;
     }
+  }
+
+  if (e.data.type === 'calibrate_frame') {
+    const bitmap = e.data.bitmap;
+    if (!faceLandmarker || !gestureRecognizer || !poseLandmarker) {
+      if (bitmap) bitmap.close();
+      return;
+    }
+    if (busy) {
+      if (bitmap) bitmap.close();
+      return;
+    }
+    busy = true;
+    try {
+      const nowMs = performance.now();
+      const faceResult = faceLandmarker.detectForVideo(bitmap, nowMs);
+      const gestureResult = gestureRecognizer.recognizeForVideo(bitmap, nowMs);
+      const poseResult = poseLandmarker.detectForVideo(bitmap, nowMs);
+
+      // Gaze offset measurement
+      if (faceResult.faceLandmarks && faceResult.faceLandmarks[0]) {
+        const lm = faceResult.faceLandmarks[0];
+        if (lm.length >= 478) {
+          const leftIris = lm[LEFT_IRIS_CENTER];
+          const leftOuter = lm[LEFT_EYE_OUTER];
+          const leftInner = lm[LEFT_EYE_INNER];
+          const leftEyeWidth = Math.abs(leftInner.x - leftOuter.x);
+          const leftEyeCenterX = (leftInner.x + leftOuter.x) / 2;
+          const leftOffset = leftEyeWidth > 0 ? Math.abs(leftIris.x - leftEyeCenterX) / leftEyeWidth : 0;
+
+          const rightIris = lm[RIGHT_IRIS_CENTER];
+          const rightOuter = lm[RIGHT_EYE_OUTER];
+          const rightInner = lm[RIGHT_EYE_INNER];
+          const rightEyeWidth = Math.abs(rightInner.x - rightOuter.x);
+          const rightEyeCenterX = (rightInner.x + rightOuter.x) / 2;
+          const rightOffset = rightEyeWidth > 0 ? Math.abs(rightIris.x - rightEyeCenterX) / rightEyeWidth : 0;
+
+          calibrationGazeOffsets.push((leftOffset + rightOffset) / 2);
+        }
+      }
+
+      // Face touch distance measurement (only when hands visible)
+      if (faceResult.faceLandmarks && faceResult.faceLandmarks[0] && gestureResult.landmarks && gestureResult.landmarks.length > 0) {
+        const nose = faceResult.faceLandmarks[0][NOSE_TIP_INDEX];
+        let minDist = Infinity;
+        for (const hand of gestureResult.landmarks) {
+          for (const idx of HAND_CHECK_INDICES) {
+            const pt = hand[idx];
+            if (!pt) continue;
+            const dist = Math.sqrt((pt.x - nose.x) ** 2 + (pt.y - nose.y) ** 2);
+            if (dist < minDist) minDist = dist;
+          }
+        }
+        if (minDist < Infinity) calibrationFaceTouchDistances.push(minDist);
+      }
+
+      // Shoulder delta measurement
+      if (poseResult.landmarks && poseResult.landmarks[0]) {
+        const leftShoulder = poseResult.landmarks[0][LEFT_SHOULDER_INDEX];
+        const rightShoulder = poseResult.landmarks[0][RIGHT_SHOULDER_INDEX];
+        if (leftShoulder && rightShoulder) {
+          const midX = (leftShoulder.x + rightShoulder.x) / 2;
+          if (calibrationPrevShoulderX !== null) {
+            calibrationShoulderDeltas.push(Math.abs(midX - calibrationPrevShoulderX));
+          }
+          calibrationPrevShoulderX = midX;
+        }
+      }
+
+      self.postMessage({ type: 'calibrate_frame_ack' });
+    } finally {
+      if (bitmap) bitmap.close();
+      busy = false;
+    }
+  }
+
+  if (e.data.type === 'calibrate_stop') {
+    self.postMessage({
+      type: 'calibration_data',
+      gazeOffsets: [...calibrationGazeOffsets],
+      faceTouchDistances: [...calibrationFaceTouchDistances],
+      shoulderDeltas: [...calibrationShoulderDeltas],
+    });
+    calibrationGazeOffsets = [];
+    calibrationFaceTouchDistances = [];
+    calibrationShoulderDeltas = [];
+    calibrationPrevShoulderX = null;
   }
 
   if (e.data.type === 'stop') {
