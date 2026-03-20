@@ -36,7 +36,7 @@ const LEFT_EYE_OUTER = 33;
 const LEFT_EYE_INNER = 133;
 const RIGHT_EYE_OUTER = 362;
 const RIGHT_EYE_INNER = 263;
-const GAZE_THRESHOLD = 0.15;
+let GAZE_THRESHOLD = 0.15;        // overwritten by init message if calibration profile exists
 
 function detectEyeContact(landmarks, timestampMs, prevState) {
   if (!landmarks || landmarks.length < 478) {
@@ -94,8 +94,8 @@ function aggregateExpressiveness(frameScores) {
 }
 
 // --- gestures ---
-const FACE_TOUCH_THRESHOLD = 0.12;
-const SWAY_THRESHOLD = 0.04;
+let FACE_TOUCH_THRESHOLD = 0.12;  // overwritten by init message if calibration profile exists
+let SWAY_THRESHOLD = 0.04;        // overwritten by init message if calibration profile exists
 const HAND_CHECK_INDICES = [0, 4, 8, 12, 16, 20];
 const NOSE_TIP_INDEX = 1;
 const LEFT_SHOULDER_INDEX = 11;
@@ -191,6 +191,10 @@ self.onmessage = async (e) => {
     prevShoulderX = null;
     prevFaceTouching = false;
     expressionFrameScores = [];
+    // Apply calibration threshold overrides if provided in init message
+    if (e.data.gazeThreshold != null) GAZE_THRESHOLD = e.data.gazeThreshold;
+    if (e.data.faceTouchThreshold != null) FACE_TOUCH_THRESHOLD = e.data.faceTouchThreshold;
+    if (e.data.swayThreshold != null) SWAY_THRESHOLD = e.data.swayThreshold;
     try {
       const vision = await FilesetResolver.forVisionTasks(
         'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm'

@@ -1,10 +1,10 @@
 // src/hooks/useMLWorker.ts
 import { useRef, useCallback } from 'react';
 import workerUrl from '../workers/mediapipe.worker.js?url';
-import type { SessionEvent } from '../db/db';
+import type { SessionEvent, CalibrationProfile } from '../db/db';
 
 export interface UseMLWorkerReturn {
-  startWorker: (videoEl: HTMLVideoElement) => Promise<void>;
+  startWorker: (videoEl: HTMLVideoElement, profile?: CalibrationProfile) => Promise<void>;
   stopWorker: () => Promise<SessionEvent[]>;
   cleanupWorker: () => void;
 }
@@ -13,7 +13,7 @@ export function useMLWorker(): UseMLWorkerReturn {
   const workerRef = useRef<Worker | null>(null);
   const frameIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const startWorker = useCallback(async (videoEl: HTMLVideoElement): Promise<void> => {
+  const startWorker = useCallback(async (videoEl: HTMLVideoElement, profile?: CalibrationProfile): Promise<void> => {
     // Terminate any existing worker before creating a new one
     if (workerRef.current) {
       workerRef.current.terminate();
@@ -35,7 +35,14 @@ export function useMLWorker(): UseMLWorkerReturn {
         }
       };
       worker.addEventListener('message', onMessage);
-      worker.postMessage({ type: 'init' });
+      worker.postMessage({
+        type: 'init',
+        ...(profile && {
+          gazeThreshold: profile.gazeThreshold,
+          faceTouchThreshold: profile.faceTouchThreshold,
+          swayThreshold: profile.swayThreshold,
+        }),
+      });
     });
 
     // Start frame pump at 150ms intervals (6.7fps)

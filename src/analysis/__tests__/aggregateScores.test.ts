@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { aggregateScores } from '../scorer';
+import { aggregateScores, DEFAULT_WEIGHTS } from '../scorer';
 import type { SessionEvent } from '../../db/db';
 
 // ---------------------------------------------------------------------------
@@ -234,6 +234,25 @@ describe('aggregateScores', () => {
     expect(result.overall).toBe(100);
   });
 
+  it('all dimension scores = 100 + custom weights all-eyeContact → overall still = 100', () => {
+    // eyeContact=100 with weight=1.0 means overall = 100
+    const events: SessionEvent[] = [
+      { type: 'wpm_snapshot', timestampMs: 60000, label: '130' },
+      { type: 'expressiveness_segment', timestampMs: 30000, label: '1.0' },
+    ];
+    const customWeights = {
+      ...DEFAULT_WEIGHTS,
+      eyeContact: 1.0,
+      fillers: 0,
+      pacing: 0,
+      expressiveness: 0,
+      gestures: 0,
+      openingClosing: 0,
+    };
+    const result = aggregateScores(events, 60000, undefined, customWeights);
+    expect(result.overall).toBe(result.dimensions.eyeContact.score);
+  });
+
   it('mixed scores → overall = 65', () => {
     // overall = round(80*0.22 + 60*0.22 + 100*0.18 + 50*0.14 + 44*0.14 + 33*0.10)
     //         = round(17.6 + 13.2 + 18 + 7 + 6.16 + 3.3) = round(65.26) = 65
@@ -276,5 +295,42 @@ describe('aggregateScores', () => {
 
     const result = aggregateScores(events, 300000);
     expect(result.overall).toBe(65);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// custom weights
+// ---------------------------------------------------------------------------
+describe('custom weights', () => {
+  it('weight all on eyeContact (1.0, rest 0) → overall === eyeContact.score', () => {
+    // 0ms away → eyeContact=100; passing weight=1.0 for eyeContact, 0 for everything else
+    const events: SessionEvent[] = [
+      { type: 'wpm_snapshot', timestampMs: 60000, label: '130' },
+      { type: 'expressiveness_segment', timestampMs: 30000, label: '0.8' },
+    ];
+    const customWeights = {
+      eyeContact: 1.0,
+      fillers: 0,
+      pacing: 0,
+      expressiveness: 0,
+      gestures: 0,
+      openingClosing: 0,
+    };
+    const result = aggregateScores(events, 60000, undefined, customWeights);
+    expect(result.overall).toBe(result.dimensions.eyeContact.score);
+  });
+
+  it('omitting weights param produces same result as using DEFAULT_WEIGHTS (regression guard)', () => {
+    const events: SessionEvent[] = [
+      { type: 'eye_contact_break', timestampMs: 5000 },
+      { type: 'eye_contact_resume', timestampMs: 8000 },
+      { type: 'filler_word', timestampMs: 10000, label: 'um' },
+      { type: 'wpm_snapshot', timestampMs: 60000, label: '130' },
+      { type: 'expressiveness_segment', timestampMs: 30000, label: '0.7' },
+    ];
+    const withDefault = aggregateScores(events, 60000);
+    const withExplicit = aggregateScores(events, 60000, undefined, DEFAULT_WEIGHTS);
+    expect(withDefault.overall).toBe(withExplicit.overall);
+    expect(withDefault.dimensions.eyeContact.score).toBe(withExplicit.dimensions.eyeContact.score);
   });
 });

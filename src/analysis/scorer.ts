@@ -178,7 +178,7 @@ function scoreOpeningClosing(events: SessionEvent[], durationMs: number): Dimens
 // --- Weighted Overall ---
 // Weights: eyeContact 22%, fillers 22%, pacing 18%, expressiveness 14%, gestures 14%, openingClosing 10%
 // Rationale: the core differentiators (eye contact, filler-free speech) carry the most weight
-const WEIGHTS = {
+export const DEFAULT_WEIGHTS = {
   eyeContact: 0.22,
   fillers: 0.22,
   pacing: 0.18,
@@ -190,7 +190,8 @@ const WEIGHTS = {
 export function aggregateScores(
   eventLog: SessionEvent[],
   durationMs: number,
-  transcript?: TranscriptSegment[]
+  transcript?: TranscriptSegment[],
+  weights: typeof DEFAULT_WEIGHTS = DEFAULT_WEIGHTS
 ): ScorecardResult {
   const eyeContact = scoreEyeContact(eventLog, durationMs);
   const expressiveness = scoreExpressiveness(eventLog);
@@ -200,12 +201,12 @@ export function aggregateScores(
   const openingClosing = scoreOpeningClosing(eventLog, durationMs);
 
   const overall = Math.round(
-    eyeContact.score * WEIGHTS.eyeContact +
-    fillers.score * WEIGHTS.fillers +
-    pacing.score * WEIGHTS.pacing +
-    expressiveness.score * WEIGHTS.expressiveness +
-    gestures.score * WEIGHTS.gestures +
-    openingClosing.score * WEIGHTS.openingClosing
+    eyeContact.score * weights.eyeContact +
+    fillers.score * weights.fillers +
+    pacing.score * weights.pacing +
+    expressiveness.score * weights.expressiveness +
+    gestures.score * weights.gestures +
+    openingClosing.score * weights.openingClosing
   );
 
   return {
