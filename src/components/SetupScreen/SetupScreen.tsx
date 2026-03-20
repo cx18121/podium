@@ -5,9 +5,11 @@ import SpeechSupportBanner from '../common/SpeechSupportBanner';
 interface SetupScreenProps {
   onStart: () => void;
   onViewHistory?: () => void;
+  onCalibrate: () => void;
+  hasCalibration: boolean;
 }
 
-export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps) {
+export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCalibration }: SetupScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
@@ -108,36 +110,48 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
         Check that you are in frame, then click Start Recording. The camera feed will be hidden during your session.
       </p>
 
-      <button
-        onClick={onStart}
-        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
-        style={{
-          padding: '0 36px',
-          height: '52px',
-          background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-          color: 'white',
-          fontFamily: 'Figtree, system-ui, sans-serif',
-          fontWeight: 600,
-          fontSize: '15px',
-          borderRadius: '14px',
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
-          transition: 'all 0.18s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.48)';
-          e.currentTarget.style.transform = 'translateY(-1px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-        onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)'; }}
-        onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
-      >
-        Start Recording
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <button
+          onClick={onStart}
+          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
+          style={{
+            padding: '0 36px',
+            height: '52px',
+            background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
+            color: 'white',
+            fontFamily: 'Figtree, system-ui, sans-serif',
+            fontWeight: 600,
+            fontSize: '15px',
+            borderRadius: '14px',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
+            transition: 'all 0.18s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.48)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)'; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
+        >
+          Start Recording
+        </button>
+
+        {hasCalibration && (
+          <span style={{
+            fontSize: '11px',
+            color: '#00d4a8',
+            fontFamily: 'Figtree',
+          }}>
+            ✓ Calibrated
+          </span>
+        )}
+      </div>
 
       {onViewHistory && (
         <button
@@ -158,6 +172,24 @@ export default function SetupScreen({ onStart, onViewHistory }: SetupScreenProps
           → View History
         </button>
       )}
+
+      <button
+        onClick={onCalibrate}
+        style={{
+          fontSize: '13px',
+          color: '#5e6f94',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '8px 16px',
+          fontFamily: 'Figtree',
+          transition: 'color 0.15s ease',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
+      >
+        {hasCalibration ? '↻ Re-calibrate' : '⚙ Calibrate for accuracy'}
+      </button>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db/db';
-import type { SessionEvent } from './db/db';
+import type { SessionEvent, CalibrationProfile } from './db/db';
 import { useRecording, type RecordingReadyData } from './hooks/useRecording';
 import { requestPersistentStorage } from './hooks/useStoragePermission';
 import { SpeechCapture } from './hooks/useSpeechCapture';
@@ -11,14 +11,16 @@ import { detectPauses, calculateWPM, calculateWPMWindows } from './analysis/paci
 import Home from './pages/Home';
 import SetupScreen from './components/SetupScreen/SetupScreen';
 import RecordingScreen from './components/RecordingScreen/RecordingScreen';
+import CalibrationScreen from './components/CalibrationScreen/CalibrationScreen';
 import { NameSessionModal } from './components/NameSessionModal/NameSessionModal';
 import ReviewPage from './pages/Review';
 import HistoryView from './pages/HistoryView';
 
 // State machine: home -> setup -> recording -> naming -> review
 //                setup <-> history
+//                setup <-> calibration
 //                review -> history (back) | setup (record again)
-type AppView = 'home' | 'setup' | 'recording' | 'processing' | 'naming' | 'review' | 'history';
+type AppView = 'home' | 'setup' | 'recording' | 'processing' | 'naming' | 'review' | 'history' | 'calibration';
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
@@ -32,6 +34,11 @@ export default function App() {
 
   const sessionCount = useLiveQuery(() => db.sessions.count(), []);
   const hasExistingSessions = (sessionCount ?? 0) > 0;
+
+  const calibrationProfile = useLiveQuery(
+    () => db.calibrationProfiles.orderBy('id').last(),
+    []
+  ) as CalibrationProfile | undefined;
 
   // Skip welcome screen for returning users
   useEffect(() => {
@@ -48,13 +55,23 @@ export default function App() {
 
   const { status, elapsedMs, error, startSession, stopSession } = useRecording(handleRecordingReady);
 
+  const handleCalibrationComplete = useCallback(async (profile: { gazeThreshold: number; faceTouchThreshold: number; swayThreshold: number }) => {
+    await db.calibrationProfiles.add({
+      createdAt: new Date(),
+      gazeThreshold: profile.gazeThreshold,
+      faceTouchThreshold: profile.faceTouchThreshold,
+      swayThreshold: profile.swayThreshold,
+    });
+    setView('setup');
+  }, []);
+
   const handleStart = useCallback(async () => {
     setView('recording');
     speechCaptureRef.current = new SpeechCapture();
     sessionStartMsRef.current = Date.now();
     speechCaptureRef.current.start(sessionStartMsRef.current);
-    await startSession();
-  }, [startSession]);
+    await startSession(calibrationProfile ?? undefined);
+  }, [startSession, calibrationProfile]);
 
   const handleStop = useCallback(() => {
     stopSession();
@@ -128,6 +145,17 @@ export default function App() {
       <SetupScreen
         onStart={handleStart}
         onViewHistory={hasExistingSessions ? () => setView('history') : undefined}
+        onCalibrate={() => setView('calibration')}
+        hasCalibration={calibrationProfile != null}
+      />
+    );
+  }
+
+  if (view === 'calibration') {
+    return (
+      <CalibrationScreen
+        onComplete={handleCalibrationComplete}
+        onCancel={() => setView('setup')}
       />
     );
   }

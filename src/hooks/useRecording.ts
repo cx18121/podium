@@ -2,7 +2,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { webmFixDuration } from 'webm-fix-duration';
 import { useMLWorker } from './useMLWorker';
-import type { SessionEvent } from '../db/db';
+import type { SessionEvent, CalibrationProfile } from '../db/db';
 
 // Intentionally does NOT import db or requestPersistentStorage.
 // App owns the Dexie save so it can insert the rename prompt between stop and save.
@@ -20,7 +20,7 @@ interface UseRecordingReturn {
   status: RecordingStatus;
   elapsedMs: number;
   error: string | null;
-  startSession: () => Promise<void>;
+  startSession: (profile?: CalibrationProfile) => Promise<void>;
   stopSession: () => void;
 }
 
@@ -66,7 +66,7 @@ export function useRecording(
     mlWorker.cleanupWorker();
   }, [mlWorker]);
 
-  const startSession = useCallback(async () => {
+  const startSession = useCallback(async (profile?: CalibrationProfile) => {
     setStatus('requesting');
     setError(null);
     setElapsedMs(0);
@@ -89,7 +89,7 @@ export function useRecording(
       hiddenVideoRef.current = hiddenVideo;
 
       // Start the ML worker — do NOT await (worker init is async, frames are dropped until ready)
-      mlWorker.startWorker(hiddenVideo);
+      mlWorker.startWorker(hiddenVideo, profile);
 
       const recorder = new MediaRecorder(stream, {
         mimeType: 'video/webm;codecs=vp9,opus',
