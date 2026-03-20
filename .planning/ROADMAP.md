@@ -263,7 +263,7 @@ v2.0 phases: 8 -> 9 -> 10 -> 11 -> 12 -> 13
   4. Skipping calibration leaves all scoring behavior identical to pre-Phase-14 (default constants used)
   5. Existing sessions are not cleared by the v4 schema migration
   6. aggregateScores accepts optional custom weights parameter for forward compatibility
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 14-01-PLAN.md — Dexie v4 schema + CalibrationProfile type, computeCalibrationProfile pure function, aggregateScores optional weights, worker threshold injection

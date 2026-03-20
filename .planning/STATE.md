@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 14-01-PLAN.md (calibration data layer and pure functions)
-last_updated: "2026-03-20T01:15:05.362Z"
+stopped_at: Completed 14-02-PLAN.md (CalibrationScreen UI, worker calibration messages, App.tsx wiring)
+last_updated: "2026-03-20T01:35:52.563Z"
 progress:
   total_phases: 15
   completed_phases: 13
   total_plans: 38
-  completed_plans: 36
+  completed_plans: 37
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 14 (calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person) — EXECUTING
-Plan: 1 of 3
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Plan: 1 of 3
 | Phase 13-whisper-integration P01 | 11 | 2 tasks | 8 files |
 | Phase 13-whisper-integration P02 | 15 | 2 tasks | 3 files |
 | Phase 14 P01 | 16 | 2 tasks | 8 files |
+| Phase 14 P02 | 17 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -175,6 +176,9 @@ Recent decisions affecting current work:
 - [Phase 13-02]: [13-02] pipeline() and transcribe options cast with 'as any' — @huggingface/transformers type definitions produce union complexity errors; runtime behavior is correct
 - [Phase 13-02]: [13-02] useEffect dependency array: [session?.id, session?.whisperStatus] — whisperStatus included so effect does not re-run after completion; guard at top prevents re-analysis on complete sessions
 - [Phase 14]: [14-01] computeCalibrationProfile: p95*1.2 gaze [0.10,0.40], p5*0.8 faceTouch [0.06,0.20], p95*1.5 sway [0.02,0.10]; Dexie v4 additive (no session clear); DEFAULT_WEIGHTS exported; worker let thresholds with null-check override; useMLWorker conditional spread for profile
+- [Phase 14]: [14-02] CalibrationScreen uses raw Worker (not useMLWorker) — calibration needs custom calibrate_frame/calibrate_stop protocol that useMLWorker's frame pump doesn't support
+- [Phase 14]: [14-02] calibrationProfile loaded via useLiveQuery with .last() on orderBy('id') — most recent profile wins, old profiles preserved for audit trail
+- [Phase 14]: [14-02] onCalibrate and hasCalibration are required props on SetupScreen (not optional) — all callers must be explicit about calibration state
 
 ### Roadmap Evolution
 
@@ -207,6 +211,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-20T01:15:05.029Z
-Stopped at: Completed 14-01-PLAN.md (calibration data layer and pure functions)
+Last session: 2026-03-20T01:35:52.226Z
+Stopped at: Completed 14-02-PLAN.md (CalibrationScreen UI, worker calibration messages, App.tsx wiring)
 Resume file: None
