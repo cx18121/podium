@@ -2,6 +2,14 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { TranscriptSegment } from '../hooks/useSpeechCapture';
 
+export interface CalibrationProfile {
+  id?: number;
+  createdAt: Date;
+  gazeThreshold: number;
+  faceTouchThreshold: number;
+  swayThreshold: number;
+}
+
 export interface WPMWindow {
   startMs: number;    // window start (e.g. 0, 30000, 60000)
   endMs: number;      // window end (clamped to session duration)
@@ -41,6 +49,7 @@ export interface Scorecard {
 
 const db = new Dexie('CognitiveLoadMapper') as Dexie & {
   sessions: EntityTable<Session, 'id'>;
+  calibrationProfiles: EntityTable<CalibrationProfile, 'id'>;
 };
 
 // v1 schema: index only metadata columns, NEVER binary or array fields
@@ -63,6 +72,13 @@ db.version(3).stores({
   sessions: '++id, createdAt, title',
 }).upgrade(tx => {
   return tx.table('sessions').clear();
+});
+
+// v4 schema: adds calibrationProfiles table for per-user threshold calibration.
+// Purely additive — no upgrade callback, no session clearing.
+db.version(4).stores({
+  sessions: '++id, createdAt, title',
+  calibrationProfiles: '++id',
 });
 
 export { db };

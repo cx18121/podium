@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import 'fake-indexeddb/auto';
 import { db } from './db';
+import type { CalibrationProfile } from './db';
 
 describe('Dexie sessions table', () => {
   beforeEach(async () => {
@@ -151,5 +152,49 @@ describe('Dexie sessions table', () => {
 
   it('database version is at least 3', () => {
     expect(db.verno).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('Dexie v4 calibrationProfiles table', () => {
+  beforeEach(async () => {
+    await db.calibrationProfiles.clear();
+  });
+
+  it('has a calibrationProfiles table', () => {
+    expect(db.calibrationProfiles).toBeTruthy();
+  });
+
+  it('db.verno >= 4', () => {
+    expect(db.verno).toBeGreaterThanOrEqual(4);
+  });
+
+  it('can store and retrieve a CalibrationProfile', async () => {
+    const profile: Omit<CalibrationProfile, 'id'> = {
+      createdAt: new Date(),
+      gazeThreshold: 0.18,
+      faceTouchThreshold: 0.10,
+      swayThreshold: 0.05,
+    };
+    const id = await db.calibrationProfiles.add(profile as CalibrationProfile);
+    expect(typeof id).toBe('number');
+    expect(id).toBeGreaterThan(0);
+
+    const retrieved = await db.calibrationProfiles.get(id);
+    expect(retrieved?.gazeThreshold).toBe(0.18);
+    expect(retrieved?.faceTouchThreshold).toBe(0.10);
+    expect(retrieved?.swayThreshold).toBe(0.05);
+  });
+
+  it('sessions table still works after v4 (no clearing)', async () => {
+    const id = await db.sessions.add({
+      title: 'Post-v4 session',
+      createdAt: new Date(),
+      durationMs: 30000,
+      videoBlob: new Blob(['test'], { type: 'video/webm' }),
+      eventLog: [],
+      scorecard: null,
+    });
+    const session = await db.sessions.get(id);
+    expect(session?.title).toBe('Post-v4 session');
   });
 });

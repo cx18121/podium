@@ -184,6 +184,8 @@ Recent decisions affecting current work:
 - Phase 6 added: Interactive UX improvements — custom tooltips, smarter filler detection, live captions
 - Phase 7 added: Visual redesign — elevate frontend design quality with distinctive, impressive visual identity
 - Phases 8-13 added: v2.0 Deeper Analytics milestone — schema migration, analytics panels, Whisper integration
+- Phase 14 added: Calibration flow — one-time baseline recording that tunes per-user thresholds (gaze, face touch, sway, score weights) stored in Dexie so scoring is accurate for each person
+- Phase 15 added: Worst-moments reel — surface the 3 worst moments per session (longest eye contact break, densest filler cluster, biggest sway) as jumpable clips on the review screen
 
 ### Pending Todos
 
