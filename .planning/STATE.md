@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
-status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-stopped_at: Completed quick task 260319-m88 (dead code removal and minor cleanup)
-last_updated: "2026-03-19T16:10:00Z"
-last_activity: 2026-03-19 — quick task 260319-m88 completed
+status: unknown
+stopped_at: Completed 14-01-PLAN.md (calibration data layer and pure functions)
+last_updated: "2026-03-20T01:15:05.362Z"
 progress:
-  total_phases: 13
+  total_phases: 15
   completed_phases: 13
-  total_plans: 35
-  completed_plans: 35
-  percent: 0
+  total_plans: 38
+  completed_plans: 36
 ---
 
 # Project State
@@ -21,20 +19,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** You watch your own session back with a coach's eye: every filler word, eye contact break, and nervous gesture marked at the exact moment it happened.
-**Current focus:** Phase 8 — Schema Migration + WPM Windows (v2.0 prerequisite gate)
+**Current focus:** Phase 14 — calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person
 
 ## Current Position
 
-Phase: Not started (roadmap defined, ready for plan-phase 8)
-Plan: —
-Status: v2.0 roadmap created — 6 phases (8-13), 13 requirements mapped
-Last activity: 2026-03-16 — v2.0 roadmap created (phases 8-13)
-
-Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
+Phase: 14 (calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 3
 - Average duration: ~10 min
 - Total execution time: ~0.5 hours
@@ -46,6 +41,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | 01-foundation-and-recording | 3 | ~30min | ~10min |
 
 **Recent Trend:**
+
 - Last 5 plans: 01-01 (11min), 01-02 (~9min), 01-03 (~10min)
 - Trend: consistent ~10 min/plan
 
@@ -80,6 +76,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 milestone)
 | Phase 12-wpm-chart-panel P01 | 26 | 2 tasks | 7 files |
 | Phase 13-whisper-integration P01 | 11 | 2 tasks | 8 files |
 | Phase 13-whisper-integration P02 | 15 | 2 tasks | 3 files |
+| Phase 14 P01 | 16 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -177,6 +174,7 @@ Recent decisions affecting current work:
 - [Phase 13-01]: [13-01] WhisperStatusBanner returns null for complete/failed states: silent fallback design per WHIS-05
 - [Phase 13-02]: [13-02] pipeline() and transcribe options cast with 'as any' — @huggingface/transformers type definitions produce union complexity errors; runtime behavior is correct
 - [Phase 13-02]: [13-02] useEffect dependency array: [session?.id, session?.whisperStatus] — whisperStatus included so effect does not re-run after completion; guard at top prevents re-analysis on complete sessions
+- [Phase 14]: [14-01] computeCalibrationProfile: p95*1.2 gaze [0.10,0.40], p5*0.8 faceTouch [0.06,0.20], p95*1.5 sway [0.02,0.10]; Dexie v4 additive (no session clear); DEFAULT_WEIGHTS exported; worker let thresholds with null-check override; useMLWorker conditional spread for profile
 
 ### Roadmap Evolution
 
@@ -209,6 +207,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-19T16:10:00Z
-Stopped at: Completed quick task 260319-m88 (dead code removal and minor cleanup)
+Last session: 2026-03-20T01:15:05.029Z
+Stopped at: Completed 14-01-PLAN.md (calibration data layer and pure functions)
 Resume file: None
