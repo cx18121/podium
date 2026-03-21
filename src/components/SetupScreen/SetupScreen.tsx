@@ -52,7 +52,7 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
           color: '#e4e9f5',
           margin: 0,
         }}>
-          Pitch Practice
+          Podium
         </h1>
         <div style={{
           height: '2px', width: '28px',

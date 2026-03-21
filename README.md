@@ -1,4 +1,4 @@
-# Pitch Practice
+# Podium
 
 A browser-based presentation practice tool that records you and scores your delivery using on-device ML. No data leaves your device.
 

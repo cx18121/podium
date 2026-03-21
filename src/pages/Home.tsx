@@ -77,7 +77,7 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
             lineHeight: 1.05,
             color: '#e4e9f5',
           }}>
-            Pitch Practice
+            Podium
           </h1>
 
           <div style={{
