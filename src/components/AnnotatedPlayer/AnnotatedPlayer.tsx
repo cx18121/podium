@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import type { SessionEvent } from '../../db/db';
 import type { TranscriptSegment } from '../../hooks/useSpeechCapture';
 import Timeline from './Timeline';
@@ -8,6 +8,10 @@ interface AnnotatedPlayerProps {
   durationMs: number;
   events: SessionEvent[];
   transcript?: TranscriptSegment[];
+}
+
+export interface AnnotatedPlayerHandle {
+  seekTo: (ms: number) => void;
 }
 
 function getCurrentCaption(
@@ -20,7 +24,8 @@ function getCurrentCaption(
   return active?.text ?? null;
 }
 
-export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcript }: AnnotatedPlayerProps) {
+const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
+  function AnnotatedPlayer({ videoUrl, durationMs, events, transcript }, ref) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
@@ -38,6 +43,12 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
     if (!videoRef.current) return;
     videoRef.current.currentTime = timestampMs / 1000;
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    seekTo: (ms: number) => {
+      if (videoRef.current) videoRef.current.currentTime = ms / 1000;
+    },
+  }));
 
   const handleVideoClick = useCallback(() => {
     if (!videoRef.current) return;
@@ -159,4 +170,6 @@ export default function AnnotatedPlayer({ videoUrl, durationMs, events, transcri
       </div>
     </div>
   );
-}
+});
+
+export default AnnotatedPlayer;

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 15 UI-SPEC approved
-last_updated: "2026-03-21T18:51:00.885Z"
+stopped_at: Completed 15-01-PLAN.md
+last_updated: "2026-03-21T20:31:47.980Z"
 progress:
   total_phases: 15
   completed_phases: 14
-  total_plans: 38
-  completed_plans: 38
+  total_plans: 40
+  completed_plans: 39
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** You watch your own session back with a coach's eye: every filler word, eye contact break, and nervous gesture marked at the exact moment it happened.
-**Current focus:** Phase 14 — calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person
+**Current focus:** Phase 15 — worst-moments-reel-surface-the-3-worst-moments-per-session-longest-eye-contact-break-densest-filler-cluster-biggest-sway-as-jumpable-clips-on-the-review-screen
 
 ## Current Position
 
-Phase: 14 (calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person) — COMPLETE
-Plan: 3 of 3 — COMPLETE
+Phase: 15 (worst-moments-reel-surface-the-3-worst-moments-per-session-longest-eye-contact-break-densest-filler-cluster-biggest-sway-as-jumpable-clips-on-the-review-screen) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Plan: 3 of 3 — COMPLETE
 | Phase 13-whisper-integration P02 | 15 | 2 tasks | 3 files |
 | Phase 14 P01 | 16 | 2 tasks | 8 files |
 | Phase 14 P02 | 17 | 2 tasks | 6 files |
+| Phase 15 P01 | 672 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -179,6 +180,9 @@ Recent decisions affecting current work:
 - [Phase 14]: [14-02] CalibrationScreen uses raw Worker (not useMLWorker) — calibration needs custom calibrate_frame/calibrate_stop protocol that useMLWorker's frame pump doesn't support
 - [Phase 14]: [14-02] calibrationProfile loaded via useLiveQuery with .last() on orderBy('id') — most recent profile wins, old profiles preserved for audit trail
 - [Phase 14]: [14-02] onCalibrate and hasCalibration are required props on SetupScreen (not optional) — all callers must be explicit about calibration state
+- [Phase 15]: [15-01] computeWorstMoments is a pure function — no I/O, no React, no Dexie; imports only SessionEvent type from db.ts
+- [Phase 15]: [15-01] densestFillerCluster: STEP_MS=5000, MIN_WINDOW_MS=10000 prevents near-end phantom windows; midpoint returned as jumpable timestamp
+- [Phase 15]: [15-01] biggestSway returns chronologically first body_sway event — no magnitude data in events
 
 ### Roadmap Evolution
 
@@ -211,6 +215,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-21T18:51:00.686Z
-Stopped at: Phase 15 UI-SPEC approved
-Resume file: .planning/phases/15-worst-moments-reel-surface-the-3-worst-moments-per-session-longest-eye-contact-break-densest-filler-cluster-biggest-sway-as-jumpable-clips-on-the-review-screen/15-UI-SPEC.md
+Last session: 2026-03-21T20:31:47.722Z
+Stopped at: Completed 15-01-PLAN.md
+Resume file: None
