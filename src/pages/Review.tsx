@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { db, type Session, type Scorecard, type WhisperFillerResult } from '../db/db';
 import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
 import ScorecardView from '../components/ScorecardView/ScorecardView';
 import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
+import type { AnnotatedPlayerHandle } from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import PauseDetail from '../components/PauseDetail/PauseDetail';
 import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
 import WPMChart from '../components/WPMChart/WPMChart';
 import WhisperStatusBanner, { type WhisperBannerStatus } from '../components/WhisperStatusBanner/WhisperStatusBanner';
 import { countFillersFromTranscript } from '../analysis/whisperFillerCounter';
+import { computeWorstMoments } from '../analysis/worstMoments';
+import WorstMomentsReel from '../components/WorstMomentsReel/WorstMomentsReel';
 
 interface ReviewPageProps {
   sessionId: number;
@@ -31,6 +34,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const [error, setError] = useState<string | null>(null);
   const [whisperBannerStatus, setWhisperBannerStatus] = useState<WhisperBannerStatus | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<number | undefined>(undefined);
+  const playerRef = useRef<AnnotatedPlayerHandle>(null);
 
   useEffect(() => {
     let objectUrl: string | null = null;
@@ -164,6 +168,8 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const durationSec = Math.round(session.durationMs / 1000);
   const durationDisplay = `${Math.floor(durationSec / 60)}:${String(durationSec % 60).padStart(2, '0')}`;
 
+  const worstMoments = computeWorstMoments(session.eventLog, session.durationMs);
+
   return (
     <div style={{
       display: 'flex',
@@ -225,7 +231,12 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       </div>
 
       <div style={{ width: '100%', maxWidth: '672px' }}>
+        <WorstMomentsReel moments={worstMoments} onSeek={(ms) => playerRef.current?.seekTo(ms)} />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '672px' }}>
         <AnnotatedPlayer
+          ref={playerRef}
           videoUrl={videoUrl}
           durationMs={session.durationMs}
           events={session.eventLog}
