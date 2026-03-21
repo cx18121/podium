@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 14-02-PLAN.md (CalibrationScreen UI, worker calibration messages, App.tsx wiring)
-last_updated: "2026-03-20T01:35:52.563Z"
+stopped_at: Phase 15 UI-SPEC approved
+last_updated: "2026-03-21T18:51:00.885Z"
 progress:
   total_phases: 15
-  completed_phases: 13
+  completed_phases: 14
   total_plans: 38
-  completed_plans: 37
+  completed_plans: 38
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 
 ## Current Position
 
-Phase: 14 (calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person) — EXECUTING
-Plan: 2 of 3
+Phase: 14 (calibration-flow-one-time-baseline-recording-that-tunes-per-user-thresholds-gaze-face-touch-sway-score-weights-stored-in-dexie-so-scoring-is-accurate-for-each-person) — COMPLETE
+Plan: 3 of 3 — COMPLETE
 
 ## Performance Metrics
 
@@ -211,6 +211,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-20T01:35:52.226Z
-Stopped at: Completed 14-02-PLAN.md (CalibrationScreen UI, worker calibration messages, App.tsx wiring)
-Resume file: None
+Last session: 2026-03-21T18:51:00.686Z
+Stopped at: Phase 15 UI-SPEC approved
+Resume file: .planning/phases/15-worst-moments-reel-surface-the-3-worst-moments-per-session-longest-eye-contact-break-densest-filler-cluster-biggest-sway-as-jumpable-clips-on-the-review-screen/15-UI-SPEC.md

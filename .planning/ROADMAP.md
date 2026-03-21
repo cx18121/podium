@@ -272,10 +272,18 @@ Plans:
 
 ### Phase 15: Worst-moments reel — surface the 3 worst moments per session (longest eye contact break, densest filler cluster, biggest sway) as jumpable clips on the review screen
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** The review page surfaces the 3 worst moments from each session — the longest eye-contact break, the densest filler cluster in a 30-second window, and the first body sway event — as a panel of jumpable entries that seek the video player to the exact timestamp, so the user can quickly navigate to their weakest moments for self-review.
+**Requirements**: WM-01, WM-02, WM-03, WM-04, WM-05, WM-06
 **Depends on:** Phase 14
-**Plans:** 0 plans
+**Success Criteria** (what must be TRUE):
+  1. The review page shows a "Worst Moments" panel with up to 3 entries (eye contact break, filler cluster, body sway), each with a category indicator, descriptive label, timestamp, and "Jump to" button
+  2. Clicking "Jump to" on any entry seeks the video player to that moment's timestamp via a shared seek channel (forwardRef + useImperativeHandle on AnnotatedPlayer)
+  3. Each category returns null when no relevant events exist; partial results (1-2 moments) show only non-null rows
+  4. When all three moments are null, the panel shows "No significant issues detected" empty state
+  5. The longest eye-contact break correctly handles an open break at session end (no matching resume event)
+  6. The densest filler cluster requires at least 2 filler events to be meaningful; fewer returns null
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 15 to break down)
+- [ ] 15-01-PLAN.md — computeWorstMoments() TDD pure function with WorstMoment/WorstMomentsResult types, unit tests for all edge cases (WM-01, WM-02, WM-03, WM-04)
+- [ ] 15-02-PLAN.md — WorstMomentsReel component, AnnotatedPlayer forwardRef/useImperativeHandle, Review.tsx wiring with seek channel (WM-05, WM-06)
