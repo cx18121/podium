@@ -282,8 +282,8 @@ Plans:
   4. When all three moments are null, the panel shows "No significant issues detected" empty state
   5. The longest eye-contact break correctly handles an open break at session end (no matching resume event)
   6. The densest filler cluster requires at least 2 filler events to be meaningful; fewer returns null
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 15-01-PLAN.md — computeWorstMoments() TDD pure function with WorstMoment/WorstMomentsResult types, unit tests for all edge cases (WM-01, WM-02, WM-03, WM-04)
-- [ ] 15-02-PLAN.md — WorstMomentsReel component, AnnotatedPlayer forwardRef/useImperativeHandle, Review.tsx wiring with seek channel (WM-05, WM-06)
+- [x] 15-02-PLAN.md — WorstMomentsReel component, AnnotatedPlayer forwardRef/useImperativeHandle, Review.tsx wiring with seek channel (WM-05, WM-06)

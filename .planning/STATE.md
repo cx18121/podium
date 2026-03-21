@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-03-21T20:31:47.980Z"
+stopped_at: Completed 15-02-PLAN.md
+last_updated: "2026-03-21T21:00:58.265Z"
 progress:
   total_phases: 15
-  completed_phases: 14
+  completed_phases: 15
   total_plans: 40
-  completed_plans: 39
+  completed_plans: 40
 ---
 
 # Project State
@@ -79,6 +79,7 @@ Plan: 2 of 2
 | Phase 14 P01 | 16 | 2 tasks | 8 files |
 | Phase 14 P02 | 17 | 2 tasks | 6 files |
 | Phase 15 P01 | 672 | 1 tasks | 2 files |
+| Phase 15 P02 | 1625 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -183,6 +184,9 @@ Recent decisions affecting current work:
 - [Phase 15]: [15-01] computeWorstMoments is a pure function — no I/O, no React, no Dexie; imports only SessionEvent type from db.ts
 - [Phase 15]: [15-01] densestFillerCluster: STEP_MS=5000, MIN_WINDOW_MS=10000 prevents near-end phantom windows; midpoint returned as jumpable timestamp
 - [Phase 15]: [15-01] biggestSway returns chronologically first body_sway event — no magnitude data in events
+- [Phase 15]: [15-02] AnnotatedPlayer converted to forwardRef — additive only, internal seekTo useCallback and Timeline onSeek unchanged
+- [Phase 15]: [15-02] @testing-library/user-event not installed; used fireEvent.click from @testing-library/react consistent with all other test files
+- [Phase 15]: [15-02] JumpButton extracted as inner component to encapsulate hover state via useState
 
 ### Roadmap Evolution
 
@@ -215,6 +219,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-21T20:31:47.722Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-03-21T21:00:58.161Z
+Stopped at: Completed 15-02-PLAN.md
 Resume file: None
