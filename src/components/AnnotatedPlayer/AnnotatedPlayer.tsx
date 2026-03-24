@@ -68,7 +68,7 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
           style={{
             width: '100%',
             borderRadius: '14px',
-            background: '#0b1022',
+            background: 'var(--color-surface)',
             cursor: 'pointer',
             display: 'block',
           }}
@@ -82,7 +82,7 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'transparent', border: 'none', cursor: 'pointer',
           }}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+          className="opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-150"
         >
           <div style={{
             width: '52px', height: '52px',
@@ -129,14 +129,14 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
             padding: '4px 10px',
             borderRadius: '6px',
             border: showCaptions
-              ? '1px solid rgba(91,143,255,0.40)'
+              ? '1px solid rgba(99,102,241,0.40)'
               : '1px solid rgba(255,255,255,0.06)',
-            background: showCaptions ? 'rgba(91,143,255,0.15)' : 'rgba(255,255,255,0.03)',
-            color: showCaptions ? '#7ba7ff' : '#5e6f94',
+            background: showCaptions ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.03)',
+            color: showCaptions ? 'var(--color-accent-hover)' : 'var(--color-text-secondary)',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
-          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-1"
+          className="min-h-[44px] focus-ring"
         >
           CC
         </button>
@@ -150,7 +150,7 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
               borderRadius: '8px',
               padding: '10px 16px',
               fontSize: '13px',
-              color: '#e4e9f5',
+              color: 'var(--color-text-primary)',
               textAlign: 'center',
               display: 'flex',
               alignItems: 'center',
@@ -161,7 +161,7 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
             aria-atomic="true"
           >
             {transcript === undefined ? (
-              <span style={{ color: '#363e55' }}>No transcript available</span>
+              <span style={{ color: 'var(--color-text-muted)' }}>No transcript available</span>
             ) : (
               <span>{getCurrentCaption(transcript, currentTimeMs) ?? ''}</span>
             )}

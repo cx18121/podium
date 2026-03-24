@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceArea,
 } from 'recharts';
 import { computeWPMChartData } from '../../analysis/wpmChart';
 import type { WPMWindow } from '../../db/db';
@@ -20,25 +21,25 @@ export default function WPMChart({ wpmWindows }: WPMChartProps) {
 
   return (
     <div style={{
-      background: '#0b1022',
-      border: '1px solid rgba(255,255,255,0.06)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-border)',
       borderRadius: '18px',
       padding: '24px',
       width: '100%',
       fontFamily: 'Figtree, system-ui, sans-serif',
     }}>
       <h3 style={{
-        fontSize: '14px',
+        fontSize: '11px',
         fontWeight: 600,
-        color: '#8a9bc2',
+        color: 'var(--color-text-muted)',
         textTransform: 'uppercase' as const,
-        letterSpacing: '0.06em',
+        letterSpacing: '0.12em',
         margin: '0 0 16px 0',
       }}>
         Speaking Pace
       </h3>
       {(!wpmWindows || chartData.length === 0) ? (
-        <p style={{ fontSize: '14px', color: '#5e6f94', margin: 0 }}>
+        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', margin: 0 }}>
           No data available
         </p>
       ) : (
@@ -47,33 +48,43 @@ export default function WPMChart({ wpmWindows }: WPMChartProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
             <XAxis
               dataKey="label"
-              tick={{ fill: '#5e6f94', fontSize: 11, fontFamily: 'Figtree' }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 11, fontFamily: 'Figtree' }}
+              axisLine={{ stroke: 'var(--color-border-modal)' }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#5e6f94', fontSize: 11, fontFamily: 'Figtree' }}
+              tick={{ fill: 'var(--color-text-secondary)', fontSize: 11, fontFamily: 'Figtree' }}
               tickLine={false}
               unit=" wpm"
-              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
+              axisLine={{ stroke: 'var(--color-border-modal)' }}
             />
             <Tooltip
               contentStyle={{
-                background: '#0d1526',
-                border: '1px solid rgba(255,255,255,0.10)',
+                background: 'var(--color-surface-raised)',
+                border: '1px solid var(--color-border-hover)',
                 borderRadius: '10px',
                 fontFamily: 'Figtree',
                 fontSize: '13px',
-                color: '#e4e9f5',
+                color: 'var(--color-text-primary)',
               }}
               formatter={(value) => [`${value} wpm`, 'Pace']}
+            />
+            <ReferenceArea
+              y1={120}
+              y2={160}
+              fill="#10b981"
+              fillOpacity={0.06}
+              stroke="#10b981"
+              strokeOpacity={0.18}
+              strokeDasharray="4 4"
+              label={{ value: 'ideal', position: 'insideTopRight', fill: 'rgba(16,185,129,0.5)', fontSize: 10, fontFamily: 'Figtree' }}
             />
             <Line
               type="monotone"
               dataKey="wpm"
-              stroke="#5b8fff"
+              stroke="#6366f1"
               strokeWidth={2}
-              dot={{ fill: '#5b8fff', r: 3 }}
+              dot={{ fill: '#6366f1', r: 3 }}
               activeDot={{ r: 5 }}
             />
           </LineChart>

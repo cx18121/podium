@@ -20,27 +20,26 @@ export default function SpeechSupportBanner() {
         alignItems: 'flex-start',
         gap: '12px',
         padding: '11px 14px',
-        background: 'rgba(245,158,11,0.07)',
-        border: '1px solid rgba(245,158,11,0.18)',
-        borderLeft: '3px solid #f59e0b',
+        background: 'rgba(251,191,36,0.07)',
+        border: '1px solid rgba(251,191,36,0.18)',
+        borderLeft: '2px solid var(--color-warning)',
         borderRadius: '10px',
       }}
     >
       <span style={{
         flex: 1,
-        fontSize: '12.5px',
-        color: '#d4a04a',
-        fontFamily: 'Figtree, system-ui, sans-serif',
+        fontSize: '13px',
+        color: 'var(--color-warning)',
         lineHeight: 1.6,
       }}>
-        Audio analysis requires Chrome or Edge. Eye contact, expressiveness, and gesture analysis will still work.
+        Speech recognition requires Chrome or Edge. Eye contact, expressiveness, and gesture analysis will still work.
       </span>
       <button
         type="button"
         aria-label="Dismiss"
         onClick={() => setDismissed(true)}
         style={{
-          color: '#d4a04a',
+          color: 'var(--color-warning)',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -48,13 +47,13 @@ export default function SpeechSupportBanner() {
           lineHeight: 1,
           padding: '2px 4px',
           flexShrink: 0,
-          opacity: 0.7,
+          opacity: 0.6,
           transition: 'opacity 0.15s ease',
           fontFamily: 'system-ui',
         }}
-        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400 focus-visible:outline-offset-1"
+        className="focus-ring"
         onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.7'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6'; }}
       >
         ×
       </button>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { SessionListItem } from '../components/SessionListItem/SessionListItem';
 import { StorageQuotaBar } from '../components/StorageQuotaBar/StorageQuotaBar';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal/DeleteConfirmModal';
@@ -20,8 +21,7 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
     return (
       <div aria-busy="true" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100svh', background: '#060911', color: '#5e6f94',
-        fontFamily: 'Figtree',
+        minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
       }}>
         Loading sessions...
       </div>
@@ -36,8 +36,8 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100svh',
-        background: '#060911',
-        color: '#e4e9f5',
+        background: 'var(--color-bg)',
+        color: 'var(--color-text-primary)',
         gap: '16px',
         padding: '32px',
       }}>
@@ -46,78 +46,49 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
           fontWeight: 700,
           fontSize: '1.25rem',
           letterSpacing: '-0.02em',
-          color: '#e4e9f5',
+          color: 'var(--color-text-primary)',
           margin: 0,
         }}>
           No sessions yet
         </h1>
-        <p style={{ fontSize: '14px', color: '#5e6f94', textAlign: 'center', maxWidth: '380px', fontFamily: 'Figtree', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', textAlign: 'center', maxWidth: '380px', lineHeight: 1.6 }}>
           Record your first practice session to see your history and track your progress.
         </p>
-        <button
-          onClick={onRecordNew}
-          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
-          style={{
-            padding: '0 32px', height: '48px',
-            background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-            color: 'white', fontFamily: 'Figtree, system-ui, sans-serif',
-            fontWeight: 600, fontSize: '14px', borderRadius: '12px', border: 'none',
-            cursor: 'pointer', boxShadow: '0 4px 20px rgba(91,143,255,0.30)',
-            transition: 'all 0.18s ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(91,143,255,0.46)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(91,143,255,0.30)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-        >
-          Start Recording
-        </button>
+        <PrimaryButton onClick={onRecordNew}>Start Recording</PrimaryButton>
       </div>
     );
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100svh',
-      background: '#060911',
-      padding: '40px 32px',
-      gap: '32px',
-      maxWidth: '768px',
-      margin: '0 auto',
-      width: '100%',
-    }}>
+    <div
+      className="px-4 py-6 sm:px-8 sm:py-10"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        minHeight: '100svh',
+        background: 'var(--color-bg)',
+        gap: '32px',
+        maxWidth: '768px',
+        margin: '0 auto',
+        width: '100%',
+      }}
+    >
       {/* Header row */}
       <div style={{ width: '100%', maxWidth: '672px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
         <h1 style={{
           fontFamily: 'Syne, system-ui, sans-serif',
           fontWeight: 700,
-          fontSize: '1.25rem',
-          letterSpacing: '-0.025em',
-          color: '#e4e9f5',
+          fontSize: '1.625rem',
+          letterSpacing: '-0.03em',
+          color: 'var(--color-text-primary)',
           margin: 0,
         }}>
           Past Sessions
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <StorageQuotaBar />
-          <button
-            onClick={onRecordNew}
-            className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
-            style={{
-              padding: '0 20px', height: '40px',
-              background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-              color: 'white', fontFamily: 'Figtree, system-ui, sans-serif',
-              fontWeight: 600, fontSize: '13px', borderRadius: '10px', border: 'none',
-              cursor: 'pointer', whiteSpace: 'nowrap',
-              boxShadow: '0 2px 16px rgba(91,143,255,0.28)',
-              transition: 'all 0.18s ease',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.44)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 2px 16px rgba(91,143,255,0.28)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-          >
-            Start Recording
-          </button>
+          <PrimaryButton size="sm" onClick={onRecordNew}>Start Recording</PrimaryButton>
         </div>
       </div>
 
@@ -133,8 +104,8 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
         ))}
       </div>
 
-      {/* Progress sparklines */}
-      {(() => {
+      {/* Progress sparklines — only meaningful with enough data points */}
+      {sessions.length >= 3 && (() => {
         const recentSessions = sessions.slice(0, 10).reverse();
         const dimensionKeys: { key: string; label: string }[] = [
           { key: 'eyeContact', label: 'Eye Contact' },
@@ -145,15 +116,7 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
         ];
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '672px' }}>
-            <h2 style={{
-              fontSize: '11px',
-              fontFamily: 'Figtree',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#363e55',
-              margin: 0,
-            }}>
+            <h2 className="text-caps" style={{ color: 'var(--color-text-muted)', margin: 0 }}>
               Progress by Dimension
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">

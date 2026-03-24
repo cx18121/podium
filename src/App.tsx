@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from './db/db';
 import type { SessionEvent, CalibrationProfile } from './db/db';
@@ -9,12 +9,17 @@ import { SpeechCapture } from './hooks/useSpeechCapture';
 import { detectFillers } from './analysis/fillerDetector';
 import { detectPauses, calculateWPM, calculateWPMWindows } from './analysis/pacing';
 import Home from './pages/Home';
-import SetupScreen from './components/SetupScreen/SetupScreen';
-import RecordingScreen from './components/RecordingScreen/RecordingScreen';
-import CalibrationScreen from './components/CalibrationScreen/CalibrationScreen';
 import { NameSessionModal } from './components/NameSessionModal/NameSessionModal';
-import ReviewPage from './pages/Review';
-import HistoryView from './pages/HistoryView';
+
+const SetupScreen = lazy(() => import('./components/SetupScreen/SetupScreen'));
+const RecordingScreen = lazy(() => import('./components/RecordingScreen/RecordingScreen'));
+const CalibrationScreen = lazy(() => import('./components/CalibrationScreen/CalibrationScreen'));
+const ReviewPage = lazy(() => import('./pages/Review'));
+const HistoryView = lazy(() => import('./pages/HistoryView'));
+
+function PageFallback() {
+  return <div style={{ minHeight: '100svh', background: 'var(--color-bg)' }} />;
+}
 
 // State machine: home -> setup -> recording -> naming -> review
 //                setup <-> history
@@ -142,42 +147,49 @@ export default function App() {
 
   if (view === 'setup') {
     return (
-      <SetupScreen
-        onStart={handleStart}
-        onViewHistory={hasExistingSessions ? () => setView('history') : undefined}
-        onCalibrate={() => setView('calibration')}
-        hasCalibration={calibrationProfile != null}
-      />
+      <Suspense fallback={<PageFallback />}>
+        <SetupScreen
+          onStart={handleStart}
+          onViewHistory={hasExistingSessions ? () => setView('history') : undefined}
+          onCalibrate={() => setView('calibration')}
+          hasCalibration={calibrationProfile != null}
+        />
+      </Suspense>
     );
   }
 
   if (view === 'calibration') {
     return (
-      <CalibrationScreen
-        onComplete={handleCalibrationComplete}
-        onCancel={() => setView('setup')}
-      />
+      <Suspense fallback={<PageFallback />}>
+        <CalibrationScreen
+          onComplete={handleCalibrationComplete}
+          onCancel={() => setView('setup')}
+        />
+      </Suspense>
     );
   }
 
   if (view === 'recording') {
     return (
-      <>
-        {error && (
-          <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-900 text-red-200 px-4 py-2 rounded-lg text-sm z-50">
-            {error}
-          </div>
-        )}
-        <RecordingScreen elapsedMs={elapsedMs} onStop={handleStop} />
-      </>
+      <Suspense fallback={<PageFallback />}>
+        <>
+          {error && (
+            <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-900 text-red-200 px-4 py-2 rounded-lg text-sm z-50">
+              {error}
+            </div>
+          )}
+          <RecordingScreen elapsedMs={elapsedMs} onStop={handleStop} />
+        </>
+      </Suspense>
     );
   }
 
   if (view === 'processing') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#080c14] gap-4">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100svh', background: 'var(--color-bg)', gap: '16px' }}>
         <svg
-          className="animate-spin w-8 h-8 text-[#6366f1]"
+          className="animate-spin w-8 h-8"
+          style={{ color: 'var(--color-accent)' }}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -186,14 +198,14 @@ export default function App() {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>
-        <p className="text-sm text-[#94a3b8]">Processing your recording...</p>
+        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', margin: 0 }}>Processing your recording...</p>
       </div>
     );
   }
 
   if (view === 'naming' && pendingRecording) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#080c14]">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100svh', background: 'var(--color-bg)' }}>
         <NameSessionModal
           autoTitle={pendingRecording.autoTitle}
           onConfirm={handleSaveName}
@@ -207,26 +219,30 @@ export default function App() {
     const sessionId = savedSessionId ?? historySessionId;
     if (sessionId === null) return null;
     return (
-      <ReviewPage
-        sessionId={sessionId}
-        onRecordAgain={() => setView('setup')}
-        onBack={historySessionId !== null ? () => {
-          setHistorySessionId(null);
-          setView('history');
-        } : undefined}
-      />
+      <Suspense fallback={<PageFallback />}>
+        <ReviewPage
+          sessionId={sessionId}
+          onRecordAgain={() => setView('setup')}
+          onBack={historySessionId !== null ? () => {
+            setHistorySessionId(null);
+            setView('history');
+          } : undefined}
+        />
+      </Suspense>
     );
   }
 
   if (view === 'history') {
     return (
-      <HistoryView
-        onOpenSession={(id) => {
-          setHistorySessionId(id);
-          setView('review');
-        }}
-        onRecordNew={() => setView('setup')}
-      />
+      <Suspense fallback={<PageFallback />}>
+        <HistoryView
+          onOpenSession={(id) => {
+            setHistorySessionId(id);
+            setView('review');
+          }}
+          onRecordNew={() => setView('setup')}
+        />
+      </Suspense>
     );
   }
 

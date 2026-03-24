@@ -22,15 +22,24 @@ function eventLabel(event: SessionEvent): string {
 }
 
 function markerBg(event: SessionEvent): string {
-  if (event.type === 'filler_word') return '#f59e0b';
-  if (event.type === 'eye_contact_break' || event.type === 'eye_contact_resume') return '#5b8fff';
-  if (event.type === 'face_touch' || event.type === 'body_sway') return '#f43f5e';
-  if (event.type === 'pause_detected') return '#5e6f94';
-  return '#5e6f94';
+  if (event.type === 'filler_word') return '#fbbf24';
+  if (event.type === 'eye_contact_break' || event.type === 'eye_contact_resume') return '#6366f1';
+  if (event.type === 'face_touch' || event.type === 'body_sway') return '#ef4444';
+  if (event.type === 'pause_detected') return '#94a3b8';
+  return '#94a3b8';
+}
+
+function formatScrubTime(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${String(sec).padStart(2, '0')}`;
 }
 
 export default function Timeline({ events, durationMs, progressPct, currentTimeMs, onSeek }: TimelineProps) {
   const [tooltipIndex, setTooltipIndex] = useState<number | null>(null);
+  const [hoverPct, setHoverPct] = useState<number | null>(null);
+  const [hoverMs, setHoverMs] = useState(0);
 
   if (durationMs <= 0) return null;
 
@@ -49,13 +58,20 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
         const fraction = (e.clientX - rect.left) / rect.width;
         onSeek(fraction * durationMs);
       }}
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        setHoverPct(pct * 100);
+        setHoverMs(pct * durationMs);
+      }}
+      onMouseLeave={() => setHoverPct(null)}
     >
       {/* Track */}
       <div style={{
         position: 'absolute', left: 0, right: 0,
         top: '50%', transform: 'translateY(-50%)',
         height: '6px',
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(255,255,255,0.05)',
         borderRadius: '9999px',
         pointerEvents: 'none',
         overflow: 'hidden',
@@ -63,13 +79,52 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
         {/* Progress fill */}
         <div style={{
           position: 'absolute', left: 0, top: 0, height: '100%',
-          background: 'linear-gradient(90deg, #5b8fff, #7ba7ff)',
+          background: 'linear-gradient(90deg, #6366f1, #818cf8)',
           borderRadius: '9999px',
           width: `${progressPct}%`,
           pointerEvents: 'none',
-          boxShadow: '0 0 8px rgba(91,143,255,0.40)',
+          boxShadow: '0 0 8px rgba(99,102,241,0.40)',
         }} />
       </div>
+
+      {/* Hover ghost line + timestamp */}
+      {hoverPct !== null && (
+        <>
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              left: `${hoverPct}%`,
+              top: 0, bottom: 0,
+              width: '1px',
+              background: 'rgba(255,255,255,0.20)',
+              pointerEvents: 'none',
+              zIndex: 5,
+            }}
+          />
+          <div
+            role="tooltip"
+            style={{
+              position: 'absolute',
+              bottom: 'calc(100% + 6px)',
+              left: `clamp(20px, calc(${hoverPct}% - 16px), calc(100% - 44px))`,
+              padding: '3px 8px',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border-modal)',
+              color: 'var(--color-text-secondary)',
+              fontSize: '11px',
+              fontFamily: 'Figtree',
+              borderRadius: '6px',
+              pointerEvents: 'none',
+              whiteSpace: 'nowrap',
+              zIndex: 20,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+            }}
+          >
+            {formatScrubTime(hoverMs)}
+          </div>
+        </>
+      )}
 
       {events.map((event, i) => {
         const leftPct = (event.timestampMs / durationMs) * 100;
@@ -100,7 +155,7 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
                 margin: '-12px',
                 boxSizing: 'content-box',
               } as React.CSSProperties}
-              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5b8fff] focus-visible:ring-offset-1 hover:scale-y-[1.3]"
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-1 hover:scale-y-[1.3]"
             />
             {tooltipIndex === i && (
               <div
@@ -110,9 +165,9 @@ export default function Timeline({ events, durationMs, progressPct, currentTimeM
                   bottom: 'calc(100% + 4px)',
                   left: `clamp(0px, calc(${leftPct}% - 8px), calc(100% - 130px))`,
                   padding: '5px 10px',
-                  background: '#0f1628',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: '#e4e9f5',
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border-modal)',
+                  color: 'var(--color-text-primary)',
                   fontSize: '12px',
                   fontFamily: 'Figtree',
                   borderRadius: '8px',

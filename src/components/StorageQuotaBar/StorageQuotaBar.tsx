@@ -28,7 +28,7 @@ export function StorageQuotaBar() {
   const isCritical = pct > 95;
   const isWarning = pct > 80;
 
-  const fillColor = isCritical ? '#f43f5e' : isWarning ? '#f59e0b' : '#5b8fff';
+  const fillColor = isCritical ? '#ef4444' : isWarning ? '#fbbf24' : '#6366f1';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '100px' }}>
@@ -50,13 +50,13 @@ export function StorageQuotaBar() {
       <span style={{
         fontSize: '11px',
         fontFamily: 'Figtree',
-        color: isCritical ? '#f43f5e' : '#363e55',
+        color: isCritical ? 'var(--color-destructive)' : 'var(--color-text-muted)',
         letterSpacing: '0.02em',
       }}>
         {usedMB} MB of {totalMB} MB
       </span>
       {isCritical && (
-        <span style={{ fontSize: '11px', color: '#f43f5e', fontFamily: 'Figtree' }}>
+        <span style={{ fontSize: '11px', color: 'var(--color-destructive)', fontFamily: 'Figtree' }}>
           Storage almost full. Delete older sessions to keep recording.
         </span>
       )}

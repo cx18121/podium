@@ -12,12 +12,10 @@ type CalibrationStep = 'waiting' | 'gaze' | 'posture' | 'computing' | 'done';
 
 const STEP_DURATION_MS = 15_000;
 const FRAME_INTERVAL_MS = 150;
-const MIN_FRAMES = Math.floor(STEP_DURATION_MS / FRAME_INTERVAL_MS); // 100 frames
 
 export default function CalibrationScreen({ onComplete, onCancel }: CalibrationScreenProps) {
   const [step, setStep] = useState<CalibrationStep>('waiting');
   const [elapsedMs, setElapsedMs] = useState(0);
-  const [frameCount, setFrameCount] = useState(0);
   const [dotCount, setDotCount] = useState(0);
 
   const workerRef = useRef<Worker | null>(null);
@@ -109,22 +107,17 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
     stepStartEpochRef.current = Date.now();
     setElapsedMs(0);
     frameCountRef.current = 0;
-    setFrameCount(0);
 
     startFramePump(hidden);
 
-    // Track acks from worker
     if (workerRef.current) {
       const worker = workerRef.current;
       const onAck = (e: MessageEvent) => {
         if (e.data.type === 'calibrate_frame_ack') {
           frameCountRef.current += 1;
-          setFrameCount(c => c + 1);
         }
       };
       worker.addEventListener('message', onAck);
-      // Store ack handler reference for removal later (we won't remove it mid-flow)
-      // It naturally stops when worker terminates
     }
 
     stepTimerRef.current = setInterval(() => {
@@ -134,7 +127,6 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       if (elapsed >= STEP_DURATION_MS && stepRef.current === 'gaze') {
         clearInterval(stepTimerRef.current!);
         stepTimerRef.current = null;
-        // Transition to posture step
         stepStartEpochRef.current = Date.now();
         setElapsedMs(0);
         setStep('posture');
@@ -159,12 +151,10 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
       streamRef.current = stream;
 
-      // Visible preview
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
-      // Hidden video for frame pump
       const hidden = document.createElement('video');
       hidden.srcObject = stream;
       hidden.muted = true;
@@ -172,7 +162,6 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       await hidden.play();
       hiddenVideoRef.current = hidden;
 
-      // Create worker
       const worker = new Worker(workerUrl, { type: 'classic' });
       workerRef.current = worker;
 
@@ -190,7 +179,6 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
         worker.postMessage({ type: 'init' });
       });
 
-      // Start dot animation
       dotTimerRef.current = setInterval(() => {
         setDotCount(d => (d + 1) % 4);
       }, 400);
@@ -202,7 +190,6 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
   }, [startGazeStep, onCancel]);
 
   const countdownSec = Math.max(0, Math.ceil((STEP_DURATION_MS - elapsedMs) / 1000));
-  const hasEnoughData = frameCount >= MIN_FRAMES;
 
   const stepLabel = step === 'gaze'
     ? 'Step 1 of 2'
@@ -227,7 +214,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100svh',
-      background: '#060911',
+      background: 'var(--color-bg)',
       gap: '24px',
       padding: '32px',
     }}>
@@ -238,14 +225,14 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
           fontWeight: 700,
           fontSize: '1.25rem',
           letterSpacing: '-0.025em',
-          color: '#e4e9f5',
+          color: 'var(--color-text-primary)',
           margin: 0,
         }}>
           Calibration
         </h1>
         <div style={{
           height: '2px', width: '28px',
-          background: 'linear-gradient(90deg, #5b8fff, #00d4a8)',
+          background: 'linear-gradient(90deg, #818cf8, #6366f1)',
           borderRadius: '2px',
         }} aria-hidden="true" />
       </div>
@@ -255,7 +242,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
         <p style={{
           fontFamily: 'Figtree, system-ui, sans-serif',
           fontSize: '12px',
-          color: '#5b8fff',
+          color: 'var(--color-accent)',
           margin: 0,
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -269,14 +256,14 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
         width: '100%',
         maxWidth: '560px',
         aspectRatio: '16/9',
-        background: '#0b1022',
-        border: '1px solid rgba(91,143,255,0.12)',
+        background: 'var(--color-surface)',
+        border: '1px solid rgba(99,102,241,0.10)',
         borderRadius: '16px',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 0 40px rgba(91,143,255,0.06)',
+        boxShadow: '0 0 40px rgba(99,102,241,0.05)',
         position: 'relative',
       }}>
         <video
@@ -294,7 +281,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
             bottom: 0,
             left: 0,
             right: 0,
-            background: 'rgba(6,9,17,0.75)',
+            background: 'rgba(8,12,20,0.80)',
             padding: '12px 16px',
             display: 'flex',
             alignItems: 'center',
@@ -303,7 +290,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
             <span style={{
               fontFamily: 'Figtree, system-ui, sans-serif',
               fontSize: '14px',
-              color: '#e4e9f5',
+              color: 'var(--color-text-primary)',
               fontWeight: 600,
             }}>
               {instruction}
@@ -311,7 +298,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
             <span style={{
               fontFamily: 'Figtree, system-ui, sans-serif',
               fontSize: '20px',
-              color: '#5b8fff',
+              color: 'var(--color-accent)',
               fontWeight: 700,
               minWidth: '32px',
               textAlign: 'right',
@@ -325,7 +312,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       {/* Instruction / status text */}
       {step === 'waiting' && (
         <p style={{
-          color: '#5e6f94',
+          color: 'var(--color-text-secondary)',
           fontSize: '13px',
           textAlign: 'center',
           maxWidth: '400px',
@@ -333,26 +320,25 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
           fontFamily: 'Figtree',
           margin: 0,
         }}>
-          Calibration takes 30 seconds and personalises your accuracy thresholds.
-          Make sure you are well-lit and centred in the frame.
+          Calibration takes 30 seconds and improves detection accuracy for your face and posture.
+          Make sure you're well-lit and centered in the frame.
         </p>
       )}
 
       {(step === 'gaze' || step === 'posture') && (
         <p style={{
-          color: '#5e6f94',
+          color: 'var(--color-text-secondary)',
           fontSize: '12px',
           fontFamily: 'Figtree',
           margin: 0,
         }}>
-          {hasEnoughData ? 'Collecting data' : 'Collecting data'}{dots}
-          {' '}({frameCount} frames)
+          Collecting data{dots}
         </p>
       )}
 
       {step === 'computing' && (
         <p style={{
-          color: '#5e6f94',
+          color: 'var(--color-text-secondary)',
           fontSize: '13px',
           fontFamily: 'Figtree',
           margin: 0,
@@ -365,19 +351,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
       {step === 'waiting' && (
         <button
           onClick={startCalibration}
-          style={{
-            padding: '0 36px',
-            height: '52px',
-            background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-            color: 'white',
-            fontFamily: 'Figtree, system-ui, sans-serif',
-            fontWeight: 600,
-            fontSize: '15px',
-            borderRadius: '14px',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
-          }}
+          className="btn-primary btn-primary-lg focus-ring"
         >
           Start Calibration
         </button>
@@ -385,18 +359,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
 
       <button
         onClick={handleCancel}
-        style={{
-          fontSize: '13px',
-          color: '#5e6f94',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: '8px 16px',
-          fontFamily: 'Figtree',
-          transition: 'color 0.15s ease',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
+        className="btn-ghost focus-ring"
       >
         Cancel
       </button>

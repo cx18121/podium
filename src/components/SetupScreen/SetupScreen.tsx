@@ -1,6 +1,7 @@
 // src/components/SetupScreen/SetupScreen.tsx
 import { useEffect, useRef, useState } from 'react';
 import SpeechSupportBanner from '../common/SpeechSupportBanner';
+import { PrimaryButton } from '../common/PrimaryButton';
 
 interface SetupScreenProps {
   onStart: () => void;
@@ -38,7 +39,7 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100svh',
-      background: '#060911',
+      background: 'var(--color-bg)',
       gap: '24px',
       padding: '32px',
     }}>
@@ -49,14 +50,14 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
           fontWeight: 700,
           fontSize: '1.25rem',
           letterSpacing: '-0.025em',
-          color: '#e4e9f5',
+          color: 'var(--color-text-primary)',
           margin: 0,
         }}>
           Podium
         </h1>
         <div style={{
           height: '2px', width: '28px',
-          background: 'linear-gradient(90deg, #5b8fff, #00d4a8)',
+          background: 'linear-gradient(90deg, #818cf8, #6366f1)',
           borderRadius: '2px',
         }} aria-hidden="true" />
       </div>
@@ -68,18 +69,18 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
         width: '100%',
         maxWidth: '560px',
         aspectRatio: '16/9',
-        background: '#0b1022',
-        border: '1px solid rgba(91,143,255,0.12)',
+        background: 'var(--color-surface)',
+        border: '1px solid rgba(99,102,241,0.10)',
         borderRadius: '16px',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 0 40px rgba(91,143,255,0.06)',
+        boxShadow: '0 0 40px rgba(99,102,241,0.05)',
       }}>
         {previewError ? (
           <p style={{
-            color: '#5e6f94',
+            color: 'var(--color-text-secondary)',
             fontSize: '13px',
             textAlign: 'center',
             padding: '0 24px',
@@ -100,7 +101,7 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
       </div>
 
       <p style={{
-        color: '#5e6f94',
+        color: 'var(--color-text-secondary)',
         fontSize: '13px',
         textAlign: 'center',
         maxWidth: '400px',
@@ -111,41 +112,12 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-        <button
-          onClick={onStart}
-          className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
-          style={{
-            padding: '0 36px',
-            height: '52px',
-            background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-            color: 'white',
-            fontFamily: 'Figtree, system-ui, sans-serif',
-            fontWeight: 600,
-            fontSize: '15px',
-            borderRadius: '14px',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
-            transition: 'all 0.18s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.48)';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
-          onMouseDown={(e) => { e.currentTarget.style.transform = 'scale(0.98)'; }}
-          onMouseUp={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; }}
-        >
-          Start Recording
-        </button>
+        <PrimaryButton onClick={onStart}>Start Recording</PrimaryButton>
 
         {hasCalibration && (
           <span style={{
             fontSize: '11px',
-            color: '#00d4a8',
+            color: 'var(--color-success)',
             fontFamily: 'Figtree',
           }}>
             ✓ Calibrated
@@ -154,41 +126,11 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
       </div>
 
       {onViewHistory && (
-        <button
-          onClick={onViewHistory}
-          style={{
-            fontSize: '13px',
-            color: '#5e6f94',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '8px 16px',
-            fontFamily: 'Figtree',
-            transition: 'color 0.15s ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
-        >
-          → View History
-        </button>
+        <button onClick={onViewHistory} className="btn-ghost">→ View History</button>
       )}
 
-      <button
-        onClick={onCalibrate}
-        style={{
-          fontSize: '13px',
-          color: '#5e6f94',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: '8px 16px',
-          fontFamily: 'Figtree',
-          transition: 'color 0.15s ease',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
-      >
-        {hasCalibration ? '↻ Re-calibrate' : '⚙ Calibrate for accuracy'}
+      <button onClick={onCalibrate} className="btn-ghost">
+        {hasCalibration ? '↻ Re-calibrate' : 'Calibrate for accuracy'}
       </button>
     </div>
   );

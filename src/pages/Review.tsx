@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
+import { PrimaryButton } from '../components/common/PrimaryButton';
 import { db, type Session, type Scorecard, type WhisperFillerResult } from '../db/db';
 import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
 import ScorecardView from '../components/ScorecardView/ScorecardView';
@@ -6,11 +7,122 @@ import AnnotatedPlayer from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import type { AnnotatedPlayerHandle } from '../components/AnnotatedPlayer/AnnotatedPlayer';
 import PauseDetail from '../components/PauseDetail/PauseDetail';
 import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
-import WPMChart from '../components/WPMChart/WPMChart';
 import WhisperStatusBanner, { type WhisperBannerStatus } from '../components/WhisperStatusBanner/WhisperStatusBanner';
+
+const WPMChart = lazy(() => import('../components/WPMChart/WPMChart'));
 import { countFillersFromTranscript } from '../analysis/whisperFillerCounter';
 import { computeWorstMoments } from '../analysis/worstMoments';
 import WorstMomentsReel from '../components/WorstMomentsReel/WorstMomentsReel';
+
+const HINT_KEY = 'podium-first-review-seen';
+
+const HINTS = [
+  {
+    label: 'Scorecard',
+    text: 'Your overall score and 6 dimensions — eye contact, fillers, pacing, expression, gestures, and opening/closing.',
+    color: 'var(--color-accent)',
+    bgColor: 'rgba(99,102,241,0.08)',
+    borderColor: 'rgba(99,102,241,0.14)',
+  },
+  {
+    label: 'Colored markers',
+    text: 'Yellow and red marks on the timeline show filler words, pauses, and gestures — click any to jump.',
+    color: 'var(--color-warning)',
+    bgColor: 'rgba(251,191,36,0.07)',
+    borderColor: 'rgba(251,191,36,0.14)',
+  },
+  {
+    label: 'Worst Moments',
+    text: 'Your top clips ranked by impact — jump straight to the moments worth replaying.',
+    color: 'var(--color-destructive)',
+    bgColor: 'rgba(239,68,68,0.07)',
+    borderColor: 'rgba(239,68,68,0.14)',
+  },
+];
+
+function FirstReviewHint() {
+  const [visible, setVisible] = useState(
+    () => !localStorage.getItem(HINT_KEY)
+  );
+
+  const dismiss = useCallback(() => {
+    localStorage.setItem(HINT_KEY, '1');
+    setVisible(false);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div style={{
+      width: '100%',
+      maxWidth: '672px',
+      background: 'rgba(99,102,241,0.06)',
+      border: '1px solid rgba(99,102,241,0.16)',
+      borderRadius: '16px',
+      padding: '16px 20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '12px',
+      }}>
+        <span style={{
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.10em',
+          textTransform: 'uppercase' as const,
+          color: 'rgba(99,102,241,0.7)',
+        }}>
+          First review — here's what you're looking at
+        </span>
+        <button
+          onClick={dismiss}
+          aria-label="Dismiss hint"
+          className="btn-ghost"
+          style={{ padding: '2px 4px', lineHeight: 1, fontSize: '16px' }}
+        >
+          ×
+        </button>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '8px',
+      }}>
+        {HINTS.map((hint) => (
+          <div key={hint.label} style={{
+            background: hint.bgColor,
+            border: `1px solid ${hint.borderColor}`,
+            borderRadius: '10px',
+            padding: '10px 12px',
+          }}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: hint.color,
+              marginBottom: '4px',
+            }}>
+              {hint.label}
+            </div>
+            <div style={{
+              fontSize: '12px',
+              color: 'var(--color-text-muted)',
+              lineHeight: 1.5,
+            }}>
+              {hint.text}
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
+}
 
 interface ReviewPageProps {
   sessionId: number;
@@ -38,9 +150,15 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
 
   useEffect(() => {
     let objectUrl: string | null = null;
+    let mounted = true;
+
     db.sessions.get(sessionId).then(async (s) => {
+      if (!mounted) return;
       if (!s) { setError('Session not found.'); return; }
+
       objectUrl = URL.createObjectURL(s.videoBlob);
+      if (!mounted) { URL.revokeObjectURL(objectUrl); return; }
+
       setVideoUrl(objectUrl);
       setSession(s);
 
@@ -53,13 +171,15 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
           ),
         };
         await db.sessions.update(s.id!, { scorecard: dbScorecard });
+        if (!mounted) return;
         setScorecard(result);
       } else {
         setScorecard(aggregateScores(s.eventLog, s.durationMs, s.transcript));
       }
-    }).catch(() => setError('Could not load this session. Try recording a new one.'));
+    }).catch(() => { if (mounted) setError('Could not load this session. Try recording a new one.'); });
 
     return () => {
+      mounted = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [sessionId]);
@@ -145,8 +265,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
     return (
       <div role="alert" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100svh', background: '#060911', color: '#f43f5e',
-        fontFamily: 'Figtree',
+        minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-destructive)',
       }}>
         {error}
       </div>
@@ -157,8 +276,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
     return (
       <div aria-busy="true" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100svh', background: '#060911', color: '#5e6f94',
-        fontFamily: 'Figtree',
+        minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
       }}>
         Loading session...
       </div>
@@ -171,18 +289,20 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
   const worstMoments = computeWorstMoments(session.eventLog, session.durationMs);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100svh',
-      background: '#060911',
-      padding: '40px 32px',
-      gap: '28px',
-      maxWidth: '768px',
-      margin: '0 auto',
-      width: '100%',
-    }}>
+    <div
+      className="px-4 py-6 sm:px-8 sm:py-10"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        minHeight: '100svh',
+        background: 'var(--color-bg)',
+        gap: '28px',
+        maxWidth: '768px',
+        margin: '0 auto',
+        width: '100%',
+      }}
+    >
       {/* Session header */}
       <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <h1 style={{
@@ -190,51 +310,55 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
           fontWeight: 700,
           fontSize: '1.375rem',
           letterSpacing: '-0.025em',
-          color: '#e4e9f5',
+          color: 'var(--color-text-primary)',
           margin: 0,
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
         }}>
-          {session.title}
+          {session.title || 'Untitled Session'}
         </h1>
         <p style={{
           fontSize: '13px',
-          color: '#5e6f94',
-          fontFamily: 'Figtree',
+          color: 'var(--color-text-secondary)',
           margin: 0,
         }}>
           {durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}
         </p>
       </div>
 
-      {/* Whisper status banner — shown during downloading/pending, hidden on complete/failed */}
+      {/* First-review orientation hint */}
+      <FirstReviewHint />
+
+      {/* Whisper status banner */}
       <div style={{ width: '100%', maxWidth: '672px' }}>
         {whisperBannerStatus && (
           <WhisperStatusBanner status={whisperBannerStatus} downloadProgress={downloadProgress} />
         )}
       </div>
 
+      {/* ── Section: Scorecard ── */}
       <ScorecardView scorecard={scorecard} />
 
-      <div style={{ width: '100%', maxWidth: '672px' }}>
-        <PauseDetail events={session.eventLog} transcript={session.transcript} />
+      {/* ── Section: Analysis breakdown ── */}
+      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* PauseDetail + FillerBreakdown — side-by-side on sm+, stacked on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <PauseDetail events={session.eventLog} transcript={session.transcript} />
+          <FillerBreakdown
+            events={session.eventLog}
+            durationMs={session.durationMs}
+            whisperFillers={session.whisperFillers}
+          />
+        </div>
+        {/* WPMChart full-width below */}
+        <Suspense fallback={null}>
+          <WPMChart wpmWindows={session.wpmWindows} />
+        </Suspense>
       </div>
 
-      <div style={{ width: '100%', maxWidth: '672px' }}>
-        <FillerBreakdown
-          events={session.eventLog}
-          durationMs={session.durationMs}
-          whisperFillers={session.whisperFillers}
-        />
-      </div>
-
-      <div style={{ width: '100%', maxWidth: '672px' }}>
-        <WPMChart wpmWindows={session.wpmWindows} />
-      </div>
-
-      <div style={{ width: '100%', maxWidth: '672px' }}>
+      {/* ── Section: Video review ── */}
+      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
         <WorstMomentsReel moments={worstMoments} onSeek={(ms) => playerRef.current?.seekTo(ms)} />
-      </div>
-
-      <div style={{ width: '100%', maxWidth: '672px' }}>
         <AnnotatedPlayer
           ref={playerRef}
           videoUrl={videoUrl}
@@ -244,53 +368,10 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
         />
       </div>
 
-      <button
-        onClick={onRecordAgain}
-        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#5b8fff] focus-visible:outline-offset-2"
-        style={{
-          padding: '0 36px',
-          height: '52px',
-          background: 'linear-gradient(135deg, #5b8fff 0%, #3d6ef7 100%)',
-          color: 'white',
-          fontFamily: 'Figtree, system-ui, sans-serif',
-          fontWeight: 600,
-          fontSize: '15px',
-          borderRadius: '14px',
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: '0 4px 24px rgba(91,143,255,0.32)',
-          transition: 'all 0.18s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 6px 32px rgba(91,143,255,0.50)';
-          e.currentTarget.style.transform = 'translateY(-1px)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 4px 24px rgba(91,143,255,0.32)';
-          e.currentTarget.style.transform = 'translateY(0)';
-        }}
-      >
-        Record Again
-      </button>
+      <PrimaryButton onClick={onRecordAgain}>Record Again</PrimaryButton>
 
       {onBack && (
-        <button
-          onClick={onBack}
-          style={{
-            fontSize: '13px',
-            color: '#5e6f94',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px 8px',
-            fontFamily: 'Figtree',
-            transition: 'color 0.15s ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#e4e9f5'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#5e6f94'; }}
-        >
-          Back to History
-        </button>
+        <button onClick={onBack} className="btn-ghost">Back to History</button>
       )}
     </div>
   );

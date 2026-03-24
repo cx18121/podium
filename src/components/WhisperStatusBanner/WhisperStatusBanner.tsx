@@ -14,7 +14,7 @@ export default function WhisperStatusBanner({ status, downloadProgress }: Whispe
 
   const message = status === 'downloading'
     ? `Downloading speech model (first time only)...${downloadProgress != null ? ` ${Math.round(downloadProgress)}%` : ''}`
-    : 'Analyzing speech for accurate filler detection...';
+    : 'Detecting filler words in your speech...';
 
   return (
     <div
@@ -28,12 +28,12 @@ export default function WhisperStatusBanner({ status, downloadProgress }: Whispe
         justifyContent: 'center',
         gap: '10px',
         padding: '10px 16px',
-        background: 'rgba(91,143,255,0.08)',
-        border: '1px solid rgba(91,143,255,0.18)',
+        background: 'rgba(99,102,241,0.07)',
+        border: '1px solid rgba(99,102,241,0.15)',
         borderRadius: '12px',
         fontFamily: 'Figtree, system-ui, sans-serif',
         fontSize: '13px',
-        color: '#8a9bc2',
+        color: 'var(--color-text-secondary)',
       }}
     >
       {/* Spinner dot */}
@@ -44,7 +44,7 @@ export default function WhisperStatusBanner({ status, downloadProgress }: Whispe
           width: '8px',
           height: '8px',
           borderRadius: '50%',
-          background: '#5b8fff',
+          background: 'var(--color-accent)',
         }}
       />
       <span>{message}</span>
