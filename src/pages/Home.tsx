@@ -52,10 +52,10 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden max-w-3xl mx-auto w-full px-8 py-16" style={{ background: 'var(--color-bg)' }}>
+    <div className="relative min-h-screen overflow-hidden" style={{ background: 'var(--color-bg)' }}>
 
-      {/* Aurora background orbs */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden select-none">
+      {/* Aurora background orbs — full viewport */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 select-none">
         <div style={{
           position: 'absolute',
           width: '700px', height: '700px',
@@ -86,6 +86,7 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
       </div>
 
       {/* Content */}
+      <div className="relative flex flex-col items-center justify-center min-h-screen max-w-3xl mx-auto w-full px-8 py-16">
       <div className="relative flex flex-col items-center gap-10 text-center max-w-xl w-full">
 
         {/* Logo + wordmark */}
@@ -220,6 +221,7 @@ export default function Home({ hasExistingSessions, onStart }: HomeProps) {
         }}>
           Runs entirely in your browser. Nothing is uploaded.
         </p>
+      </div>
       </div>
     </div>
   );
