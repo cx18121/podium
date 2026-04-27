@@ -30,16 +30,28 @@ function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
+const FILL_LEVELS = [
+  'var(--color-surface-raised)',
+  '#1a3d28',
+  '#206836',
+  '#2ea043',
+  '#39d353',
+] as const;
+
+const BORDER_LEVELS = [
+  'rgba(255,255,255,0.05)',
+  'rgba(57,211,83,0.20)',
+  'rgba(57,211,83,0.35)',
+  'rgba(57,211,83,0.50)',
+  'rgba(57,211,83,0.70)',
+] as const;
+
 function cellFill(count: number): string {
-  if (count === 0) return 'var(--color-surface-raised)';
-  const opacity = Math.min(0.18 + (count - 1) * 0.18, 0.70);
-  return `rgba(200,200,200,${opacity.toFixed(2)})`;
+  return FILL_LEVELS[Math.min(count, 4)];
 }
 
 function cellBorder(count: number): string {
-  if (count === 0) return 'rgba(255,255,255,0.05)';
-  const opacity = Math.min(0.10 + (count - 1) * 0.08, 0.32);
-  return `rgba(200,200,200,${opacity.toFixed(2)})`;
+  return BORDER_LEVELS[Math.min(count, 4)];
 }
 
 const SHORT_DAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
@@ -205,7 +217,7 @@ export default function SessionHeatmap({ sessions, onDayClick, selectedDate }: S
         {/* Legend — right-aligned to grid edge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px', marginLeft: '38px', width: `${gridWidth}px`, justifyContent: 'flex-end' }}>
           <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>Fewer sessions</span>
-          {[0, 1, 2, 4].map((count, i) => (
+          {[0, 1, 2, 3, 4].map((count, i) => (
             <div key={i} style={{
               width: CELL, height: CELL, borderRadius: '3px',
               background: cellFill(count),
