@@ -15,6 +15,7 @@
     "@mediapipe/tasks-vision": "^0.10.32",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
+    "geist": "^1.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.8.0",

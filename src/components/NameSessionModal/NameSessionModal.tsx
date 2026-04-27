@@ -1,25 +1,17 @@
-// src/components/NameSessionModal/NameSessionModal.tsx
-// Shown after Stop, before the Dexie save — locked user decision (CONTEXT.md: Session naming).
-// Confirm saves with the custom name; Skip saves with the auto date/time title.
 import { useState } from 'react';
 import { PrimaryButton } from '../common/PrimaryButton';
 
 export interface NameSessionModalProps {
   autoTitle: string;
   onConfirm: (title: string) => void;
-  onSkip: () => void;
 }
 
-export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: NameSessionModalProps) {
+export function NameSessionModal({ autoTitle, onConfirm }: NameSessionModalProps) {
   const [name, setName] = useState(autoTitle);
 
   const handleSave = () => {
     if (name.trim().length === 0) return;
     onConfirm(name.trim());
-  };
-
-  const handleSkip = () => {
-    onConfirm(autoTitle);
   };
 
   return (
@@ -33,21 +25,20 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
       <div
         className="dialog-panel"
         style={{
-          padding: '32px',
+          padding: '28px',
           width: '100%',
-          maxWidth: '380px',
+          maxWidth: '360px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '24px',
+          gap: '20px',
         }}
       >
         <h2
           id="name-session-heading"
           style={{
-            fontFamily: 'Syne, system-ui, sans-serif',
-            fontWeight: 700,
-            fontSize: '1.25rem',
-            letterSpacing: '-0.025em',
+            fontWeight: 600,
+            fontSize: '1rem',
+            letterSpacing: '-0.02em',
             color: 'var(--color-text-primary)',
             margin: 0,
           }}
@@ -66,23 +57,15 @@ export function NameSessionModal({ autoTitle, onConfirm, onSkip: _onSkip }: Name
           className="input-field"
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <PrimaryButton
             type="button"
             disabled={name.trim().length === 0}
             onClick={handleSave}
             style={{ width: '100%' }}
           >
-            Save Session
+            Save
           </PrimaryButton>
-
-          <button
-            onClick={handleSkip}
-            className="btn-ghost"
-            style={{ textAlign: 'center', padding: '4px' }}
-          >
-            Keep the default name
-          </button>
         </div>
       </div>
     </div>

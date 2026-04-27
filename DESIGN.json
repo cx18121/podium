@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-26T00:00:00Z",
+  "title": "Design System: Podium",
+  "extensions": {
+    "colorMeta": {
+      "bg":             { "role": "neutral",   "displayName": "Deep Charcoal",    "canonical": "oklch(8% 0.004 75)",   "tonalRamp": ["#060605","#0C0C0B","#161614","#1F1F1D","#252523","#2E2E2B","#3A3A36","#4A4A45"] },
+      "surface":        { "role": "neutral",   "displayName": "Soft Charcoal",    "canonical": "oklch(11% 0.004 75)",  "tonalRamp": ["#0C0C0B","#161614","#1F1F1D","#252523","#2E2E2B","#3A3A36","#4A4A45","#5A5A54"] },
+      "surface-raised": { "role": "neutral",   "displayName": "Raised Charcoal",  "canonical": "oklch(14% 0.004 75)",  "tonalRamp": ["#0C0C0B","#161614","#1F1F1D","#252523","#2E2E2B","#3A3A36","#4A4A45","#5A5A54"] },
+      "accent":         { "role": "primary",   "displayName": "Neutral Gray",     "canonical": "oklch(80% 0 0)",       "tonalRamp": ["#1A1A1A","#2E2E2E","#484848","#646464","#808080","#A0A0A0","#C8C8C8","#DEDEDE"] },
+      "text-primary":   { "role": "neutral",   "displayName": "Near-White",       "canonical": "oklch(98% 0.004 75)",  "tonalRamp": ["#161614","#252523","#3A3A36","#57534E","#78716C","#A8A29E","#D6D3D0","#FAFAF9"] },
+      "text-secondary": { "role": "neutral",   "displayName": "Warm Stone",       "canonical": "oklch(68% 0.01 60)",   "tonalRamp": ["#1A1614","#2E2926","#453F3B","#5C5551","#78716C","#A8A29E","#C8C4C0","#E7E5E2"] },
+      "text-muted":     { "role": "neutral",   "displayName": "Muted Stone",      "canonical": "oklch(52% 0.01 60)",   "tonalRamp": ["#161210","#27221F","#3D3733","#544E4A","#78716C","#A09690","#C2BAB4","#DDD9D5"] },
+      "success":        { "role": "tertiary",  "displayName": "Score Green",      "canonical": "oklch(67% 0.17 164)",  "tonalRamp": ["#052217","#08372A","#0A5240","#0B6B56","#10b981","#34D399","#6EE7B7","#A7F3D0"] },
+      "warning":        { "role": "secondary", "displayName": "Score Amber",      "canonical": "oklch(73% 0.15 75)",   "tonalRamp": ["#1A0E00","#2E1A00","#4A2E00","#6B4500","#f59e0b","#FBC845","#FDDDA0","#FEF3C7"] },
+      "destructive":    { "role": "tertiary",  "displayName": "Alert Red",        "canonical": "oklch(60% 0.20 25)",   "tonalRamp": ["#1A0505","#330A0A","#5C1515","#8B1A1A","#ef4444","#F87171","#FCA5A5","#FEE2E2"] }
+    },
+    "typographyMeta": {
+      "display":   { "displayName": "Display",       "purpose": "Product logotype on Home screen and hero moments only. Not a repeatable heading level." },
+      "headline":  { "displayName": "Score Headline","purpose": "Large numeric data outputs: overall score, filler counts, session scores in history cards." },
+      "title":     { "displayName": "Title",         "purpose": "Page-level labels, session titles, primary header text." },
+      "body":      { "displayName": "Body",          "purpose": "Descriptive copy, transcript text, callout prose. Cap at 65-75ch." },
+      "label":     { "displayName": "Label",         "purpose": "Section dividers (SCORECARD, FILLERS, TRANSCRIPT). Uppercase, maximum tracking, minimum size." }
+    },
+    "shadows": [
+      {
+        "name": "dialog-elevation",
+        "value": "0 24px 64px rgba(0, 0, 0, 0.6)",
+        "purpose": "Modal dialog panels only. The only box-shadow in the system. Large diffuse blur for cinematic, not mechanical, elevation."
+      }
+    ],
+    "motion": [
+      { "name": "ease-standard",  "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for all transitions: buttons, borders, color changes. Duration 0.15s." },
+      { "name": "ease-out-expo",  "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entrance animations. Duration 0.3-0.5s." },
+      { "name": "fade-up",        "value": "opacity 0→1, translateY 10px→0, 0.4s ease-out", "purpose": "Screen-level entrance. Home page, primary content blocks." },
+      { "name": "scale-in",       "value": "scale 0.96→1, opacity 0→1, 0.18s ease-out", "purpose": "Dialog entrance. Fast, precise, no overshoot." },
+      { "name": "score-animate",  "value": "easeOutCubic 900ms, requestAnimationFrame counter", "purpose": "Score counter animation on reveal. Builds anticipation." },
+      { "name": "score-pop",      "value": "scale 1→1.06→1, 0.35s ease-out", "purpose": "Score pop on high scores (≥70). Triggered after counter reaches target." },
+      { "name": "bar-stagger",    "value": "width 0.5s ease-standard, delay: i * 60ms", "purpose": "Score dimension bars animate sequentially, not simultaneously." },
+      { "name": "pulse-ring",     "value": "scale 1→2.6, opacity 0.7→0, 1.6s ease-out infinite", "purpose": "Recording indicator. Concentric rings expanding from center." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "900px", "purpose": "Review split layout collapses to single column. Video unsticks from viewport." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (md)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default CTA. One per context. Warm cream background, dark text, lifts on hover.",
+      "html": "<button class=\"ds-btn-primary\">Start Recording</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; background: #F5F0EB; color: #0C0C0B; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 0.9375rem; letter-spacing: -0.01em; border: none; cursor: pointer; border-radius: 10px; padding: 0 28px; height: 44px; transition: background 0.15s cubic-bezier(0.4,0,0.2,1), transform 0.15s cubic-bezier(0.4,0,0.2,1); white-space: nowrap; } .ds-btn-primary:hover { background: #FFFFFF; transform: translateY(-1px); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:disabled { background: rgba(245,240,235,0.15); color: rgba(245,240,235,0.35); cursor: not-allowed; transform: none; } .ds-btn-primary:focus-visible { outline: 2px solid rgba(245,240,235,0.5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Primary Button (sm)",
+      "kind": "button",
+      "refersTo": "button-primary-sm",
+      "description": "Compact CTA for headers and tight contexts.",
+      "html": "<button class=\"ds-btn-primary-sm\">+ New Session</button>",
+      "css": ".ds-btn-primary-sm { display: inline-flex; align-items: center; justify-content: center; background: #F5F0EB; color: #0C0C0B; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 0.8125rem; letter-spacing: -0.01em; border: none; cursor: pointer; border-radius: 8px; padding: 0 16px; height: 36px; transition: background 0.15s cubic-bezier(0.4,0,0.2,1), transform 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary-sm:hover { background: #FFFFFF; transform: translateY(-1px); } .ds-btn-primary-sm:active { transform: scale(0.98); } .ds-btn-primary-sm:focus-visible { outline: 2px solid rgba(245,240,235,0.5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting action. Subtle surface + border, steps back behind primary.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; height: 36px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); color: #A8A29E; font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: background 0.15s cubic-bezier(0.4,0,0.2,1), border-color 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); } .ds-btn-secondary:focus-visible { outline: 2px solid rgba(245,240,235,0.5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Lowest-priority navigation action. Back links, tertiary labels.",
+      "html": "<button class=\"ds-btn-ghost\">View past sessions</button>",
+      "css": ".ds-btn-ghost { font-family: Inter, system-ui, sans-serif; font-size: 0.8125rem; color: #78716C; background: none; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-ghost:hover { color: #A8A29E; } .ds-btn-ghost:focus-visible { outline: 2px solid rgba(245,240,235,0.5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Session Card",
+      "kind": "card",
+      "refersTo": "session-card",
+      "description": "Primary history list item. Score as large tabular numeral, hover border brightens.",
+      "html": "<div class=\"ds-session-card\"><span class=\"ds-session-card__title\">Quarterly Update — Practice Run</span><span class=\"ds-session-card__score\" style=\"color:#10b981\">82</span><span class=\"ds-session-card__meta\">Apr 25 · 4m 12s</span></div>",
+      "css": ".ds-session-card { background: #161614; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px; cursor: pointer; transition: border-color 0.15s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; gap: 12px; position: relative; } .ds-session-card:hover { border-color: rgba(255,255,255,0.12); } .ds-session-card__title { font-size: 13px; font-weight: 600; color: #FAFAF9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 20px; } .ds-session-card__score { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; } .ds-session-card__meta { font-size: 11px; color: #78716C; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Single-line text field. Raised surface, modal border, warm ghost focus.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Name this session\" />",
+      "css": ".ds-input { width: 100%; padding: 10px 14px; background: #1F1F1D; border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; color: #FAFAF9; font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; outline: none; transition: border-color 0.15s cubic-bezier(0.4,0,0.2,1); box-sizing: border-box; } .ds-input::placeholder { color: #78716C; } .ds-input:focus { border-color: rgba(245,240,235,0.25); }"
+    },
+    {
+      "name": "Section Label",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Section divider used throughout the analysis panel. Uppercase, tight, muted. Applied via .section-label class.",
+      "html": "<p class=\"ds-section-label\">Scorecard</p>",
+      "css": ".ds-section-label { font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: #78716C; margin: 0 0 14px 0; }"
+    },
+    {
+      "name": "Score Bar",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "3px dimension score bar. Track + animated fill in semantic score color. Used in ScorecardView.",
+      "html": "<div class=\"ds-score-bar-wrap\"><div class=\"ds-score-bar-track\"><div class=\"ds-score-bar-fill\" style=\"width:78%;background:#10b981\"></div></div></div>",
+      "css": ".ds-score-bar-track { height: 3px; background: rgba(255,255,255,0.07); border-radius: 9999px; overflow: hidden; } .ds-score-bar-fill { height: 100%; border-radius: 9999px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }"
+    },
+    {
+      "name": "Dialog",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Modal overlay + panel. Blurred backdrop, scale-in entrance, deep shadow.",
+      "html": "<div class=\"ds-dialog-overlay\"><div class=\"ds-dialog-panel\"><p style=\"color:#FAFAF9;font-size:14px;font-weight:600;margin:0 0 8px\">Delete Session?</p><p style=\"color:#A8A29E;font-size:13px;margin:0 0 20px\">This cannot be undone.</p><div style=\"display:flex;gap:8px;justify-content:flex-end\"><button class=\"ds-btn-secondary\">Cancel</button><button class=\"ds-btn-destructive\">Delete</button></div></div></div>",
+      "css": "@keyframes ds-scale-in { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } } .ds-dialog-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.70); backdrop-filter:blur(6px); z-index:50; } .ds-dialog-panel { background:#161614; border:1px solid rgba(255,255,255,0.09); border-radius:16px; box-shadow:0 24px 64px rgba(0,0,0,0.6); padding:28px; max-width:380px; width:100%; animation:ds-scale-in 0.18s ease-out both; } .ds-btn-destructive { display:inline-flex; align-items:center; justify-content:center; background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.20); font-family:Inter,system-ui,sans-serif; font-weight:600; font-size:0.8125rem; cursor:pointer; border-radius:8px; padding:0 16px; height:36px; transition:background 0.15s cubic-bezier(0.4,0,0.2,1),color 0.15s cubic-bezier(0.4,0,0.2,1); } .ds-btn-destructive:hover { background:#ef4444; color:#fff; } .ds-btn-secondary { display:inline-flex; align-items:center; justify-content:center; padding:0 16px; height:36px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); color:#A8A29E; font-family:Inter,system-ui,sans-serif; font-size:0.8125rem; font-weight:500; border-radius:8px; cursor:pointer; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Signal Room",
+    "overview": "Podium is a focused coaching workspace for professionals who are serious about improving their delivery. The interface is built around one mandate: surface the signal, eliminate the noise. Every element either helps users understand their performance or gets out of the way. Nothing decorates. Nothing distracts.\n\nThe color system is deliberately warm and low-contrast at rest. Near-black charcoal surfaces carry a trace of warmth; the sole primary accent is a cream-white that reads as \"ready\" against the dark ground. This warmth is intentional: presenting is a human act, and the tool should acknowledge that without sentimentality. Data-heavy moments use a separate semantic color language that never bleeds into the interface chrome.\n\nMotion is sparse. Entrances orient without choreography. Score animations build anticipation and deliver a small moment of release. The interface never moves unless it is communicating something.",
+    "keyCharacteristics": [
+      "Three neutral charcoal surfaces with consistent warm undertone -- no blue tints, no cool grays",
+      "Cream-white primary CTA (#F5F0EB) -- restrained, reads as professional confidence rather than urgency",
+      "Flat depth: structural layering via tonal surface shift + 1px borders, no decorative shadows",
+      "Tight Inter at every scale, heavy letter-spacing contrast between display and label sizes",
+      "Score semantics isolated from interface chrome: emerald / amber / red serve data, never decoration"
+    ],
+    "rules": [
+      { "name": "The Semantic Firewall Rule", "body": "Score colors (emerald, amber, red) are a closed system. They appear on score numerics, dimension bars, timeline event markers, destructive buttons, and status indicators. They never appear as hover accents, icon tints, decorative borders, or interface chrome.", "section": "colors" },
+      { "name": "The Warm Charcoal Rule", "body": "Every neutral surface carries a trace of warmth: #0C0C0B, #161614, #1F1F1D. The blue channel is always lower than the red and green channels. Cool gray (#18181B, #1F2937) is explicitly rejected.", "section": "colors" },
+      { "name": "The Numeric Display Rule", "body": "All score outputs use font-weight: 700, font-variant-numeric: tabular-nums, and letter-spacing between -0.04em and -0.05em. The number should feel weighty and precise.", "section": "typography" },
+      { "name": "The Section Label Rule", "body": "Section headers are always .section-label: 0.6875rem, 600 weight, 0.09em tracking, uppercase, --color-text-muted. Increasing the weight, size, or color immediately breaks the hierarchy.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "If a card, panel, or input feels like it needs a shadow to read as distinct, the fix is a tonal background shift or a 1px border -- not a box-shadow. Adding shadows to non-dialog surfaces breaks the depth hierarchy.", "section": "elevation" },
+      { "name": "The Three-Surface Rule", "body": "Background (--color-bg) → Surface (--color-surface) → Raised Surface (--color-surface-raised). This is the complete elevation vocabulary. Nesting beyond three levels requires restructuring the layout, not adding another surface.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do build depth using the three-surface tonal stack (--color-bg → --color-surface → --color-surface-raised) plus 1px Smoke Borders.",
+      "Do reserve #F5F0EB (Warm Paper White) for primary CTAs and primary interactive affordances exclusively.",
+      "Do display all scores and numeric data with font-weight: 700, tight letter-spacing (-0.04em or tighter), and font-variant-numeric: tabular-nums.",
+      "Do use .section-label (0.6875rem, 600, 0.09em tracking, uppercase, --color-text-muted) for all section headers in analysis panels.",
+      "Do animate score bars from 0% width with staggered per-dimension delays (60ms).",
+      "Do apply box-shadow: 0 24px 64px rgba(0,0,0,0.6) to dialog panels only.",
+      "Do run transitions at 0.15s ease for micro-interactions and 0.4-0.5s cubic-bezier(0.4,0,0.2,1) for data animations.",
+      "Do keep all neutral surfaces warm: the blue channel in each surface hex is always lower than the red and green channels."
+    ],
+    "donts": [
+      "Don't use blue-tinted navy surfaces. Surfaces are warm charcoal -- never blue, never cool gray.",
+      "Don't use gradient text (background-clip: text). Emphasis is achieved through weight, size, or the semantic score color system.",
+      "Don't use glassmorphism decoratively. The dialog overlay blur is functional only.",
+      "Don't use score colors (emerald, amber, red) as interface accents, hover states, or decorative borders.",
+      "Don't add box-shadow to cards, inputs, panels, or containers.",
+      "Don't use border-left or border-right greater than 1px as colored accents on cards or list items.",
+      "Don't nest cards. Hierarchy inside a surface is expressed through whitespace and .section-label dividers.",
+      "Don't introduce playful or gamified patterns: no streaks, achievement badges, confetti, or progress celebrations.",
+      "Don't use bounce, elastic, or spring easing. Ease-out only."
+    ]
+  }
+}

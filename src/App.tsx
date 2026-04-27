@@ -40,17 +40,18 @@ export default function App() {
   const sessionCount = useLiveQuery(() => db.sessions.count(), []);
   const hasExistingSessions = (sessionCount ?? 0) > 0;
 
+  // Skip landing page for returning users
+  useEffect(() => {
+    if (sessionCount !== undefined && sessionCount > 0 && view === 'home') {
+      setView('history');
+    }
+  }, [sessionCount, view]);
+
   const calibrationProfile = useLiveQuery(
     () => db.calibrationProfiles.orderBy('id').last(),
     []
   ) as CalibrationProfile | undefined;
 
-  // Skip welcome screen for returning users
-  useEffect(() => {
-    if (sessionCount !== undefined && sessionCount > 0 && view === 'home') {
-      setView('setup');
-    }
-  }, [sessionCount, view]);
 
   // Called by useRecording when blob is ready — transitions to naming prompt
   const handleRecordingReady = useCallback((data: RecordingReadyData) => {
@@ -141,6 +142,7 @@ export default function App() {
       <Home
         hasExistingSessions={hasExistingSessions}
         onStart={() => setView('setup')}
+        onViewHistory={() => setView('history')}
       />
     );
   }
@@ -209,7 +211,6 @@ export default function App() {
         <NameSessionModal
           autoTitle={pendingRecording.autoTitle}
           onConfirm={handleSaveName}
-          onSkip={() => handleSaveName(pendingRecording.autoTitle)}
         />
       </div>
     );
@@ -223,6 +224,8 @@ export default function App() {
         <ReviewPage
           sessionId={sessionId}
           onRecordAgain={() => setView('setup')}
+          onViewHistory={() => { setHistorySessionId(null); setView('history'); }}
+          onDeleted={() => { setSavedSessionId(null); setHistorySessionId(null); setView('history'); }}
           onBack={historySessionId !== null ? () => {
             setHistorySessionId(null);
             setView('history');

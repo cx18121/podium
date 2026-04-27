@@ -1,4 +1,3 @@
-// src/components/SetupScreen/SetupScreen.tsx
 import { useEffect, useRef, useState } from 'react';
 import SpeechSupportBanner from '../common/SpeechSupportBanner';
 import { PrimaryButton } from '../common/PrimaryButton';
@@ -20,118 +19,87 @@ export default function SetupScreen({ onStart, onViewHistory, onCalibrate, hasCa
       .getUserMedia({ video: true, audio: false })
       .then((s) => {
         stream = s;
-        if (videoRef.current) {
-          videoRef.current.srcObject = s;
-        }
+        if (videoRef.current) videoRef.current.srcObject = s;
       })
-      .catch(() => {
-        setPreviewError('Camera preview unavailable — you can still start recording.');
-      });
-    return () => {
-      stream?.getTracks().forEach((t) => t.stop());
-    };
+      .catch(() => setPreviewError('Camera unavailable'));
+    return () => { stream?.getTracks().forEach((t) => t.stop()); };
   }, []);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100svh',
-      background: 'var(--color-bg)',
-      gap: '24px',
-      padding: '32px',
-    }}>
-      {/* Wordmark */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-        <h1 style={{
-          fontFamily: 'Syne, system-ui, sans-serif',
-          fontWeight: 700,
-          fontSize: '1.25rem',
-          letterSpacing: '-0.025em',
-          color: 'var(--color-text-primary)',
-          margin: 0,
-        }}>
-          Podium
-        </h1>
-        <div style={{
-          height: '2px', width: '28px',
-          background: 'linear-gradient(90deg, #818cf8, #6366f1)',
-          borderRadius: '2px',
-        }} aria-hidden="true" />
-      </div>
+    <div style={{ minHeight: '100svh', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
 
-      <SpeechSupportBanner />
-
-      {/* Camera preview */}
-      <div style={{
-        width: '100%',
-        maxWidth: '560px',
-        aspectRatio: '16/9',
-        background: 'var(--color-surface)',
-        border: '1px solid rgba(99,102,241,0.10)',
-        borderRadius: '16px',
-        overflow: 'hidden',
+      {/* Header — matches Review/History */}
+      <header style={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        height: '52px',
+        borderBottom: '1px solid var(--color-border)',
+        flexShrink: 0,
+      }}>
+        <span style={{
+          fontSize: '14px',
+          fontWeight: 600,
+          color: 'var(--color-text-primary)',
+          letterSpacing: '-0.01em',
+        }}>
+          Podium
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <SpeechSupportBanner />
+          {onViewHistory && (
+            <button onClick={onViewHistory} className="btn-ghost">History</button>
+          )}
+          <button onClick={onCalibrate} className="btn-ghost">
+            {hasCalibration ? 'Re-calibrate' : 'Calibrate'}
+          </button>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 0 40px rgba(99,102,241,0.05)',
+        gap: '20px',
+        padding: '32px',
       }}>
-        {previewError ? (
-          <p style={{
-            color: 'var(--color-text-secondary)',
-            fontSize: '13px',
-            textAlign: 'center',
-            padding: '0 24px',
-            fontFamily: 'Figtree',
-          }}>
-            {previewError}
-          </p>
-        ) : (
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            className="w-full h-full object-cover scale-x-[-1]"
-            aria-label="Camera preview"
-          />
-        )}
-      </div>
+        {/* Camera window */}
+        <div style={{
+          width: '100%',
+          maxWidth: '480px',
+          aspectRatio: '16/9',
+          background: '#000',
+          border: '1px solid var(--color-border)',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          {previewError ? (
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '13px' }}>{previewError}</p>
+          ) : (
+            <video
+              ref={videoRef}
+              autoPlay muted playsInline
+              aria-label="Camera preview"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
+            />
+          )}
+        </div>
 
-      <p style={{
-        color: 'var(--color-text-secondary)',
-        fontSize: '13px',
-        textAlign: 'center',
-        maxWidth: '400px',
-        lineHeight: 1.6,
-        fontFamily: 'Figtree',
-      }}>
-        Check that you are in frame, then click Start Recording. The camera feed will be hidden during your session.
-      </p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>
+          {previewError
+            ? 'Camera unavailable — audio will still be recorded.'
+            : 'Check you\'re in frame, then start.'}
+        </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
         <PrimaryButton onClick={onStart}>Start Recording</PrimaryButton>
-
-        {hasCalibration && (
-          <span style={{
-            fontSize: '11px',
-            color: 'var(--color-success)',
-            fontFamily: 'Figtree',
-          }}>
-            ✓ Calibrated
-          </span>
-        )}
       </div>
-
-      {onViewHistory && (
-        <button onClick={onViewHistory} className="btn-ghost">→ View History</button>
-      )}
-
-      <button onClick={onCalibrate} className="btn-ghost">
-        {hasCalibration ? '↻ Re-calibrate' : 'Calibrate for accuracy'}
-      </button>
     </div>
   );
 }

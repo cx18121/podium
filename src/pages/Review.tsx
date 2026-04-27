@@ -8,126 +8,19 @@ import type { AnnotatedPlayerHandle } from '../components/AnnotatedPlayer/Annota
 import PauseDetail from '../components/PauseDetail/PauseDetail';
 import FillerBreakdown from '../components/FillerBreakdown/FillerBreakdown';
 import WhisperStatusBanner, { type WhisperBannerStatus } from '../components/WhisperStatusBanner/WhisperStatusBanner';
-
-const WPMChart = lazy(() => import('../components/WPMChart/WPMChart'));
 import { countFillersFromTranscript } from '../analysis/whisperFillerCounter';
 import { computeWorstMoments } from '../analysis/worstMoments';
 import WorstMomentsReel from '../components/WorstMomentsReel/WorstMomentsReel';
+import { DeleteConfirmModal } from '../components/DeleteConfirmModal/DeleteConfirmModal';
 
-const HINT_KEY = 'podium-first-review-seen';
-
-const HINTS = [
-  {
-    label: 'Scorecard',
-    text: 'Your overall score and 6 dimensions — eye contact, fillers, pacing, expression, gestures, and opening/closing.',
-    color: 'var(--color-accent)',
-    bgColor: 'rgba(99,102,241,0.08)',
-    borderColor: 'rgba(99,102,241,0.14)',
-  },
-  {
-    label: 'Colored markers',
-    text: 'Yellow and red marks on the timeline show filler words, pauses, and gestures — click any to jump.',
-    color: 'var(--color-warning)',
-    bgColor: 'rgba(251,191,36,0.07)',
-    borderColor: 'rgba(251,191,36,0.14)',
-  },
-  {
-    label: 'Worst Moments',
-    text: 'Your top clips ranked by impact — jump straight to the moments worth replaying.',
-    color: 'var(--color-destructive)',
-    bgColor: 'rgba(239,68,68,0.07)',
-    borderColor: 'rgba(239,68,68,0.14)',
-  },
-];
-
-function FirstReviewHint() {
-  const [visible, setVisible] = useState(
-    () => !localStorage.getItem(HINT_KEY)
-  );
-
-  const dismiss = useCallback(() => {
-    localStorage.setItem(HINT_KEY, '1');
-    setVisible(false);
-  }, []);
-
-  if (!visible) return null;
-
-  return (
-    <div style={{
-      width: '100%',
-      maxWidth: '672px',
-      background: 'rgba(99,102,241,0.06)',
-      border: '1px solid rgba(99,102,241,0.16)',
-      borderRadius: '16px',
-      padding: '16px 20px',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '12px',
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '12px',
-      }}>
-        <span style={{
-          fontSize: '11px',
-          fontWeight: 700,
-          letterSpacing: '0.10em',
-          textTransform: 'uppercase' as const,
-          color: 'rgba(99,102,241,0.7)',
-        }}>
-          First review — here's what you're looking at
-        </span>
-        <button
-          onClick={dismiss}
-          aria-label="Dismiss hint"
-          className="btn-ghost"
-          style={{ padding: '2px 4px', lineHeight: 1, fontSize: '16px' }}
-        >
-          ×
-        </button>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '8px',
-      }}>
-        {HINTS.map((hint) => (
-          <div key={hint.label} style={{
-            background: hint.bgColor,
-            border: `1px solid ${hint.borderColor}`,
-            borderRadius: '10px',
-            padding: '10px 12px',
-          }}>
-            <div style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              color: hint.color,
-              marginBottom: '4px',
-            }}>
-              {hint.label}
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: 'var(--color-text-muted)',
-              lineHeight: 1.5,
-            }}>
-              {hint.text}
-            </div>
-          </div>
-        ))}
-      </div>
-
-    </div>
-  );
-}
+const WPMChart = lazy(() => import('../components/WPMChart/WPMChart'));
 
 interface ReviewPageProps {
   sessionId: number;
   onRecordAgain: () => void;
   onBack?: () => void;
+  onViewHistory?: () => void;
+  onDeleted?: () => void;
 }
 
 async function audioBlobToFloat32(blob: Blob): Promise<Float32Array> {
@@ -139,13 +32,14 @@ async function audioBlobToFloat32(blob: Blob): Promise<Float32Array> {
   return pcm;
 }
 
-export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewPageProps) {
+export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHistory, onDeleted }: ReviewPageProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [scorecard, setScorecard] = useState<ScorecardResult | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [whisperBannerStatus, setWhisperBannerStatus] = useState<WhisperBannerStatus | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<number | undefined>(undefined);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const playerRef = useRef<AnnotatedPlayerHandle>(null);
 
   useEffect(() => {
@@ -176,7 +70,9 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       } else {
         setScorecard(aggregateScores(s.eventLog, s.durationMs, s.transcript));
       }
-    }).catch(() => { if (mounted) setError('Could not load this session. Try recording a new one.'); });
+    }).catch(() => {
+      if (mounted) setError('Could not load this session.');
+    });
 
     return () => {
       mounted = false;
@@ -184,7 +80,6 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
     };
   }, [sessionId]);
 
-  // Whisper worker lifecycle: runs post-session, updates filler counts from ASR transcript
   useEffect(() => {
     if (!session) return;
     if (session.whisperStatus === 'complete') return;
@@ -229,11 +124,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       if (msg.type === 'result') {
         const byType = countFillersFromTranscript(msg.text);
         const whisperFillers: WhisperFillerResult = { byType };
-        await db.sessions.update(session.id!, {
-          whisperFillers,
-          whisperStatus: 'complete',
-        });
-        // Re-read session to get updated data and trigger re-render
+        await db.sessions.update(session.id!, { whisperFillers, whisperStatus: 'complete', whisperTranscript: msg.text });
         const updated = await db.sessions.get(session.id!);
         if (updated) {
           setSession(updated);
@@ -257,7 +148,6 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
     };
 
     worker.postMessage({ type: 'init' });
-
     return () => worker.terminate();
   }, [session?.id, session?.whisperStatus]);
 
@@ -266,6 +156,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
       <div role="alert" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-destructive)',
+        fontSize: '14px',
       }}>
         {error}
       </div>
@@ -276,103 +167,189 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack }: ReviewP
     return (
       <div aria-busy="true" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+        minHeight: '100svh', background: 'var(--color-bg)', color: 'var(--color-text-muted)',
+        fontSize: '13px',
       }}>
-        Loading session...
+        Loading...
       </div>
     );
   }
 
   const durationSec = Math.round(session.durationMs / 1000);
   const durationDisplay = `${Math.floor(durationSec / 60)}:${String(durationSec % 60).padStart(2, '0')}`;
-
   const worstMoments = computeWorstMoments(session.eventLog, session.durationMs);
 
   return (
-    <div
-      className="px-4 py-6 sm:px-8 sm:py-10"
-      style={{
+    <div style={{ minHeight: '100svh', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
+
+      {/* Header */}
+      <header style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        minHeight: '100svh',
-        background: 'var(--color-bg)',
-        gap: '28px',
-        maxWidth: '768px',
-        margin: '0 auto',
-        width: '100%',
-      }}
-    >
-      {/* Session header */}
-      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <h1 style={{
-          fontFamily: 'Syne, system-ui, sans-serif',
-          fontWeight: 700,
-          fontSize: '1.375rem',
-          letterSpacing: '-0.025em',
+        gap: '12px',
+        padding: '0 24px',
+        height: '52px',
+        borderBottom: '1px solid var(--color-border)',
+        flexShrink: 0,
+      }}>
+        {onBack && (
+          <button onClick={onBack} className="btn-ghost" style={{ padding: '4px 0', marginRight: '4px' }}>
+            ← Back
+          </button>
+        )}
+        <span style={{
+          fontSize: '14px',
+          fontWeight: 600,
           color: 'var(--color-text-primary)',
-          margin: 0,
-          overflowWrap: 'break-word',
-          wordBreak: 'break-word',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          flex: 1,
+          minWidth: 0,
         }}>
           {session.title || 'Untitled Session'}
-        </h1>
-        <p style={{
-          fontSize: '13px',
-          color: 'var(--color-text-secondary)',
-          margin: 0,
-        }}>
+        </span>
+        <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>
           {durationDisplay} · {new Date(session.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-
-      {/* First-review orientation hint */}
-      <FirstReviewHint />
-
-      {/* Whisper status banner */}
-      <div style={{ width: '100%', maxWidth: '672px' }}>
-        {whisperBannerStatus && (
-          <WhisperStatusBanner status={whisperBannerStatus} downloadProgress={downloadProgress} />
-        )}
-      </div>
-
-      {/* ── Section: Scorecard ── */}
-      <ScorecardView scorecard={scorecard} />
-
-      {/* ── Section: Analysis breakdown ── */}
-      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* PauseDetail + FillerBreakdown — side-by-side on sm+, stacked on mobile */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <PauseDetail events={session.eventLog} transcript={session.transcript} />
-          <FillerBreakdown
-            events={session.eventLog}
-            durationMs={session.durationMs}
-            whisperFillers={session.whisperFillers}
-          />
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px', flexShrink: 0 }}>
+          {onViewHistory && (
+            <button onClick={onViewHistory} className="btn-ghost">History</button>
+          )}
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="btn-ghost focus-ring-destructive"
+            aria-label="Delete session"
+            title="Delete session"
+            style={{ color: 'var(--color-text-muted)', transition: 'color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-destructive)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}
+          >
+            Delete
+          </button>
+          <PrimaryButton size="sm" onClick={onRecordAgain}>Record Again</PrimaryButton>
         </div>
-        {/* WPMChart full-width below */}
-        <Suspense fallback={null}>
-          <WPMChart wpmWindows={session.wpmWindows} />
-        </Suspense>
-      </div>
+      </header>
 
-      {/* ── Section: Video review ── */}
-      <div style={{ width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-        <WorstMomentsReel moments={worstMoments} onSeek={(ms) => playerRef.current?.seekTo(ms)} />
-        <AnnotatedPlayer
-          ref={playerRef}
-          videoUrl={videoUrl}
-          durationMs={session.durationMs}
-          events={session.eventLog}
-          transcript={session.transcript}
+      {showDeleteModal && (
+        <DeleteConfirmModal
+          onConfirm={async () => {
+            await db.sessions.delete(sessionId);
+            setShowDeleteModal(false);
+            onDeleted?.();
+          }}
+          onCancel={() => setShowDeleteModal(false)}
         />
-      </div>
-
-      <PrimaryButton onClick={onRecordAgain}>Record Again</PrimaryButton>
-
-      {onBack && (
-        <button onClick={onBack} className="btn-ghost">Back to History</button>
       )}
+
+      {/* Split layout */}
+      <div style={{
+        flex: 1,
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 3fr) minmax(0, 2fr)',
+        minHeight: 0,
+      }} className="review-split">
+        {/* Left: video */}
+        <div style={{
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          borderRight: '1px solid var(--color-border)',
+          position: 'sticky',
+          top: 0,
+          height: 'calc(100svh - 52px)',
+          overflow: 'hidden',
+        }}>
+          {whisperBannerStatus && (
+            <WhisperStatusBanner status={whisperBannerStatus} downloadProgress={downloadProgress} />
+          )}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '8px', minHeight: 0 }}>
+            <AnnotatedPlayer
+              ref={playerRef}
+              videoUrl={videoUrl}
+              durationMs={session.durationMs}
+              events={session.eventLog}
+              transcript={session.transcript}
+            />
+          </div>
+        </div>
+
+        {/* Right: analysis panel */}
+        <div style={{ overflowY: 'auto', height: 'calc(100svh - 52px)' }}>
+
+          {/* Scorecard — lead section, generous top air */}
+          <section style={{ padding: '32px 28px 28px', borderBottom: '1px solid var(--color-border)' }}>
+            <p className="section-label">Scorecard</p>
+            <ScorecardView scorecard={scorecard} />
+          </section>
+
+          {/* Worst moments — second priority, same horizontal rhythm */}
+          {worstMoments && (
+            <section style={{ padding: '24px 28px', borderBottom: '1px solid var(--color-border)' }}>
+              <WorstMomentsReel
+                moments={worstMoments}
+                onSeek={(ms) => playerRef.current?.seekTo(ms)}
+              />
+            </section>
+          )}
+
+          {/* Pause + Filler — supporting detail, slightly tighter */}
+          <section style={{
+            padding: '20px 28px',
+            borderBottom: '1px solid var(--color-border)',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '24px',
+          }}>
+            <PauseDetail events={session.eventLog} transcript={session.transcript} />
+            <FillerBreakdown
+              events={session.eventLog}
+              durationMs={session.durationMs}
+              whisperFillers={session.whisperFillers}
+            />
+          </section>
+
+          {/* WPM chart — supporting detail */}
+          <section style={{ padding: '20px 28px', borderBottom: '1px solid var(--color-border)' }}>
+            <Suspense fallback={null}>
+              <WPMChart wpmWindows={session.wpmWindows} />
+            </Suspense>
+          </section>
+
+          {/* Transcript — reference material, tightest weight */}
+          {(() => {
+            const text = session.whisperTranscript?.trim() ||
+              session.transcript
+                ?.filter(s => s.isFinal)
+                .map(s => s.text.trim())
+                .filter(Boolean)
+                .join(' ');
+            if (!text) return null;
+            return (
+              <section style={{ padding: '20px 28px 28px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                  <p className="section-label" style={{ margin: 0 }}>Transcript</p>
+                  {session.whisperTranscript && (
+                    <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
+                      Whisper
+                    </span>
+                  )}
+                </div>
+                <p style={{
+                  fontSize: '14px',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.75,
+                  margin: 0,
+                }}>
+                  {text}
+                </p>
+              </section>
+            );
+          })()}
+
+        </div>
+      </div>
     </div>
   );
 }

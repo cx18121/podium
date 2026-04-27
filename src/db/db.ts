@@ -34,6 +34,7 @@ export interface Session {
   wpmWindows?: WPMWindow[];                 // Phase 8 — FOUND-02
   whisperFillers?: WhisperFillerResult;      // Phase 13 — WHIS-01
   whisperStatus?: 'pending' | 'complete' | 'failed'; // Phase 13 — WHIS-03
+  whisperTranscript?: string;               // full ASR transcript text
 }
 
 export interface SessionEvent {
@@ -77,6 +78,12 @@ db.version(3).stores({
 // v4 schema: adds calibrationProfiles table for per-user threshold calibration.
 // Purely additive — no upgrade callback, no session clearing.
 db.version(4).stores({
+  sessions: '++id, createdAt, title',
+  calibrationProfiles: '++id',
+});
+
+// v5 schema: adds whisperTranscript as unindexed text field. Purely additive.
+db.version(5).stores({
   sessions: '++id, createdAt, title',
   calibrationProfiles: '++id',
 });

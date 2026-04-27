@@ -1,4 +1,3 @@
-// src/components/CalibrationScreen/CalibrationScreen.tsx
 import { useCallback, useEffect, useRef, useState } from 'react';
 import workerUrl from '../../workers/mediapipe.worker.js?url';
 import { computeCalibrationProfile } from '../../analysis/calibration';
@@ -34,14 +33,24 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
     shoulderDeltas: number[];
   } | null>(null);
 
-  // Keep stepRef in sync
   useEffect(() => { stepRef.current = step; }, [step]);
 
+  // Open camera preview immediately on mount so the user sees themselves before clicking Start
+  useEffect(() => {
+    let mounted = true;
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then(stream => {
+        if (!mounted) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      })
+      .catch(() => { /* preview unavailable */ });
+    return () => { mounted = false; };
+  }, []);
+
   const stopFramePump = useCallback(() => {
-    if (frameIntervalRef.current) {
-      clearInterval(frameIntervalRef.current);
-      frameIntervalRef.current = null;
-    }
+    if (frameIntervalRef.current) { clearInterval(frameIntervalRef.current); frameIntervalRef.current = null; }
   }, []);
 
   const cleanup = useCallback(() => {
@@ -54,24 +63,15 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
     if (hiddenVideoRef.current) { hiddenVideoRef.current.srcObject = null; hiddenVideoRef.current = null; }
   }, [stopFramePump]);
 
-  const handleCancel = useCallback(() => {
-    cleanup();
-    onCancel();
-  }, [cleanup, onCancel]);
+  const handleCancel = useCallback(() => { cleanup(); onCancel(); }, [cleanup, onCancel]);
 
   const startFramePump = useCallback((hidden: HTMLVideoElement) => {
     frameIntervalRef.current = setInterval(async () => {
-      if (!workerRef.current) return;
-      if (hidden.readyState < 2) return;
+      if (!workerRef.current || hidden.readyState < 2) return;
       try {
         const bitmap = await createImageBitmap(hidden);
-        workerRef.current?.postMessage(
-          { type: 'calibrate_frame', bitmap },
-          [bitmap]
-        );
-      } catch {
-        // silently skip
-      }
+        workerRef.current?.postMessage({ type: 'calibrate_frame', bitmap }, [bitmap]);
+      } catch { /* skip */ }
     }, FRAME_INTERVAL_MS);
   }, []);
 
@@ -79,9 +79,7 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
     stopFramePump();
     setStep('computing');
     stepRef.current = 'computing';
-
     if (!workerRef.current) return;
-
     const worker = workerRef.current;
     const onMsg = (e: MessageEvent) => {
       if (e.data.type === 'calibration_data') {
@@ -107,23 +105,11 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
     stepStartEpochRef.current = Date.now();
     setElapsedMs(0);
     frameCountRef.current = 0;
-
     startFramePump(hidden);
-
-    if (workerRef.current) {
-      const worker = workerRef.current;
-      const onAck = (e: MessageEvent) => {
-        if (e.data.type === 'calibrate_frame_ack') {
-          frameCountRef.current += 1;
-        }
-      };
-      worker.addEventListener('message', onAck);
-    }
 
     stepTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - stepStartEpochRef.current;
       setElapsedMs(elapsed);
-
       if (elapsed >= STEP_DURATION_MS && stepRef.current === 'gaze') {
         clearInterval(stepTimerRef.current!);
         stepTimerRef.current = null;
@@ -131,11 +117,9 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
         setElapsedMs(0);
         setStep('posture');
         stepRef.current = 'posture';
-
         stepTimerRef.current = setInterval(() => {
           const el2 = Date.now() - stepStartEpochRef.current;
           setElapsedMs(el2);
-
           if (el2 >= STEP_DURATION_MS && stepRef.current === 'posture') {
             clearInterval(stepTimerRef.current!);
             stepTimerRef.current = null;
@@ -148,221 +132,98 @@ export default function CalibrationScreen({ onComplete, onCancel }: CalibrationS
 
   const startCalibration = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      // Reuse the preview stream opened on mount; request fresh only if it closed
+      if (!streamRef.current) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        streamRef.current = stream;
+        if (videoRef.current) videoRef.current.srcObject = stream;
       }
-
+      const stream = streamRef.current!;
       const hidden = document.createElement('video');
       hidden.srcObject = stream;
       hidden.muted = true;
       hidden.playsInline = true;
       await hidden.play();
       hiddenVideoRef.current = hidden;
-
       const worker = new Worker(workerUrl, { type: 'classic' });
       workerRef.current = worker;
-
       await new Promise<void>((resolve, reject) => {
         const onInit = (e: MessageEvent) => {
-          if (e.data.type === 'ready') {
-            worker.removeEventListener('message', onInit);
-            resolve();
-          } else if (e.data.type === 'error') {
-            worker.removeEventListener('message', onInit);
-            reject(new Error(e.data.message));
-          }
+          if (e.data.type === 'ready') { worker.removeEventListener('message', onInit); resolve(); }
+          else if (e.data.type === 'error') { worker.removeEventListener('message', onInit); reject(new Error(e.data.message)); }
         };
         worker.addEventListener('message', onInit);
         worker.postMessage({ type: 'init' });
       });
-
-      dotTimerRef.current = setInterval(() => {
-        setDotCount(d => (d + 1) % 4);
-      }, 400);
-
+      dotTimerRef.current = setInterval(() => setDotCount(d => (d + 1) % 4), 400);
       startGazeStep(hidden);
-    } catch {
-      onCancel();
-    }
+    } catch { onCancel(); }
   }, [startGazeStep, onCancel]);
 
   const countdownSec = Math.max(0, Math.ceil((STEP_DURATION_MS - elapsedMs) / 1000));
-
-  const stepLabel = step === 'gaze'
-    ? 'Step 1 of 2'
-    : step === 'posture'
-    ? 'Step 2 of 2'
-    : '';
-
-  const instruction = step === 'gaze'
-    ? 'Look directly at the camera'
-    : step === 'posture'
-    ? 'Keep your hands at your sides'
-    : step === 'computing'
-    ? 'Computing your calibration...'
-    : '';
-
   const dots = '.'.repeat(dotCount);
+
+  const stepLabel = step === 'gaze' ? '1 of 2' : step === 'posture' ? '2 of 2' : '';
+  const instruction = step === 'gaze' ? 'Look directly at the camera'
+    : step === 'posture' ? 'Keep your hands at your sides'
+    : step === 'computing' ? 'Computing calibration…'
+    : '';
 
   return (
     <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100svh',
-      background: 'var(--color-bg)',
-      gap: '24px',
-      padding: '32px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      minHeight: '100svh', background: 'var(--color-bg)', gap: '20px', padding: '32px',
     }}>
-      {/* Header */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-        <h1 style={{
-          fontFamily: 'Syne, system-ui, sans-serif',
-          fontWeight: 700,
-          fontSize: '1.25rem',
-          letterSpacing: '-0.025em',
-          color: 'var(--color-text-primary)',
-          margin: 0,
-        }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+        <h1 style={{ fontWeight: 700, fontSize: '1.125rem', letterSpacing: '-0.02em', color: 'var(--color-text-primary)', margin: 0 }}>
           Calibration
         </h1>
-        <div style={{
-          height: '2px', width: '28px',
-          background: 'linear-gradient(90deg, #818cf8, #6366f1)',
-          borderRadius: '2px',
-        }} aria-hidden="true" />
+        {stepLabel && (
+          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            Step {stepLabel}
+          </span>
+        )}
       </div>
-
-      {/* Step indicator */}
-      {stepLabel && (
-        <p style={{
-          fontFamily: 'Figtree, system-ui, sans-serif',
-          fontSize: '12px',
-          color: 'var(--color-accent)',
-          margin: 0,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-        }}>
-          {stepLabel}
-        </p>
-      )}
 
       {/* Camera preview */}
       <div style={{
-        width: '100%',
-        maxWidth: '560px',
-        aspectRatio: '16/9',
-        background: 'var(--color-surface)',
-        border: '1px solid rgba(99,102,241,0.10)',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 0 40px rgba(99,102,241,0.05)',
-        position: 'relative',
+        width: '100%', maxWidth: '520px', aspectRatio: '16/9',
+        background: '#000', border: '1px solid var(--color-border)', borderRadius: '12px',
+        overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
       }}>
         <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
+          ref={videoRef} autoPlay muted playsInline
           style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }}
           aria-label="Camera preview"
         />
-        {/* Instruction overlay */}
         {(step === 'gaze' || step === 'posture') && (
           <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'rgba(8,12,20,0.80)',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+            padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{
-              fontFamily: 'Figtree, system-ui, sans-serif',
-              fontSize: '14px',
-              color: 'var(--color-text-primary)',
-              fontWeight: 600,
-            }}>
-              {instruction}
-            </span>
-            <span style={{
-              fontFamily: 'Figtree, system-ui, sans-serif',
-              fontSize: '20px',
-              color: 'var(--color-accent)',
-              fontWeight: 700,
-              minWidth: '32px',
-              textAlign: 'right',
-            }}>
-              {countdownSec}s
-            </span>
+            <span style={{ fontSize: '13px', color: 'var(--color-text-primary)', fontWeight: 500 }}>{instruction}</span>
+            <span style={{ fontSize: '18px', color: 'var(--color-text-secondary)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{countdownSec}s</span>
           </div>
         )}
       </div>
 
-      {/* Instruction / status text */}
       {step === 'waiting' && (
-        <p style={{
-          color: 'var(--color-text-secondary)',
-          fontSize: '13px',
-          textAlign: 'center',
-          maxWidth: '400px',
-          lineHeight: 1.6,
-          fontFamily: 'Figtree',
-          margin: 0,
-        }}>
-          Calibration takes 30 seconds and improves detection accuracy for your face and posture.
-          Make sure you're well-lit and centered in the frame.
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', textAlign: 'center', maxWidth: '380px', lineHeight: 1.6, margin: 0 }}>
+          Takes 30 seconds. Improves eye contact and gesture detection accuracy.
         </p>
       )}
-
       {(step === 'gaze' || step === 'posture') && (
-        <p style={{
-          color: 'var(--color-text-secondary)',
-          fontSize: '12px',
-          fontFamily: 'Figtree',
-          margin: 0,
-        }}>
-          Collecting data{dots}
-        </p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>Collecting data{dots}</p>
       )}
-
       {step === 'computing' && (
-        <p style={{
-          color: 'var(--color-text-secondary)',
-          fontSize: '13px',
-          fontFamily: 'Figtree',
-          margin: 0,
-        }}>
-          Computing your calibration{dots}
-        </p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>Computing{dots}</p>
       )}
 
-      {/* Actions */}
       {step === 'waiting' && (
-        <button
-          onClick={startCalibration}
-          className="btn-primary btn-primary-lg focus-ring"
-        >
-          Start Calibration
-        </button>
+        <button onClick={startCalibration} className="btn-primary focus-ring">Start Calibration</button>
       )}
-
-      <button
-        onClick={handleCancel}
-        className="btn-ghost focus-ring"
-      >
-        Cancel
-      </button>
+      <button onClick={handleCancel} className="btn-ghost focus-ring">Cancel</button>
     </div>
   );
 }
