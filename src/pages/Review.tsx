@@ -306,27 +306,22 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHis
             </Suspense>
           </section>
 
-          {/* Delete — destructive action, bottom of panel after all content */}
-          <section style={{ padding: '20px 28px', borderBottom: '1px solid var(--color-border)' }}>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="btn-destructive-sm focus-ring-destructive"
-            >
-              Delete this session
-            </button>
-          </section>
-
           {/* Transcript — reference material, tightest weight */}
           {(() => {
-            const text = session.whisperTranscript?.trim() ||
-              session.transcript
-                ?.filter(s => s.isFinal)
-                .map(s => s.text.trim())
-                .filter(Boolean)
-                .join(' ');
+            const whisperText = session.whisperTranscript?.trim();
+            const srText = session.transcript
+              ?.filter(s => s.isFinal)
+              .map(s => s.text.trim())
+              .filter(Boolean)
+              .map(s => {
+                const cap = s.charAt(0).toUpperCase() + s.slice(1);
+                return /[.!?,]$/.test(cap) ? cap : cap + '.';
+              })
+              .join(' ');
+            const text = whisperText || srText;
             if (!text) return null;
             return (
-              <section style={{ padding: '20px 28px 28px' }}>
+              <section style={{ padding: '20px 28px', borderBottom: '1px solid var(--color-border)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                   <p className="section-label" style={{ margin: 0 }}>Transcript</p>
                   {session.whisperTranscript && (
@@ -346,6 +341,16 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHis
               </section>
             );
           })()}
+
+          {/* Delete — at the very end, below all content */}
+          <div style={{ padding: '20px 28px 32px' }}>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="btn-destructive-sm focus-ring-destructive"
+            >
+              Delete this session
+            </button>
+          </div>
 
         </div>
       </div>

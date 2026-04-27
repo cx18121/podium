@@ -18,8 +18,8 @@ export default function WPMChart({ wpmWindows }: WPMChartProps) {
       {(!wpmWindows || chartData.length === 0) ? (
         <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>No data</p>
       ) : (
-        <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={chartData} margin={{ top: 4, right: 16, left: 8, bottom: 0 }}>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={chartData} margin={{ top: 12, right: 16, left: 0, bottom: 0 }} style={{ userSelect: 'none' }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
             <XAxis
               dataKey="label"
@@ -32,6 +32,7 @@ export default function WPMChart({ wpmWindows }: WPMChartProps) {
               tickLine={false}
               unit=" wpm"
               axisLine={false}
+              width={58}
             />
             <Tooltip
               contentStyle={{
