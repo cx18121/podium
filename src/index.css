@@ -334,6 +334,13 @@
   }
 }
 
+/* ── Recharts ───────────────────────────────────────────────── */
+/* ReferenceArea rect receives browser focus on click — suppress outline */
+.recharts-reference-area-rect {
+  outline: none;
+  pointer-events: none;
+}
+
 /* ── Motion sensitivity ─────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
