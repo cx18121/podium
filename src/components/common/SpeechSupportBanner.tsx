@@ -21,8 +21,7 @@ export default function SpeechSupportBanner() {
         gap: '12px',
         padding: '11px 14px',
         background: 'rgba(251,191,36,0.07)',
-        border: '1px solid rgba(251,191,36,0.18)',
-        borderLeft: '2px solid var(--color-warning)',
+        border: '1px solid rgba(251,191,36,0.22)',
         borderRadius: '10px',
       }}
     >
@@ -49,7 +48,6 @@ export default function SpeechSupportBanner() {
           flexShrink: 0,
           opacity: 0.6,
           transition: 'opacity 0.15s ease',
-          fontFamily: 'system-ui',
         }}
         className="focus-ring"
         onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
