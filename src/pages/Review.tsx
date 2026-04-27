@@ -325,7 +325,7 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHis
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                   <p className="section-label" style={{ margin: 0 }}>Transcript</p>
                   {session.whisperTranscript && (
-                    <span style={{ fontSize: '10px', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
                       Whisper
                     </span>
                   )}

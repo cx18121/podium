@@ -170,6 +170,16 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
           <StorageQuotaBar />
         </div>
 
+        {/* Progress sparklines — teaser when <3 sessions */}
+        {sessions.length > 0 && sessions.length < 3 && (
+          <div style={{ marginTop: '48px' }}>
+            <p className="section-label" style={{ marginBottom: '10px' }}>Progress</p>
+            <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+              Record {3 - sessions.length} more session{3 - sessions.length !== 1 ? 's' : ''} to see your trend.
+            </p>
+          </div>
+        )}
+
         {/* Progress sparklines */}
         {sessions.length >= 3 && (() => {
           const recentSessions = sessions.slice(0, 10).reverse();

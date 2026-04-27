@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ScorecardResult } from '../../analysis/scorer';
-
-function scoreColor(score: number): string {
-  if (score >= 70) return '#10b981';
-  if (score >= 40) return '#f59e0b';
-  return '#ef4444';
-}
+import { scoreColor } from '../../analysis/scoreColor';
 
 interface ScorecardViewProps {
   scorecard: ScorecardResult | null;

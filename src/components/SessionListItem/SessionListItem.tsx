@@ -1,17 +1,10 @@
 import type { Session } from '../../db/db';
+import { scoreColor } from '../../analysis/scoreColor';
 
 interface SessionListItemProps {
   session: Session;
   onOpen: () => void;
   onDelete: () => void;
-}
-
-function scoreColor(scorecard: Session['scorecard']): string {
-  if (scorecard === null) return 'var(--color-text-muted)';
-  const s = scorecard.overall;
-  if (s >= 70) return '#10b981';
-  if (s >= 40) return '#f59e0b';
-  return '#ef4444';
 }
 
 export function SessionListItem({ session, onOpen, onDelete }: SessionListItemProps) {
@@ -26,24 +19,17 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
-      className="focus-ring"
+      className="session-card focus-ring"
       style={{
         background: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
         borderRadius: '12px',
         padding: '20px',
         cursor: 'pointer',
-        transition: 'border-color 0.15s ease',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border-hover)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--color-border)';
       }}
     >
       {/* Title */}
@@ -67,7 +53,7 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
           fontWeight: 700,
           letterSpacing: '-0.04em',
           lineHeight: 1,
-          color: scoreColor(session.scorecard),
+          color: session.scorecard === null ? 'var(--color-text-muted)' : scoreColor(session.scorecard.overall),
           fontVariantNumeric: 'tabular-nums',
           flexShrink: 0,
         }}>

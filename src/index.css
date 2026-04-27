@@ -334,6 +334,14 @@
   }
 }
 
+/* ── Session card ───────────────────────────────────────────── */
+.session-card {
+  transition: border-color 0.15s ease;
+}
+.session-card:hover {
+  border-color: var(--color-border-hover);
+}
+
 /* ── Recharts ───────────────────────────────────────────────── */
 /* ReferenceArea rect receives browser focus on click — suppress outline */
 .recharts-reference-area-rect {
