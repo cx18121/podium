@@ -4,44 +4,44 @@ import Home from './Home';
 
 describe('Home', () => {
   it('renders null when hasExistingSessions is true', () => {
-    const { container } = render(<Home hasExistingSessions={true} onStart={vi.fn()} />);
+    const { container } = render(<Home hasExistingSessions={true} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     expect(container.firstChild).toBeNull();
   });
 
   it('renders the h1 heading when hasExistingSessions is false', () => {
-    render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
+    render(<Home hasExistingSessions={false} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
   it('h1 uses Syne display font and bold weight (not text-4xl class)', () => {
-    render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
+    render(<Home hasExistingSessions={false} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(h1).toBeInTheDocument();
     expect(h1.className).not.toContain('text-4xl');
   });
 
   it('footnote uses muted text color (not text-gray-600)', () => {
-    render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
+    render(<Home hasExistingSessions={false} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     const footnote = screen.getByText('Runs entirely in your browser. Nothing is uploaded.');
     expect(footnote).toBeInTheDocument();
     expect(footnote.className).not.toContain('text-gray-600');
   });
 
   it('outer container has max-w-3xl class', () => {
-    render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
+    render(<Home hasExistingSessions={false} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     // The outermost div is the page container
     const container = screen.getByRole('heading', { level: 1 }).closest('div[class*="max-w-3xl"]');
     expect(container).not.toBeNull();
   });
 
   it('renders "Start Recording" button', () => {
-    render(<Home hasExistingSessions={false} onStart={vi.fn()} />);
+    render(<Home hasExistingSessions={false} onStart={vi.fn()} onViewHistory={vi.fn()} />);
     expect(screen.getByRole('button', { name: 'Start Recording' })).toBeInTheDocument();
   });
 
   it('calls onStart when button is clicked', () => {
     const onStart = vi.fn();
-    render(<Home hasExistingSessions={false} onStart={onStart} />);
+    render(<Home hasExistingSessions={false} onStart={onStart} onViewHistory={vi.fn()} />);
     screen.getByRole('button', { name: 'Start Recording' }).click();
     expect(onStart).toHaveBeenCalledTimes(1);
   });

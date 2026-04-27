@@ -83,6 +83,11 @@
   100% { transform: scale(1); }
 }
 
+@keyframes progress-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
 /* ── Buttons ──────────────────────────────────────────────────── */
 
 .btn-primary {
@@ -127,8 +132,8 @@
 
 .btn-primary:disabled,
 .btn-primary:disabled:hover {
-  background: rgba(245, 240, 235, 0.15);
-  color: rgba(245, 240, 235, 0.35);
+  background: rgba(200, 200, 200, 0.15);
+  color: rgba(200, 200, 200, 0.35);
   cursor: not-allowed;
   transform: none;
 }
@@ -215,8 +220,14 @@
 
 /* ── Focus ──────────────────────────────────────────────────── */
 .focus-ring:focus-visible {
-  outline: 2px solid rgba(245, 240, 235, 0.5);
+  outline: 2px solid rgba(200, 200, 200, 0.5);
   outline-offset: 2px;
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid rgba(200, 200, 200, 0.4);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .focus-ring-destructive:focus-visible {
   outline: 2px solid var(--color-destructive);
@@ -257,7 +268,7 @@
   box-sizing: border-box;
 }
 .input-field:focus {
-  border-color: rgba(245, 240, 235, 0.25);
+  border-color: rgba(200, 200, 200, 0.3);
 }
 
 /* ── Typography ─────────────────────────────────────────────── */

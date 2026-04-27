@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { PrimaryButton } from '../components/common/PrimaryButton';
 import { db, type Session, type Scorecard, type WhisperFillerResult } from '../db/db';
 import { aggregateScores, type ScorecardResult } from '../analysis/scorer';
@@ -216,17 +216,6 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHis
           {onViewHistory && (
             <button onClick={onViewHistory} className="btn-ghost">History</button>
           )}
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="btn-ghost focus-ring-destructive"
-            aria-label="Delete session"
-            title="Delete session"
-            style={{ color: 'var(--color-text-muted)', transition: 'color 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-destructive)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}
-          >
-            Delete
-          </button>
           <PrimaryButton size="sm" onClick={onRecordAgain}>Record Again</PrimaryButton>
         </div>
       </header>
@@ -315,6 +304,16 @@ export default function ReviewPage({ sessionId, onRecordAgain, onBack, onViewHis
             <Suspense fallback={null}>
               <WPMChart wpmWindows={session.wpmWindows} />
             </Suspense>
+          </section>
+
+          {/* Delete — destructive action, bottom of panel after all content */}
+          <section style={{ padding: '20px 28px', borderBottom: '1px solid var(--color-border)' }}>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="btn-destructive-sm focus-ring-destructive"
+            >
+              Delete this session
+            </button>
           </section>
 
           {/* Transcript — reference material, tightest weight */}

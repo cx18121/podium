@@ -30,20 +30,16 @@ function toDateKey(date: Date): string {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 
-function cellColor(avgScore: number | null, hasSession: boolean): string {
-  if (!hasSession) return 'var(--color-surface-raised)';
-  if (avgScore === null) return 'rgba(245,240,235,0.25)';
-  if (avgScore >= 70) return 'rgba(16,185,129,0.60)';
-  if (avgScore >= 40) return 'rgba(245,158,11,0.60)';
-  return 'rgba(239,68,68,0.60)';
+function cellFill(count: number): string {
+  if (count === 0) return 'var(--color-surface-raised)';
+  const opacity = Math.min(0.18 + (count - 1) * 0.18, 0.70);
+  return `rgba(200,200,200,${opacity.toFixed(2)})`;
 }
 
-function cellBorder(avgScore: number | null, hasSession: boolean): string {
-  if (!hasSession) return 'rgba(255,255,255,0.05)';
-  if (avgScore === null) return 'rgba(245,240,235,0.15)';
-  if (avgScore >= 70) return 'rgba(16,185,129,0.35)';
-  if (avgScore >= 40) return 'rgba(245,158,11,0.35)';
-  return 'rgba(239,68,68,0.35)';
+function cellBorder(count: number): string {
+  if (count === 0) return 'rgba(255,255,255,0.05)';
+  const opacity = Math.min(0.10 + (count - 1) * 0.08, 0.32);
+  return `rgba(200,200,200,${opacity.toFixed(2)})`;
 }
 
 const SHORT_DAYS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
@@ -188,10 +184,10 @@ export default function SessionHeatmap({ sessions, onDayClick, selectedDate }: S
                           width: `${CELL}px`,
                           height: `${CELL}px`,
                           borderRadius: '3px',
-                          background: day.isFuture ? 'transparent' : cellColor(day.avgScore, day.hasSession),
+                          background: day.isFuture ? 'transparent' : cellFill(day.count),
                           border: isSelected
                             ? '2px solid var(--color-text-primary)'
-                            : `1px solid ${day.isFuture ? 'transparent' : cellBorder(day.avgScore, day.hasSession)}`,
+                            : `1px solid ${day.isFuture ? 'transparent' : cellBorder(day.count)}`,
                           flexShrink: 0,
                           opacity: day.isFuture ? 0 : 1,
                           cursor: day.hasSession ? 'pointer' : 'default',
@@ -207,13 +203,13 @@ export default function SessionHeatmap({ sessions, onDayClick, selectedDate }: S
         </div>
 
         {/* Legend — right-aligned to grid edge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px', marginLeft: '38px', width: `${gridWidth}px` , justifyContent: 'flex-end' }}>
-          <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>Less</span>
-          {[null, 35, 55, 80].map((score, i) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px', marginLeft: '38px', width: `${gridWidth}px`, justifyContent: 'flex-end' }}>
+          <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>Fewer sessions</span>
+          {[0, 1, 2, 4].map((count, i) => (
             <div key={i} style={{
               width: CELL, height: CELL, borderRadius: '3px',
-              background: cellColor(score, score !== null),
-              border: `1px solid ${cellBorder(score, score !== null)}`,
+              background: cellFill(count),
+              border: `1px solid ${cellBorder(count)}`,
             }} />
           ))}
           <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>More</span>

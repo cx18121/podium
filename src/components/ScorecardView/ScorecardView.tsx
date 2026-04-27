@@ -7,18 +7,6 @@ function scoreColor(score: number): string {
   return '#ef4444';
 }
 
-function scoreBarColor(score: number): string {
-  if (score >= 70) return '#10b981';
-  if (score >= 40) return '#f59e0b';
-  return '#ef4444';
-}
-
-function coachLine(score: number): string {
-  if (score >= 70) return 'Strong session.';
-  if (score >= 40) return 'Good progress.';
-  return 'Keep at it.';
-}
-
 interface ScorecardViewProps {
   scorecard: ScorecardResult | null;
 }
@@ -52,7 +40,7 @@ export default function ScorecardView({ scorecard }: ScorecardViewProps) {
       setDisplayScore(Math.round(eased * target));
       if (t < 1) {
         requestAnimationFrame(tick);
-      } else if (target >= 70) {
+      } else {
         setTimeout(() => setScoreRevealed(true), 60);
       }
     }
@@ -99,16 +87,28 @@ export default function ScorecardView({ scorecard }: ScorecardViewProps) {
             Overall
           </span>
         </div>
-        <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-          {coachLine(overall)}
-        </span>
+        {overall < 70 && scoreRevealed && (() => {
+          const focus = DIMENSIONS.reduce((lowest, dim) =>
+            scorecard.dimensions[dim.key].score < scorecard.dimensions[lowest.key].score ? dim : lowest
+          );
+          return (
+            <span style={{
+              fontSize: '12px',
+              color: '#f59e0b',
+              fontWeight: 500,
+              animation: 'fade-up 0.3s ease-out both',
+            }}>
+              Focus: {focus.label}
+            </span>
+          );
+        })()}
       </div>
 
       {/* Dimension bars */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {DIMENSIONS.map(({ key, label }, i) => {
           const dim = scorecard.dimensions[key];
-          const barColor = scoreBarColor(dim.score);
+          const barColor = scoreColor(dim.score);
           return (
             <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>

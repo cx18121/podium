@@ -9,7 +9,7 @@ describe('NameSessionModal — custom name path', () => {
   it('calls onConfirm with the custom name when user edits input and clicks Save', () => {
     const onConfirm = vi.fn();
     render(
-      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={onConfirm} onSkip={vi.fn()} />
+      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={onConfirm} />
     );
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: 'My Talk' } });
@@ -22,7 +22,7 @@ describe('NameSessionModal — skip path', () => {
   it('calls onConfirm with autoTitle when user clicks Skip', () => {
     const onConfirm = vi.fn();
     render(
-      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={onConfirm} onSkip={vi.fn()} />
+      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={onConfirm} />
     );
     fireEvent.click(screen.getByRole('button', { name: /skip/i }));
     expect(onConfirm).toHaveBeenCalledWith(AUTO_TITLE);
@@ -32,7 +32,7 @@ describe('NameSessionModal — skip path', () => {
 describe('NameSessionModal — input validation', () => {
   it('disables Save button when input is empty', () => {
     render(
-      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={vi.fn()} onSkip={vi.fn()} />
+      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={vi.fn()} />
     );
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '' } });
@@ -41,7 +41,7 @@ describe('NameSessionModal — input validation', () => {
 
   it('pre-fills input with autoTitle', () => {
     render(
-      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={vi.fn()} onSkip={vi.fn()} />
+      <NameSessionModal autoTitle={AUTO_TITLE} onConfirm={vi.fn()} />
     );
     expect(screen.getByRole('textbox')).toHaveValue(AUTO_TITLE);
   });

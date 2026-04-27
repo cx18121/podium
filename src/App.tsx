@@ -32,6 +32,7 @@ export default function App() {
   const [savedSessionId, setSavedSessionId] = useState<number | null>(null);
   const [historySessionId, setHistorySessionId] = useState<number | null>(null);
   const [pendingRecording, setPendingRecording] = useState<RecordingReadyData | null>(null);
+  const processingDurationMsRef = useRef<number>(0);
 
   // SpeechCapture ref — does NOT trigger re-renders (useRef, not useState)
   const speechCaptureRef = useRef<SpeechCapture | null>(null);
@@ -80,9 +81,10 @@ export default function App() {
   }, [startSession, calibrationProfile]);
 
   const handleStop = useCallback(() => {
+    processingDurationMsRef.current = elapsedMs;
     stopSession();
     setView('processing');
-  }, [stopSession]);
+  }, [stopSession, elapsedMs]);
 
   // App owns the save so naming prompt sits between stop and save (locked user decision)
   const handleSaveName = useCallback(async (title: string) => {
@@ -187,20 +189,36 @@ export default function App() {
   }
 
   if (view === 'processing') {
+    const durSec = Math.round(processingDurationMsRef.current / 1000);
+    const durMin = Math.floor(durSec / 60);
+    const durLabel = durMin > 0
+      ? `${durMin}m ${durSec % 60}s`
+      : `${durSec}s`;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100svh', background: 'var(--color-bg)', gap: '16px' }}>
-        <svg
-          className="animate-spin w-8 h-8"
-          style={{ color: 'var(--color-accent)' }}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-        </svg>
-        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', margin: 0 }}>Processing your recording...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100svh', background: 'var(--color-bg)', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', margin: 0 }}>
+            Saving your {durLabel} session
+          </p>
+          <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', margin: 0 }}>
+            This takes a few seconds
+          </p>
+        </div>
+        <div style={{
+          width: '160px',
+          height: '2px',
+          background: 'rgba(255,255,255,0.07)',
+          borderRadius: '9999px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: '40%',
+            height: '100%',
+            background: 'var(--color-accent)',
+            borderRadius: '9999px',
+            animation: 'progress-slide 1.4s cubic-bezier(0.4,0,0.2,1) infinite',
+          }} />
+        </div>
       </div>
     );
   }

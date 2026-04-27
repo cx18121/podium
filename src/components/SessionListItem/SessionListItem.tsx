@@ -26,6 +26,7 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } }}
+      className="focus-ring"
       style={{
         background: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
@@ -47,33 +48,35 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
     >
       {/* Title */}
       <span style={{
-        fontSize: '13px',
+        fontSize: '15px',
         fontWeight: 600,
         color: 'var(--color-text-primary)',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        paddingRight: '20px',
+        paddingRight: '24px',
+        letterSpacing: '-0.01em',
       }}>
         {session.title}
       </span>
 
-      {/* Score */}
-      <span style={{
-        fontSize: '2.25rem',
-        fontWeight: 700,
-        letterSpacing: '-0.04em',
-        lineHeight: 1,
-        color: scoreColor(session.scorecard),
-        fontVariantNumeric: 'tabular-nums',
-      }}>
-        {scoreDisplay}
-      </span>
-
-      {/* Metadata */}
-      <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
-        {dateDisplay} · {durationDisplay}
-      </span>
+      {/* Score + metadata row */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+        <span style={{
+          fontSize: '1.625rem',
+          fontWeight: 700,
+          letterSpacing: '-0.04em',
+          lineHeight: 1,
+          color: scoreColor(session.scorecard),
+          fontVariantNumeric: 'tabular-nums',
+          flexShrink: 0,
+        }}>
+          {scoreDisplay}
+        </span>
+        <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+          {dateDisplay} · {durationDisplay}
+        </span>
+      </div>
 
       {/* Delete */}
       <button
@@ -84,7 +87,6 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
         style={{
           position: 'absolute',
           top: '12px', right: '12px',
-          fontFamily: 'system-ui',
         }}
       >
         ×
