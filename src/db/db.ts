@@ -35,6 +35,8 @@ export interface Session {
   whisperFillers?: WhisperFillerResult;      // Phase 13 — WHIS-01
   whisperStatus?: 'pending' | 'complete' | 'failed'; // Phase 13 — WHIS-03
   whisperTranscript?: string;               // full ASR transcript text
+  notes?: string;                            // user-written session notes
+  prompt?: string;                           // optional practice prompt / question
 }
 
 export interface SessionEvent {
@@ -84,6 +86,18 @@ db.version(4).stores({
 
 // v5 schema: adds whisperTranscript as unindexed text field. Purely additive.
 db.version(5).stores({
+  sessions: '++id, createdAt, title',
+  calibrationProfiles: '++id',
+});
+
+// v6 schema: adds notes as unindexed text field. Purely additive.
+db.version(6).stores({
+  sessions: '++id, createdAt, title',
+  calibrationProfiles: '++id',
+});
+
+// v7 schema: adds prompt as unindexed text field. Purely additive.
+db.version(7).stores({
   sessions: '++id, createdAt, title',
   calibrationProfiles: '++id',
 });

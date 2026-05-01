@@ -15,6 +15,42 @@ const DIMENSIONS: { key: keyof ScorecardResult['dimensions']; label: string }[] 
   { key: 'openingClosing', label: 'Opening / Closing' },
 ];
 
+const TIPS: Record<string, { threshold: number; tip: string }[]> = {
+  eyeContact: [
+    { threshold: 50, tip: 'Pick 2–3 fixed points in the room to return to — anchor your gaze rather than letting it drift.' },
+    { threshold: 75, tip: 'Pause before looking down at notes so breaks feel intentional, not nervous.' },
+  ],
+  fillers: [
+    { threshold: 50, tip: 'Replace fillers with silence. A deliberate pause sounds more confident than "um".' },
+    { threshold: 75, tip: 'Notice your trigger moments — transitions between ideas tend to produce the most fillers.' },
+  ],
+  pacing: [
+    { threshold: 50, tip: 'Mark pause points in your script and slow down at section transitions.' },
+    { threshold: 75, tip: 'Vary your speed intentionally — slow for key points, faster for supporting context.' },
+  ],
+  expressiveness: [
+    { threshold: 50, tip: 'Animate your face when making a strong point. Start with deliberate eyebrow raises and smiles.' },
+    { threshold: 75, tip: 'Let your expression lead your words, not lag behind them.' },
+  ],
+  gestures: [
+    { threshold: 50, tip: 'Rest your hands at your sides or on a surface when not gesturing purposefully.' },
+    { threshold: 75, tip: 'Watch for nervous gestures during transitions — that\'s when they tend to spike.' },
+  ],
+  openingClosing: [
+    { threshold: 50, tip: 'Script your first and last 30 seconds. Strong bookends anchor the whole talk.' },
+    { threshold: 75, tip: 'Cut filler words and eye breaks from your opening — that\'s when first impressions form.' },
+  ],
+};
+
+function getTip(key: string, score: number): string | null {
+  const tiers = TIPS[key];
+  if (!tiers) return null;
+  for (const { threshold, tip } of tiers) {
+    if (score < threshold) return tip;
+  }
+  return null;
+}
+
 export default function ScorecardView({ scorecard }: ScorecardViewProps) {
   const [animated, setAnimated] = useState(false);
   const [displayScore, setDisplayScore] = useState(0);
@@ -136,6 +172,19 @@ export default function ScorecardView({ scorecard }: ScorecardViewProps) {
                   }}
                 />
               </div>
+              {(() => {
+                const tip = getTip(key, dim.score);
+                return tip ? (
+                  <p style={{
+                    fontSize: '11px',
+                    color: 'var(--color-text-muted)',
+                    margin: '3px 0 0',
+                    lineHeight: 1.55,
+                  }}>
+                    {tip}
+                  </p>
+                ) : null;
+              })()}
             </div>
           );
         })}

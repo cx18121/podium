@@ -3,11 +3,12 @@ import { scoreColor } from '../../analysis/scoreColor';
 
 interface SessionListItemProps {
   session: Session;
+  prevScore?: number | null;
   onOpen: () => void;
   onDelete: () => void;
 }
 
-export function SessionListItem({ session, onOpen, onDelete }: SessionListItemProps) {
+export function SessionListItem({ session, prevScore, onOpen, onDelete }: SessionListItemProps) {
   const dateDisplay = new Date(session.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   const sec = Math.round(session.durationMs / 1000);
   const durationDisplay = `${Math.floor(sec / 60)}m ${sec % 60}s`;
@@ -59,6 +60,20 @@ export function SessionListItem({ session, onOpen, onDelete }: SessionListItemPr
         }}>
           {scoreDisplay}
         </span>
+        {session.scorecard !== null && prevScore != null && (() => {
+          const delta = session.scorecard.overall - prevScore;
+          if (delta === 0) return null;
+          return (
+            <span style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: delta > 0 ? 'var(--color-success)' : 'var(--color-destructive)',
+              flexShrink: 0,
+            }}>
+              {delta > 0 ? '+' : ''}{delta}
+            </span>
+          );
+        })()}
         <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
           {dateDisplay} · {durationDisplay}
         </span>

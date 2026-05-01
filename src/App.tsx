@@ -21,17 +21,58 @@ function PageFallback() {
   return <div style={{ minHeight: '100svh', background: 'var(--color-bg)' }} />;
 }
 
-// State machine: home -> setup -> recording -> naming -> review
+// State machine: home -> setup -> countdown -> recording -> naming -> review
 //                setup <-> history
 //                setup <-> calibration
 //                review -> history (back) | setup (record again)
-type AppView = 'home' | 'setup' | 'recording' | 'processing' | 'naming' | 'review' | 'history' | 'calibration';
+type AppView = 'home' | 'setup' | 'countdown' | 'recording' | 'processing' | 'naming' | 'review' | 'history' | 'calibration';
+
+function CountdownView({ onDone }: { onDone: () => void }) {
+  const [count, setCount] = useState(3);
+  const called = useRef(false);
+
+  useEffect(() => {
+    if (count === 0) {
+      if (!called.current) { called.current = true; onDone(); }
+      return;
+    }
+    const id = setTimeout(() => setCount(c => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [count, onDone]);
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      minHeight: '100svh', background: 'var(--color-bg)', gap: '16px',
+    }}>
+      <span
+        key={count}
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '7rem',
+          fontWeight: 700,
+          letterSpacing: '-0.05em',
+          color: 'var(--color-text-primary)',
+          fontVariantNumeric: 'tabular-nums',
+          lineHeight: 1,
+          animation: 'fade-up 0.25s ease-out both',
+        } as React.CSSProperties}
+      >
+        {count > 0 ? count : ''}
+      </span>
+      <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
+        Get ready
+      </span>
+    </div>
+  );
+}
 
 export default function App() {
   const [view, setView] = useState<AppView>('home');
   const [savedSessionId, setSavedSessionId] = useState<number | null>(null);
   const [historySessionId, setHistorySessionId] = useState<number | null>(null);
   const [pendingRecording, setPendingRecording] = useState<RecordingReadyData | null>(null);
+  const [pendingPrompt, setPendingPrompt] = useState<string | undefined>(undefined);
   const processingDurationMsRef = useRef<number>(0);
 
   // SpeechCapture ref — does NOT trigger re-renders (useRef, not useState)
@@ -121,6 +162,7 @@ export default function App() {
       scorecard: null,
       transcript: segments, // Phase 6: persist for caption display
       wpmWindows, // FOUND-02: 30-second window WPM data for Phase 12 chart
+      prompt: pendingPrompt,
     });
 
     // REC-06: request persistent storage after first save
@@ -128,6 +170,7 @@ export default function App() {
 
     speechCaptureRef.current = null;
     setPendingRecording(null);
+    setPendingPrompt(undefined);
     setSavedSessionId(sessionId as number);
     setView('review');
   }, [pendingRecording]);
@@ -153,13 +196,17 @@ export default function App() {
     return (
       <Suspense fallback={<PageFallback />}>
         <SetupScreen
-          onStart={handleStart}
+          onStart={(prompt) => { setPendingPrompt(prompt); setView('countdown'); }}
           onViewHistory={hasExistingSessions ? () => setView('history') : undefined}
           onCalibrate={() => setView('calibration')}
           hasCalibration={calibrationProfile != null}
         />
       </Suspense>
     );
+  }
+
+  if (view === 'countdown') {
+    return <CountdownView onDone={handleStart} />;
   }
 
   if (view === 'calibration') {
@@ -182,7 +229,7 @@ export default function App() {
               {error}
             </div>
           )}
-          <RecordingScreen elapsedMs={elapsedMs} onStop={handleStop} />
+          <RecordingScreen elapsedMs={elapsedMs} onStop={handleStop} prompt={pendingPrompt} />
         </>
       </Suspense>
     );

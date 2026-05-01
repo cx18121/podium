@@ -50,8 +50,26 @@ const AnnotatedPlayer = forwardRef<AnnotatedPlayerHandle, AnnotatedPlayerProps>(
       videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
     }, []);
 
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+      if (!videoRef.current) return;
+      if (e.key === ' ') {
+        e.preventDefault();
+        videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 5);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        videoRef.current.currentTime = Math.min(videoRef.current.duration || 0, videoRef.current.currentTime + 5);
+      }
+    }, []);
+
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+      <div
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', outline: 'none' }}
+      >
         {/* Video */}
         <div style={{ position: 'relative', width: '100%' }} className="group">
           <video

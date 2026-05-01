@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 interface RecordingScreenProps {
   elapsedMs: number;
   onStop: () => void;
+  prompt?: string;
 }
 
 function formatElapsed(ms: number): string {
@@ -10,7 +11,7 @@ function formatElapsed(ms: number): string {
   return `${Math.floor(totalSec / 60)}:${String(totalSec % 60).padStart(2, '0')}`;
 }
 
-export default function RecordingScreen({ elapsedMs, onStop }: RecordingScreenProps) {
+export default function RecordingScreen({ elapsedMs, onStop, prompt }: RecordingScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -36,6 +37,40 @@ export default function RecordingScreen({ elapsedMs, onStop }: RecordingScreenPr
       gap: '36px',
       position: 'relative',
     }}>
+      {/* Prompt card — above camera, only when set */}
+      {prompt && (
+        <div style={{
+          width: '100%',
+          maxWidth: '360px',
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: '10px',
+          padding: '14px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          animation: 'fade-up 0.3s ease-out both',
+        }}>
+          <span style={{
+            fontSize: '10px',
+            fontWeight: 600,
+            letterSpacing: '0.09em',
+            textTransform: 'uppercase',
+            color: 'var(--color-text-muted)',
+          }}>
+            Prompt
+          </span>
+          <p style={{
+            fontSize: '14px',
+            color: 'var(--color-text-primary)',
+            lineHeight: 1.6,
+            margin: 0,
+          }}>
+            {prompt}
+          </p>
+        </div>
+      )}
+
       {/* Camera preview — centered */}
       <div style={{
         width: '100%',

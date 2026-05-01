@@ -146,24 +146,34 @@ export default function HistoryView({ onOpenSession, onRecordNew }: HistoryViewP
         )}
 
         {/* Card grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {(filterDate
+        {(() => {
+          // Precompute prevScore for each session (sessions sorted newest-first)
+          const prevScoreById = new Map<number, number | null>();
+          sessions.forEach((s, i) => {
+            prevScoreById.set(s.id!, sessions[i + 1]?.scorecard?.overall ?? null);
+          });
+          const visible = filterDate
             ? sessions.filter(s => {
                 const d = new Date(s.createdAt);
                 return d.getFullYear() === filterDate.getFullYear()
                   && d.getMonth() === filterDate.getMonth()
                   && d.getDate() === filterDate.getDate();
               })
-            : sessions
-          ).map((s) => (
-            <SessionListItem
-              key={s.id}
-              session={s}
-              onOpen={() => onOpenSession(s.id!)}
-              onDelete={() => setDeleteTargetId(s.id!)}
-            />
-          ))}
-        </div>
+            : sessions;
+          return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {visible.map((s) => (
+                <SessionListItem
+                  key={s.id}
+                  session={s}
+                  prevScore={prevScoreById.get(s.id!)}
+                  onOpen={() => onOpenSession(s.id!)}
+                  onDelete={() => setDeleteTargetId(s.id!)}
+                />
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Storage — contextual info, not header chrome */}
         <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
